@@ -66,11 +66,47 @@ namespace aed2
     			nat filas;
     			nat columnas;
 			};
+			
+    			struct Posicion{
+    			Nat x;
+    			Nat y;
+    			};
     	};
 
 	
 	//Implementacion del Campus
 	
 	Campus::Campus(Nat ancho, Nat alto) : columnas(ancho), filas(alto) {}
+	
+	//Agrega un obstaculo al campus en una posicion valida y desocupada
+	//Pre: p es una posicion valida y no esta ocupada
+	void Campus::AgregarObstaculo(Posicion p, Campus& c){
+		c.Grilla.matriz[p.x][p.y] = true;
+	}
+
+	//Devuelve la cantidad de filas que tiene el campus
+	Nat Campus::Filas(const Campus& c){
+		return c.filas;
+	}
+
+	//Devuelve la cantidad de columnas que tiene el campus.
+	Nat Campus::Columnas(const Campus& c){
+		return c.columnas;
+	}
+
+	//Chequea si la posicion p esta ocupada.
+	//Pre: p es una posicion valida de p
+	bool Campus::EstaOcupada(Posicion p, const Campus& c){
+		return (c.Grilla.matriz[p.x][p.y] == true);
+	}
+
+	//Chequea si p pertenece a las posiciones del campus.
+	bool Campus::posValida(Posicion p, const Campus& c){
+		bool valida = false;
+		if (p.x > 0 && p.y>0)
+		if ((p.x <= c.Grilla.filas) && (p.y <= c.Grilla.columnas))
+		valida = true;
+		return valida; 
+	}
 }
 #endif // CAMPUS_H_
