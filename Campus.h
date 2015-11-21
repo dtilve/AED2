@@ -97,32 +97,30 @@ namespace aed2
 	//Chequea si la posicion p esta ocupada.
 	//Pre: p es una posicion valida de p
 	bool Campus::EstaOcupada(Posicion p, const Campus& c){
-		return (c.Grilla.matriz[p.x][p.y] == true);
+		return (c.Grilla.matriz[p.x -1][p.y -1] == true);
 	}
 
-	//Chequea si p pertenece a las posiciones del campus.
+			//Chequea si p pertenece a las posiciones del campus.
 	bool Campus::posValida(Posicion p, const Campus& c){
 		bool valida = false;
 		if (p.x > 0 && p.y>0)
-		if ((p.x <= c.Grilla.filas) && (p.y <= c.Grilla.columnas))
+		if ((p.y <= c.Grilla.filas) && (p.x <= c.Grilla.columnas))
 		valida = true;
 		return valida; 
 	}
-	
-	//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
-	//Esa posicion debe estar vacia y en la primera o ultima fila.
+
+			//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
+			//Esa posicion debe estar vacia y en la primera o ultima fila.
 	bool Campus::EsIngreso(Posicion p, const Campus& c){ 
 		return (c.IngresoSuperior(p,c)||c.IngresoInferior(p,c));
 	}
 
-	//Chequea si la posicion de ingreso pertenece a la fila superior.
+			//Chequea si la posicion de ingreso pertenece a la fila superior.
 	bool Campus::IngresoSuperior(Posicion p, const Campus& c){
-		return ((p.x=1)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
+		return ((p.y=1)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
 	}
 
-	//Chequea si la posicion de ingreso pertenece a la fila inferior.
+			//Chequea si la posicion de ingreso pertenece a la fila inferior.
 	bool Campus::IngresoInferior(Posicion p, const Campus& c){
-		return ((p.x = c.Grilla.filas)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
+		return ((p.y = c.Grilla.filas)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
 	}
-}
-#endif // CAMPUS_H_
