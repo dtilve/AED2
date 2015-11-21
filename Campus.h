@@ -131,7 +131,12 @@ namespace aed2
 	//Devuelve la distancia que hay entre p1 y p2.
 	//Pre: tanto p1 como p2 deben ser posiciones validas.
 	Nat Campus::Distancia(Posicion p1, Posicion p2, const campus& c){
-
+		Nat dist;
+		if (p1.x>p2.x) dist= p1.x-p2.x
+			else dist=p2.x-p1.x;
+		if (p1.y>p2.y) dist = dist +(p1.y-p2.y)
+			else dist= dist + (p2.y-p1.y);
+		return dist;
 	}
 
 	//Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo
