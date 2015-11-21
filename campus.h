@@ -49,12 +49,12 @@ namespace aed2
 
 			//Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo
 			//se utilizara esta funcion. Seran datos a interpretar por el invocador.
-			//Pre:
+			//Pre: p debe ser una posicion valida.
 			Posicion ProxPosicion(Posicion p, Direccion d, const Campus& c);
 
 			//Devuelve el conjunto de posiciones libres del ingreso que esta mas cerca de p. si no hay posiciones
 			//libres en el mas cercano, devuelve el otro conjunto.
-			//Pre:
+			//Pre: p debe ser una posicion valida.
 			Conj<Posicion> IngresosMasCercanos(Posicion p, const Campus& c);
 
 		private:
