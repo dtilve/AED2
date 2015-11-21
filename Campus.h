@@ -10,6 +10,9 @@ namespace aed2
 		public:
 			//devuelve el campus
 			Campus(Nat ancho, Nat alto);
+			
+			//Destructor
+			~Campus();
 
 			//Agrega un obstaculo al campus en una posicion valida y desocupada
 			//Pre: p es una posicion valida y no esta ocupada
