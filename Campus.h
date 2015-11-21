@@ -61,27 +61,23 @@ namespace aed2
 			Conj<Posicion> IngresosMasCercanos(Posicion p, const Campus& c);
 
 		private:
-			struct Grilla{
-    			vector<vector<bool>> matriz;
-    			nat filas;
-    			nat columnas;
-			};
-			
-    			struct Posicion{
+		vector<vector<bool>> matriz;
+    		Nat filas;
+    		Nat columnas;
+
+    		struct Posicion{
     			Nat x;
     			Nat y;
-    			};
-    	};
+    		};
 
-	
-	//Implementacion del Campus
-	
+	};
+
 	Campus::Campus(Nat ancho, Nat alto) : columnas(ancho), filas(alto) {}
-	
+
 	//Agrega un obstaculo al campus en una posicion valida y desocupada
 	//Pre: p es una posicion valida y no esta ocupada
 	void Campus::AgregarObstaculo(Posicion p, Campus& c){
-		c.Grilla.matriz[p.x][p.y] = true;
+		c.matriz[p.x -1][p.y -1] = true;
 	}
 
 	//Devuelve la cantidad de filas que tiene el campus
@@ -97,30 +93,72 @@ namespace aed2
 	//Chequea si la posicion p esta ocupada.
 	//Pre: p es una posicion valida de p
 	bool Campus::EstaOcupada(Posicion p, const Campus& c){
-		return (c.Grilla.matriz[p.x -1][p.y -1] == true);
+		return (c.matriz[p.x -1][p.y -1] == true);
 	}
 
-			//Chequea si p pertenece a las posiciones del campus.
+	//Chequea si p pertenece a las posiciones del campus.
 	bool Campus::posValida(Posicion p, const Campus& c){
 		bool valida = false;
 		if (p.x > 0 && p.y>0)
-		if ((p.y <= c.Grilla.filas) && (p.x <= c.Grilla.columnas))
+		if ((p.y <= c.filas) && (p.x <= c.columnas))
 		valida = true;
 		return valida; 
 	}
 
-			//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
-			//Esa posicion debe estar vacia y en la primera o ultima fila.
+	//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
+	//Esa posicion debe estar vacia y en la primera o ultima fila.
 	bool Campus::EsIngreso(Posicion p, const Campus& c){ 
 		return (c.IngresoSuperior(p,c)||c.IngresoInferior(p,c));
 	}
 
-			//Chequea si la posicion de ingreso pertenece a la fila superior.
+	//Chequea si la posicion de ingreso pertenece a la fila superior.
 	bool Campus::IngresoSuperior(Posicion p, const Campus& c){
-		return ((p.y=1)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
+		return ((p.y=1)&&(c.matriz[p.x -1][p.y-1] == false));
 	}
 
-			//Chequea si la posicion de ingreso pertenece a la fila inferior.
+	//Chequea si la posicion de ingreso pertenece a la fila inferior.
 	bool Campus::IngresoInferior(Posicion p, const Campus& c){
-		return ((p.y = c.Grilla.filas)&&(c.Grilla.matriz[p.x -1][p.y-1] == false));
+		return ((p.y = c.filas)&&(c.matriz[p.x -1][p.y-1] == false));
 	}
+
+	//Devuelve el conjunto de vecinos de p, si es una posicion valida. Son como maximo 4 elementos.
+	//Si no hay vecinos devuelve el conjunto vacio.
+	//Pre: p debe ser una posicion valida.
+	Conj<Posicion> Campus::Vecinos(Posicion p, const Campus& c){
+
+	}
+
+	//Devuelve la distancia que hay entre p1 y p2.
+	//Pre: tanto p1 como p2 deben ser posiciones validas.
+	Nat Campus::Distancia(Posicion p1, Posicion p2, const campus& c){
+
+	}
+
+	//Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo
+	//se utilizara esta funcion. Seran datos a interpretar por el invocador.
+	//Pre: p debe ser una posicion valida.
+	Posicion Campus::ProxPosicion(Posicion p, Direccion d, const Campus& c){
+		Posicion paux;
+		paux=p;
+		if ( ( (d==izq)&&(p.x==1) )||( (d==der)&&(p.x==c.columnas) )||( (d==abajo)&&(p.y==c.filas) )||( (d==arriba)&&(p.y==1) ))
+				paux = p;
+		else
+		{
+			if (d==izq) paux.x=paux.x-1;
+			if (d==der) paux.x=paux.x+1;
+			if (d==abajo) paux.y=paux.y+1;
+			if (d==arriba) paux.y=paux.y-1;
+		}
+		return paux;
+
+	}
+
+	//Devuelve el conjunto de posiciones libres del ingreso que esta mas cerca de p. si no hay posiciones
+	//libres en el mas cercano, devuelve el otro conjunto.
+	//Pre: p debe ser una posicion valida.
+	Conj<Posicion> Campus::IngresosMasCercanos(Posicion p, const Campus& c){
+
+	}
+	
+}
+#endif // CAMPUS_H_
