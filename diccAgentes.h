@@ -82,7 +82,7 @@ namespace aed2
 			// \InterfazFuncion{Premiar}{\In{it}{itDiccAgentes(act,arr)}, \Inout{da}{diccAgentes}}{}
 			// [Agrega una captura al agente apuntado por el iterador.]
 			// [Se genera aliasing por el iterador que esta apuntando a un agente de la estructura.]
-			Sancionar();
+			void Sancionar();
 			// \InterfazFuncion{Sacionar}{\In{it}{itDiccAgentes(act,arr)},\Inout{e}{estr}}{}
 			DiccAgentes Mover(DiccAgentes);
 			// \InterfazFuncion{Mover}{\In{it}{itDiccAgentes(act,arr)}, \Inout{da}{diccAgentes}}{}
@@ -108,4 +108,69 @@ namespace aed2
 	// \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
 	// [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
 	};
+}
+
+DiccAgentes::DiccAgentes(){
+	
+}
+DiccAgentes::DiccAgentes()~{
+	
+}
+itConj DiccAgentes::Claves(){
+	
+}
+void DiccAgentes::Definir(Nat a){
+	
+}
+Info DiccAgentes::Obtener(Nat a){
+	
+}
+Info DiccAgentes::ObtenerLog(Nat a){
+	
+}
+bool DiccAgentes::Definido?(Nat a){
+	
+}
+//implementacion iterador
+DiccAgentes::Iterador::Iterador(){
+	
+}
+DiccAgentes::Iterador::Iterador()~{
+	
+}
+bool DiccAgentes::Iterador::HayAnterior() const{
+	
+}
+boolDiccAgentes::Iterador:: DiccAgentes::Iterador::HaySiguiente() const{
+	
+}
+Nodo& DiccAgentes::Iterador::Anterior(){
+	
+}
+Nodo& DiccAgentes::Iterador::Siguiente(){
+	
+}
+void DiccAgentes::Iterador::Avanzar(){
+	
+}
+void DiccAgentes::Iterador::Retroceder(){
+	
+}
+void DiccAgentes::Iterador::AgregarComoAnterior(const T& elem){
+	
+}
+void DiccAgentes::Iterador::AgregarComoSiguiente(const Nat& a, Info i){
+	
+}
+bool operator == (const typename DiccAgentes::Iterador& otro) const{
+	
+}
+DiccAgentes DiccAgentes::Iterador::Premiar(DiccAgentes d){
+	
+}	
+void DiccAgentes::Iterador::Sancionar(){
+	
+}
+DiccAgentes DiccAgentes::Iterador::Mover(DiccAgentes){
+	
 }
