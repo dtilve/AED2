@@ -108,5 +108,14 @@ namespace aed2
 		valida = true;
 		return valida; 
 	}
+	
+	//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
+	//Esa posicion debe estar vacia y en la primera o ultima fila.
+	bool Campus::EsIngreso(Posicion p, const Campus& c){
+		bool ingreso = false;
+		if ((p.x == 1)||(p.x == c.Grilla.filas))
+			if (c.Grilla.matriz[p.x][p.y] == false) ingreso = true; 
+		return ingreso;
+	}
 }
 #endif // CAMPUS_H_
