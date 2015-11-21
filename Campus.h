@@ -9,7 +9,7 @@ namespace aed2
 	class Campus{
 		public:
 			//devuelve el campus
-			Campus();//<<<<------------------------------------------------------------------- Faltan parametros
+			Campus(Nat ancho, Nat alto);
 
 			//Agrega un obstaculo al campus en una posicion valida y desocupada
 			//Pre: p es una posicion valida y no esta ocupada
@@ -65,4 +65,8 @@ namespace aed2
     		};
 
 	};
+	
+	//Implementacion del Campus
+	
+	Campus::Campus(Nat ancho, Nat alto) : columnas(ancho), filas(alto) {}
 }
