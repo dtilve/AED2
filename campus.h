@@ -1,5 +1,5 @@
-#ifndef AED2_LISTA_H_
-#define AED2_LISTA_H_
+#ifndef AED2_CAMPUS_H_
+#define AED2_CAMPUS_H_
 
 #include <ostream>
 #include "TiposBasicos.h"
