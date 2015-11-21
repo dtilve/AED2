@@ -1,5 +1,5 @@
-#ifndef AED2_CAMPUS_H_
-#define AED2_CAMPUS_H_
+#ifndef CAMPUS_H_
+#define CAMPUS_H_
 
 #include <ostream>
 #include "TiposBasicos.h"
@@ -62,11 +62,12 @@ namespace aed2
     			vector<vector<bool>> matriz;
     			nat filas;
     			nat columnas;
-    		};
+			};
+    	};
 
-	};
 	
 	//Implementacion del Campus
 	
 	Campus::Campus(Nat ancho, Nat alto) : columnas(ancho), filas(alto) {}
 }
+#endif // CAMPUS_H_
