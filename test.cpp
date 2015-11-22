@@ -1,4 +1,7 @@
+//#include "CampusSeguro.h"
 #include "Campus.h"
+//#include "DiccNombres.h"
+//#include "DiccAgentes.h"
 #include "mini_test.h"
 
 #include <string>
@@ -91,9 +94,21 @@ void CampusIngreso(){
 
 int main(int argc, char **argv)
 {
+    //Campus Seguro
+
+
+    //Campus
+
     RUN_TEST(CampusCrear);
     RUN_TEST(CampusAgregarObstaculo);
     RUN_TEST(CampusIngreso);
+
+
+    //DiccNombres
+
+
+    //DiccAgentes
+
 
 	return 0;
 }
