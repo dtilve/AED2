@@ -25,19 +25,19 @@ namespace aed2
 			//Devuelve el campus por referencia.
 			CampusSeguro();
 
-			//Devuelve un conjunto de iteradores a los estudiantes del campus.
-			Conj<Nombre> Estudiantes(const CampusSeguro& cs);//¿"Estudiantes" es un string no?
+			//Devuelve un iterador al conjunto de estudiantes del campus.
+			Iterador<Conj<Nombre>> Estudiantes(const CampusSeguro& cs);//¿"Estudiantes" es un string no?
 
-			//Devuelve un conjunto de iteradores a los hippies del campus
-			Conj<Nombre> Hippies(const CampusSeguro& cs);
+			//Devuelve un iterador al conjunto de hippies del campus
+			Iterador<Conj<Nombre>> Hippies(const CampusSeguro& cs);
 
 
-			//Devuelve un conjunto de iteradores a los agentes del campus.
-			Conj<Placa> Agentes(const CampusSeguro& cs);//
+			//Devuelve un iterador al conjunto de agentes del campus.
+			Iterador<Conj<Placa>> Agentes(const CampusSeguro& cs);//
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:
-			Posicion PosicionEstudianteYHippie(Arreglo<char> nombre, const CampusSeguro& cs);
+			Posicion PosicionEstudianteYHippie(Nombre nombre, const CampusSeguro& cs);
 
 			//Devuelve la posicion del agente pasado por parametro.
 			//Pre:
@@ -59,23 +59,23 @@ namespace aed2
 			//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
 			//la grilla con respecto a sus vecinos.
 			//Pre:
-			void IngresarEstudiante(Arreglo<char> est, Posicion p, CampusSeguro& cs);
+			void IngresarEstudiante(Nombre est, Posicion p, CampusSeguro& cs);
 
 			//Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en la
 			//grilla con respecto a sus vecinos.
 			//Pre:
-			void IngresarHippie(Arreglo<char> hip, Posicion p, CampusSeguro& cs);
+			void IngresarHippie(Nombre hip, Posicion p, CampusSeguro& cs);
 
 			//Mueve al estudiante pasado por parametro dentro de campus hacia la direccion pasada por
 			//parametro y realiza los cambios necesarios de acuerdo a la nueva situacion en la grilla con respecto a
 			//sus vecinos.
 			//Pre:
-			void MoverEstudiante(Arreglo<char> est, Direccion d, CampusSeguro& cs);
+			void MoverEstudiante(Nombre est, Direccion d, CampusSeguro& cs);
 
 			//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
 			//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
 			//Pre:
-			void MoverHippie(Arreglo<char> hip, CampusSeguro& cs);
+			void MoverHippie(Nombre hip, CampusSeguro& cs);
 
 			//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
 			//situacion en la grilla con respecto a sus vecinos.
@@ -116,6 +116,124 @@ namespace aed2
 
 
 	};
+	
+	CampusSeguro::CampusSeguro();
+
+	//Devuelve un conjunto de iteradores a los estudiantes del campus.
+	Iterador<Conj<Nombre>> CampusSeguro::Estudiantes(const CampusSeguro& cs){
+
+	}
+
+	//Devuelve un conjunto de iteradores a los hippies del campus
+	Iterador<Conj<Nombre>> CampusSeguro::Hippies(const CampusSeguro& cs){
+
+	}
+
+
+	//Devuelve un conjunto de iteradores a los agentes del campus.
+	Iterador<Conj<Placa>> CampusSeguro::Agentes(const CampusSeguro& cs){
+
+	}
+
+	//Devuelve la posicion del estudiante o hippie pasado por parametro.
+	//Pre:
+	Posicion CampusSeguro::PosicionEstudianteYHippie(Nombre nombre, const CampusSeguro& cs){
+
+	}
+
+	//Devuelve la posicion del agente pasado por parametro.
+	//Pre:
+	Posicion CampusSeguro::PosAgente(const CampusSeguro& cs, Nat as){
+
+	}
+
+	//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
+	//Pre:
+	Nat CampusSeguro::CantSanciones(const CampusSeguro& cs, Nat as){
+
+	}
+
+	//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
+	//Pre:
+	Nat CampusSeguro::CantHippiesAtrapados(const Campus& c, Nat as){
+
+	}
+
+	//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
+	//correspondientes.
+	//Pre:
+	CampusSeguro CampusSeguro::ComenzarRastrillaje(Dicc<Placa,Posicion> da, const Campus& c){
+
+	}
+
+	//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
+	//la grilla con respecto a sus vecinos.
+	//Pre:
+	void CampusSeguro::IngresarEstudiante(Nombre est, Posicion p, CampusSeguro& cs){
+
+	}
+
+	//Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en la
+	//grilla con respecto a sus vecinos.
+	//Pre:
+	void CampusSeguro::IngresarHippie(Nombre hip, Posicion p, CampusSeguro& cs){
+
+	}
+
+	//Mueve al estudiante pasado por parametro dentro de campus hacia la direccion pasada por
+	//parametro y realiza los cambios necesarios de acuerdo a la nueva situacion en la grilla con respecto a
+	//sus vecinos.
+	//Pre:
+	void CampusSeguro::MoverEstudiante(Nombre est, Direccion d, CampusSeguro& cs){
+
+	}
+
+	//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
+	//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
+	//Pre:
+	void CampusSeguro::MoverHippie(Nombre hip, CampusSeguro& cs){
+
+	}
+
+	//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
+	//situacion en la grilla con respecto a sus vecinos.
+	//Pre:
+	void CampusSeguro::MoverAgente(Nat as, CampusSeguro& cs){
+
+	}
+
+	//Devuelve la cantidad de hippies que estan presentes en el campus.
+	//Pre:
+	Nat CampusSeguro::CantHippies(const CampusSeguro& cs){
+
+	}
+
+	//Devuelve la cantidad de estudiantes que estan presentes en el campus.
+	//Pre:
+	Nat CampusSEguro::CantEstudiantes(const CampusSeguro& cs){
+
+	}
+
+	//Devuelve el agente que atrapo la mayor cantidad de hippies.
+	//Pre:
+	Nat CampusSeguro::MasVigilante(const CampusSeguro& cs){
+
+	}
+
+	//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
+	//parametro.
+	//Pre:
+	Conj<Nat> CampusSeguro::ConMismasSanciones(Nat as,const CampusSeguro& cs){
+
+	}
+
+	//Devuelve el conjunto de agentes que tiene k sanciones
+	//parametro.
+	//Pre:
+	Conj<Nat> CampusSeguro::ConKSanciones(Nat k,const CampusSeguro& cs){
+
+	}
+
 }
 
 #endif
