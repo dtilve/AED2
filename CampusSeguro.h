@@ -26,14 +26,14 @@ namespace aed2
 			CampusSeguro();
 
 			//Devuelve un iterador al conjunto de estudiantes del campus.
-			Iterador<Conj<Nombre>> Estudiantes(const CampusSeguro& cs);//¿"Estudiantes" es un string no?
+			Iterador<Conj<Nombre>> Estudiantes(const CampusSeguro& cs);
 
 			//Devuelve un iterador al conjunto de hippies del campus
 			Iterador<Conj<Nombre>> Hippies(const CampusSeguro& cs);
 
 
 			//Devuelve un iterador al conjunto de agentes del campus.
-			Iterador<Conj<Placa>> Agentes(const CampusSeguro& cs);//
+			Iterador<Conj<Placa>> Agentes(const CampusSeguro& cs);
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:
