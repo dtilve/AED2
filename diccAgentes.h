@@ -89,7 +89,7 @@ namespace aed2
 			// [Mueve al agente apuntado por el iterador.]
 			// [Se genera aliasing por el iterador que esta apuntando a un agente de la estructura.] 
 		private:
-			vector<tuplaAg> arregloDeAgentes;
+			vector<tuplaAg> arregloDeAgentesIt;
 			nat act
 			// \tupItem{act}{nat}
 			// \tupItem{arr}{vector(tupla(Agente,Info))}
@@ -98,18 +98,18 @@ namespace aed2
     	struct diccAgentes{
     		Conj<nat>	conjuntoDeAgentes;
     		vector<tuplaAg> arregloDeAgentes;
-    		//vector<conj<...>>		  tablaHash;
+    		vector<conj<Iterador>> tablaHash;
     		nat mayor;
     		nat menor;
     		Lista<nat,Conj(nat)> ListasSanciones;
-    		vector<nat,itListaSanciones> ArregloDeSanciones;
+    		vector<nat,itLista> ArregloDeSanciones;
     	};
 	Nat FuncionDeHash(Nat a);
 	// \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
 	// [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
 	};
 }
-
+//tuplaAg=<placa,sanciones,capturas,itVector,itConj>???
 DiccAgentes::DiccAgentes(){
 	
 }
@@ -117,7 +117,7 @@ DiccAgentes::DiccAgentes()~{
 	
 }
 itConj DiccAgentes::Claves(){
-	
+	this->conjuntoDeAgentes;
 }
 void DiccAgentes::Definir(Nat a){
 	
@@ -133,44 +133,66 @@ bool DiccAgentes::Definido?(Nat a){
 }
 //implementacion iterador
 DiccAgentes::Iterador::Iterador(){
-	
+	arregloDeAgentesIt = this->arragloDeAgentes;
+	act = 0;
 }
 DiccAgentes::Iterador::Iterador()~{
 	
 }
 bool DiccAgentes::Iterador::HayAnterior() const{
-	
+	return (this->act != 0);
 }
-boolDiccAgentes::Iterador:: DiccAgentes::Iterador::HaySiguiente() const{
-	
+bool DiccAgentes::Iterador:: DiccAgentes::Iterador::HaySiguiente() const{
+	return (this->act != (Longitud(this->arregloDeAgentes)-1);
 }
-Nodo& DiccAgentes::Iterador::Anterior(){
-	
+tuplaAg& DiccAgentes::Iterador::Anterior(){
+	return arregloDeAgentesIt(act-1);
 }
-Nodo& DiccAgentes::Iterador::Siguiente(){
-	
+tuplaAg& DiccAgentes::Iterador::Siguiente(){
+	return arregloDeAgentesIt(act);
 }
 void DiccAgentes::Iterador::Avanzar(){
-	
+	act++;
 }
 void DiccAgentes::Iterador::Retroceder(){
-	
+	act--;
 }
-void DiccAgentes::Iterador::AgregarComoAnterior(const T& elem){
-	
-}
+void DiccAgentes::Iterador::AgregarComoAnterior(const Nat& a, Info i){
+	arregloDeAgentes[act-1]=<a,info>;
+}//esto es asi???
 void DiccAgentes::Iterador::AgregarComoSiguiente(const Nat& a, Info i){
-	
-}
+	arregloDeAgentes[act+1]=<a,info>;
+}//esto es asi???
 bool operator == (const typename DiccAgentes::Iterador& otro) const{
-	
+	int i=0;
+	int n=Longitud(this->arregloDeAgentesIt);
+	bool b=true;
+	while(i<n){
+		if(this->arregloDeAgentesIt[i]!=otro->arregloDeAgentes[i]){
+			b=false;
+		}
+		i++;
+	}
+	return(b);
 }
-DiccAgentes DiccAgentes::Iterador::Premiar(DiccAgentes d){
-	
+//tuplaAg=<placa,sanciones,capturas,itVector,itConj>???
+DiccAgentes DiccAgentes::Iterador::Premiar(){
+	// \State ((it.arr)$_{i}$).capturas=((it.arr)$_{i}$).capturas + 1 \Comment $O(1)$
 }	
 void DiccAgentes::Iterador::Sancionar(){
-	
+	  //          \State $borrar(it.arr_{it.act}.itcs,it.arr_{it.act}.its)$ \Comment $O(1)$
+   //         \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
+			// 	\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
+   //             \State $Agregar(it.arr_{it.act},it.arr_{it.act}.itcs)$ \Comment $O(1)$
+   //         \Else
+			// 	\State $AgregarComoSiguiente(tupla(it.arr_{it.act}.sanciones,vacio()),it.arr_{it.act}.its)$ \Comment $O(1)$
+			// 	\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
+   //             \State $Agregar(it.arr_{it.act},it.arr_{it.act}.itcs)$ \Comment $O(1)$
+   //         \EndIf
+			// \State \Comment $O(1)$
+   //         \State \Comment $O(1)$
+			// \Statex \underline{Complejidad:} $O(1)$
 }
-DiccAgentes DiccAgentes::Iterador::Mover(DiccAgentes){
-	
+DiccAgentes DiccAgentes::Iterador::Mover(Posicion p){
+	// \State $\Pi_{1}$((it.arr)$_{it.act}$.info) = p $O(1)$
 }
