@@ -2,61 +2,75 @@
 #define AED2_CAMPUSEGURO_H_
 
 #include <ostream>
-#include "TiposBasicos.h"
+#include "Campus.h"
+#include "aed2/TiposBasicos.h"
+#include "aed2/Vector.h"
+#include "aed2/Conj.h"
+#include "aed2/Dicc.h"
 
 namespace aed2
 {
-	class Campus{
+    typedef String Nombre;
+    typedef Nat Placa;
+
+    struct Celda{
+        String tipo;
+        Iterador<Nombre> estudiante;
+        Iterador<Nombre> hippie;
+        Iterador<Placa> agente;
+    };
+
+	class CampusSeguro{
 		public:
 			//Devuelve el campus por referencia.
 			CampusSeguro();
 
 			//Devuelve un conjunto de iteradores a los estudiantes del campus.
-			conj<*estudiantes> Estudiantes(const CampusSeguro& cs);//¿"Estudiantes" es un string no?
+			Conj<Nombre> Estudiantes(const CampusSeguro& cs);//¿"Estudiantes" es un string no?
 
 			//Devuelve un conjunto de iteradores a los hippies del campus
-			conj<*hippies> Hippies(const CampusSeguro& cs);
+			Conj<Nombre> Hippies(const CampusSeguro& cs);
 
 
 			//Devuelve un conjunto de iteradores a los agentes del campus.
-			conj<*agentes> Agentes(const CampusSeguro& cs);//
+			Conj<Placa> Agentes(const CampusSeguro& cs);//
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
-			//Pre: 
+			//Pre:
 			Posicion PosicionEstudianteYHippie(Arreglo<char> nombre, const CampusSeguro& cs);
 
 			//Devuelve la posicion del agente pasado por parametro.
 			//Pre:
-			Posicion PosAgente(const CampusSeguro& cs, agente as);
+			Posicion PosAgente(const CampusSeguro& cs, Nat as);
 
 			//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 			//Pre:
-			Nat CantSanciones(const CampusSeguro& cs, agente as);
+			Nat CantSanciones(const CampusSeguro& cs, Nat as);
 
 			//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 			//Pre:
-			Nat CantHippiesAtrapados(const Campus& c, agente as);
+			Nat CantHippiesAtrapados(const Campus& c, Nat as);
 
 			//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
 			//correspondientes.
 			//Pre:
-			CampusSeguro ComenzarRastrillaje(diccAgentes da, const Campus& c);
+			CampusSeguro ComenzarRastrillaje(Dicc<Placa,Posicion> da, const Campus& c);
 
 			//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
 			//la grilla con respecto a sus vecinos.
-			//Pre: 
+			//Pre:
 			void IngresarEstudiante(Arreglo<char> est, Posicion p, CampusSeguro& cs);
 
 			//Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en la
 			//grilla con respecto a sus vecinos.
-			//Pre: 
+			//Pre:
 			void IngresarHippie(Arreglo<char> hip, Posicion p, CampusSeguro& cs);
 
 			//Mueve al estudiante pasado por parametro dentro de campus hacia la direccion pasada por
-			//parametro y realiza los cambios necesarios de acuerdo a la nueva situacion en la grilla con respecto a 
+			//parametro y realiza los cambios necesarios de acuerdo a la nueva situacion en la grilla con respecto a
 			//sus vecinos.
 			//Pre:
-			void MoverEstudiante(Arreglo<char> est, direccion d, CampusSeguro& cs);
+			void MoverEstudiante(Arreglo<char> est, Direccion d, CampusSeguro& cs);
 
 			//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
 			//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
@@ -91,15 +105,17 @@ namespace aed2
 			Conj<Nat> ConKSanciones(Nat k,const CampusSeguro& cs);
 
 		private:
-			struct CampusSeguro{
-    			Campus 					campusObstaculos;
-    			vector<vector<bool>> 	campusCompleto;
-    			diccNombres 			estudiantes;
-    			diccNombres 			hippies;
-    			diccAgentes 			diccAg;
-    			Nat 					masVigilante;
-    			bool 					huboSanciones;
-    		};
+
+    		Campus 					campusObstaculos;
+    		Vector<Vector<Celda>>  	campusCompleto;
+    		diccNombres 			estudiantes;
+    		diccNombres 			hippies;
+    		diccAgentes 			diccAg;
+    		Placa 					masVigilante;
+    		bool 					huboSanciones;
+
 
 	};
 }
+
+#endif
