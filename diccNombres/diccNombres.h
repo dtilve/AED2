@@ -70,6 +70,8 @@ bool diccNombres::Definido(Nombre n){
 }
 
 void diccNombres::Definir(Nombre n, Posicion p){
+	int i = 0;
+	Nodo* actual = this->_primero;
 	if (not(this->Definido(n)))
 	{
 		Conj<Nombre>::Iterador itClaveNueva = this->_claves.AgregarRapido(n);
@@ -79,10 +81,8 @@ void diccNombres::Definir(Nombre n, Posicion p){
 		Conj<info>::Iterador itInfoNueva = this->_definiciones.AgregarRapido(definicion);
 
 		Conj<info>::Iterador* infoPointer = &itInfoNueva;
-		Nodo* actual = this->_primero;
-		Nodo* proximo = new Nodo;
+		Nodo* proximo;
 
-		int i = 0;
 		for(i = 0; i <= n.length(); i++)
 		{
 			Nodo* actualPointer = actual;
@@ -98,16 +98,25 @@ void diccNombres::Definir(Nombre n, Posicion p){
 				if (i == n.length() - 1)
 				{
 					proximo->alfabeto = ArregloDimensionable<Nodo*>(256);
-					proximo->anterior = NULL;
-					proximo->significado = infoPointer;
+					proximo->anterior = actual;
 					proximo->esNombre = true;
 				}
 				else
 				{
-					proximo->alfabeto = ArregloDimensionable<Nodo*>(256);
-					proximo->anterior = NULL;
-					proximo->significado = infoPointer;
-					proximo->esNombre = false;
+					int index = (int) n[i];
+					if (actual->alfabeto.iesimo(index) == NULL)
+					{
+						proximo->alfabeto = ArregloDimensionable<Nodo*>(256);
+						proximo->anterior = actual;
+						proximo->esNombre = false;
+					}
+					else
+					{
+						ArregloDimensionable<Nodo*> array = actual->alfabeto;
+						int index = (int) n[i];
+						proximo = array.iesimo(index);
+						actual = proximo;
+					}
 				}
 			}
 			ArregloDimensionable<Nodo*> array = actual->alfabeto;
@@ -115,6 +124,9 @@ void diccNombres::Definir(Nombre n, Posicion p){
 			array.iesimo(index) = proximo;
 			actual = proximo;
 		}
+	}
+	else
+	{
 		for(i = 0; i <= n.length() ; i++)
 		{
 			ArregloDimensionable<Nodo*> array = actual->alfabeto;
