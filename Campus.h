@@ -2,15 +2,25 @@
 #define CAMPUS_H_
 
 #include <ostream>
-#include "TiposBasicos.h"
+#include "aed2/TiposBasicos.h"
+#include "aed2/Conj.h"
+#include "aed2/Vector.h"
 
 namespace aed2
 {
+    struct Posicion{
+    			Nat x;
+    			Nat y;
+    		};
+
+    enum Direccion {izq, der, abajo, arriba};
+
 	class Campus{
 		public:
+
 			//devuelve el campus
-			Campus(Nat ancho, Nat alto);
-			
+			Campus(const Nat ancho, const Nat alto);
+
 			//Destructor
 			~Campus();
 
@@ -26,12 +36,12 @@ namespace aed2
 
 			//Chequea si la posicion p esta ocupada.
 			//Pre: p es una posicion valida de p
-			bool EstaOcupada(Posicion p, const Campus& c);
+			bool EstaOcupada(Posicion p,const Campus& c);
 
 			//Chequea si p pertenece a las posiciones del campus.
 			bool posValida(Posicion p, const Campus& c);
 
-			//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
+			//Chequea si p es una opcion de ingreso para un hippie o un estudiante.
 			//Esa posicion debe estar vacia y en la primera o ultima fila.
 			bool EsIngreso(Posicion p, const Campus& c);
 
@@ -48,7 +58,7 @@ namespace aed2
 
 			//Devuelve la distancia que hay entre p1 y p2.
 			//Pre: tanto p1 como p2 deben ser posiciones validas.
-			Nat Distancia(Posicion p1, Posicion p2, const campus& c);
+			Nat Distancia(Posicion p1, Posicion p2, const Campus& c);
 
 			//Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo
 			//se utilizara esta funcion. Seran datos a interpretar por el invocador.
@@ -61,18 +71,31 @@ namespace aed2
 			Conj<Posicion> IngresosMasCercanos(Posicion p, const Campus& c);
 
 		private:
-		vector<vector<bool>> matriz;
+            Vector<Vector<bool>> matriz;
     		Nat filas;
     		Nat columnas;
 
-    		struct Posicion{
-    			Nat x;
-    			Nat y;
-    		};
-
 	};
 
-	Campus::Campus(Nat ancho, Nat alto) : columnas(ancho), filas(alto) {}
+	Campus::Campus(const Nat ancho, const Nat alto){
+	    Nat i = 0;
+	    while(i < ancho){
+            Nat j = 0;
+            Vector<bool> v;
+            matriz.AgregarAtras(v);
+            while(j < alto){
+                matriz[i].AgregarAtras(false);
+                j++;
+            }
+            i++;
+	    }
+	    columnas = ancho;
+	    filas = alto;
+
+	}
+
+	Campus::~Campus(){
+	}
 
 	//Agrega un obstaculo al campus en una posicion valida y desocupada
 	//Pre: p es una posicion valida y no esta ocupada
@@ -92,7 +115,7 @@ namespace aed2
 
 	//Chequea si la posicion p esta ocupada.
 	//Pre: p es una posicion valida de p
-	bool Campus::EstaOcupada(Posicion p, const Campus& c){
+	bool Campus::EstaOcupada(Posicion p,const Campus& c){
 		return (c.matriz[p.x -1][p.y -1] == true);
 	}
 
@@ -102,13 +125,13 @@ namespace aed2
 		if (p.x > 0 && p.y>0)
 		if ((p.y <= c.filas) && (p.x <= c.columnas))
 		valida = true;
-		return valida; 
+		return valida;
 	}
 
-	//Chequea si p es una opcion de ingreso para un hippie o un estudiante. 
+	//Chequea si p es una opcion de ingreso para un hippie o un estudiante.
 	//Esa posicion debe estar vacia y en la primera o ultima fila.
-	bool Campus::EsIngreso(Posicion p, const Campus& c){ 
-		return (c.IngresoSuperior(p,c)||c.IngresoInferior(p,c));
+	bool Campus::EsIngreso(Posicion p, const Campus& c){
+		return (IngresoSuperior(p,c)|| IngresoInferior(p,c));
 	}
 
 	//Chequea si la posicion de ingreso pertenece a la fila superior.
@@ -130,11 +153,11 @@ namespace aed2
 
 	//Devuelve la distancia que hay entre p1 y p2.
 	//Pre: tanto p1 como p2 deben ser posiciones validas.
-	Nat Campus::Distancia(Posicion p1, Posicion p2, const campus& c){
+	Nat Campus::Distancia(Posicion p1, Posicion p2, const Campus& c){
 		Nat dist;
-		if (p1.x>p2.x) dist= p1.x-p2.x
+		if (p1.x>p2.x) dist= p1.x-p2.x;
 			else dist=p2.x-p1.x;
-		if (p1.y>p2.y) dist = dist +(p1.y-p2.y)
+		if (p1.y>p2.y) dist = dist +(p1.y-p2.y);
 			else dist= dist + (p2.y-p1.y);
 		return dist;
 	}
@@ -164,6 +187,6 @@ namespace aed2
 	Conj<Posicion> Campus::IngresosMasCercanos(Posicion p, const Campus& c){
 
 	}
-	
+
 }
 #endif // CAMPUS_H_
