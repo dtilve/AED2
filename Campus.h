@@ -12,12 +12,8 @@ namespace aed2
     			Nat x;
     			Nat y;
 
-/*    			bool operator == (const Posicion& p1, const Posicion& p2){
-                    return x == p2.x && y == p2.y;
-    			}
-    			bool operator != (const Posicion p2){
-                    return !(this == p2);
-    			}*/
+                Posicion() : x(1), y(1) {}
+                Posicion(Nat x0, Nat y0) : x(x0), y(y0) {}
     		};
 
     enum Direccion {izq, der, abajo, arriba};
@@ -84,6 +80,14 @@ namespace aed2
 
 	};
 
+    bool operator==(const Posicion& p1, const Posicion& p2){
+        return p1.x == p2.x && p1.y == p2.y;
+    }
+
+    bool operator!=(const Posicion& p1, const Posicion& p2){
+        return !(p1 == p2);
+    }
+
 	Campus::Campus(const Nat ancho, const Nat alto){
 	    Nat i = 0;
 	    while(i < ancho){
@@ -127,11 +131,7 @@ namespace aed2
 
 	//Chequea si p pertenece a las posiciones del campus.
 	bool Campus::posValida(Posicion p){
-		bool valida = false;
-		if (p.x > 0 && p.y>0)
-		if ((p.y <= filas) && (p.x <= columnas))
-		valida = true;
-		return valida;
+		return 0 < p.x && p.x <= columnas && 0 < p.y && p.y <= filas;
 	}
 
 	//Chequea si p es una opcion de ingreso para un hippie o un estudiante.
@@ -154,11 +154,19 @@ namespace aed2
 	//Si no hay vecinos devuelve el conjunto vacio.
 	//Pre: p debe ser una posicion valida.
 	Conj<Posicion> Campus::Vecinos(Posicion p){
-
+        Conj<Posicion> res;
+        if (posValida(Posicion(p.x,p.y-1)))
+            res.Agregar(Posicion(p.x,p.y-1));
+        if (posValida(Posicion(p.x+1,p.y)))
+            res.Agregar(Posicion(p.x+1,p.y));
+        if (posValida(Posicion(p.x,p.y+1)))
+            res.Agregar(Posicion(p.x,p.y+1));
+        if (posValida(Posicion(p.x-1,p.y)))
+            res.Agregar(Posicion(p.x-1,p.y));
+        return res;
 	}
 
 	//Devuelve la distancia que hay entre p1 y p2.
-	//Pre: tanto p1 como p2 deben ser posiciones validas.
 	Nat Campus::Distancia(Posicion p1, Posicion p2){
 		Nat dist;
 		if (p1.x>p2.x) dist= p1.x-p2.x;
@@ -172,26 +180,24 @@ namespace aed2
 	//se utilizara esta funcion. Seran datos a interpretar por el invocador.
 	//Pre: p debe ser una posicion valida.
 	Posicion Campus::ProxPosicion(Posicion p, Direccion d){
-		Posicion paux;
-		paux=p;
-		if ( ( (d==izq)&&(p.x==1) )||( (d==der)&&(p.x==columnas) )||( (d==abajo)&&(p.y==filas) )||( (d==arriba)&&(p.y==1) ))
-				paux = p;
-		else
-		{
-			if (d==izq) paux.x=paux.x-1;
-			if (d==der) paux.x=paux.x+1;
-			if (d==abajo) paux.y=paux.y+1;
-			if (d==arriba) paux.y=paux.y-1;
-		}
-		return paux;
-
+		Posicion res;
+		if (d==izq) res = Posicion(p.x-1,p.y);
+		if (d==der) res = Posicion(p.x+1,p.y);
+        if (d==arriba) res = Posicion(p.x,p.y-1);
+		if (d==abajo) res = Posicion(p.x,p.y+1);
+		return res;
 	}
 
 	//Devuelve el conjunto de posiciones libres del ingreso que esta mas cerca de p. si no hay posiciones
 	//libres en el mas cercano, devuelve el otro conjunto.
 	//Pre: p debe ser una posicion valida.
 	Conj<Posicion> Campus::IngresosMasCercanos(Posicion p){
-
+        Conj<Posicion> res;
+        if (Distancia(p,Posicion(p.x,1)) <= Distancia(p,Posicion(p.x,filas)))
+            res.Agregar(Posicion(p.x,1));
+        if (Distancia(p,Posicion(p.x,filas)) <= Distancia(p,Posicion(p.x,1)))
+            res.Agregar(Posicion(p.x,filas));
+        return res;
 	}
 
 }

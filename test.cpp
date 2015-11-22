@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
 using namespace aed2;
 
 
@@ -92,6 +93,45 @@ void CampusIngreso(){
     ASSERT(!c.EsIngreso(p6));
 }
 
+void CampusVecinos(){
+    Campus c = Campus(9,7);
+    //Test 1: (1,2)
+    Conj<Posicion> test1;
+    test1.Agregar(Posicion(1,3));
+    test1.Agregar(Posicion(2,2));
+    test1.Agregar(Posicion(1,1));
+    ASSERT(c.Vecinos(Posicion(1,2)) == test1);
+    //Test 2: (5,5)
+    Conj<Posicion> test2;
+    test2.Agregar(Posicion(5,4));
+    test2.Agregar(Posicion(4,5));
+    test2.Agregar(Posicion(6,5));
+    test2.Agregar(Posicion(5,6));
+    ASSERT(c.Vecinos(Posicion(5,5)) == test2);
+    //Test 3: (1,1)
+    Conj<Posicion> test3;
+    test3.Agregar(Posicion(1,2));
+    test3.Agregar(Posicion(2,1));
+    ASSERT(c.Vecinos(Posicion(1,1)) == test3);
+    //Test 4: (9,7)
+    Conj<Posicion> test4;
+    test4.Agregar(Posicion(8,7));
+    test4.Agregar(Posicion(9,6));
+    ASSERT(c.Vecinos(Posicion(9,7)) == test4);
+}
+
+void CampusPosiciones(){
+    Campus c(5,13);
+    ASSERT(c.ProxPosicion(Posicion(2,2),izq) == Posicion(1,2))
+    ASSERT(c.ProxPosicion(Posicion(2,2),der) == Posicion(3,2))
+    ASSERT(c.ProxPosicion(Posicion(2,2),arriba) == Posicion(2,1))
+    ASSERT(c.ProxPosicion(Posicion(2,2),abajo) == Posicion(2,3))
+    ASSERT_EQ(c.Distancia(Posicion(1,1),Posicion(5,13)),16)
+    ASSERT_EQ(c.Distancia(Posicion(5,13),Posicion(1,1)),16)
+    ASSERT_EQ(c.Distancia(Posicion(2,2),Posicion(2,2)),0)
+    ASSERT_EQ(c.Distancia(Posicion(2,3),Posicion(2,1)),2)
+}
+
 int main(int argc, char **argv)
 {
     //Campus Seguro
@@ -102,7 +142,8 @@ int main(int argc, char **argv)
     RUN_TEST(CampusCrear);
     RUN_TEST(CampusAgregarObstaculo);
     RUN_TEST(CampusIngreso);
-
+    RUN_TEST(CampusVecinos);
+    RUN_TEST(CampusPosiciones);
 
     //DiccNombres
 
