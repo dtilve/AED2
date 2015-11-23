@@ -165,48 +165,10 @@ DiccAgentes::~DiccAgentes(){
 Conj<Placa>::Iterador DiccAgentes::Claves(){
 	return conjuntoDeAgentes;
 }
-// struct NodoLista{
-//             Nat sanciones;
-//             Conj<Placa> sancionados;
-//         };
-
-//         struct NodoVector{
-//             Nat sanciones;
-//             Lista<NodoLista>::Iterador sancionados;
-//         };
-
-//         Nat FuncionDeHash(Nat a);
-//typedef Nat Placa;
-
-//struct Info{
-//    Posicion pos;
-//    Nat sanciones;
-//    Nat capturas;
-//    Lista<Nat>::Iterador its;
-//    Conj<Placa>::Iterador itcs;
-//};
-
-//struct Agente{
-//    Placa placa;
-//    Info info;
-//};
-
-//         Conj<Placa>	                     conjuntoDeAgentes;
-//         Vector<Agente>                    arregloDeAgentes;
-//         Vector<Conj<Iterador>>            tablaHash;
-//         Nat                               mayor;
-//         Nat                               menor;
-//         Lista<NodoLista>                  ListasSanciones;
-//         Vector<NodoVector>                ArregloDeSanciones;
 
 void DiccAgentes::Definir(Placa a, Posicion p){
-	//agrego la placa al conjunto 
-	// if(EsVacio(conjuntoDeAgentes)){
-	// 	conjuntoDeAgentes = Conj();
-	conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
-	// }
-	
-	//lo creo
+        conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
+        
 	Agente agenteNuevo;
 	agenteNuevo.placa=a;
 	agenteNuevo.info.pos=p;
@@ -216,8 +178,6 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 	agenteNuevo.info.itcs=/*completar!!!*/;
 
 	Vector<Agente> arregloNuevo;
-	
-	//lo agrego al arreglo de agentes
 	Nat i =0;
 	while(i<Longitud(arregloDeAgentes)){
 		if(arregloDeAgentes[i].placa < a){
@@ -229,23 +189,21 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 		}
 	}
 	arregloDeAgentes=arregloNuevo;
-	
-	//lo agrego a la tabla de hash
-	//TENGO QUE CREAR LA TABLA??? que onda con la longitud del vector? ya esta como deberia
-	Nat t = FuncionDeHash(a);
-	AgregarRapido(tablaHash[t])=arregloDeAgentes.Iterador();
-	int i=0;
-	while(arregloDeAgentes[i].placa != a){
-		tablaHash[i].Avenzar();
-	}
-	
-	mayor
-	
-	menor
-	
-	ListasSanciones
-	
-	ArregloDeSanciones
+
+        
+        
+        Nat s =0; //cantidad de sanciones del agente nuevo
+        it = ListasSanciones.Iterador()
+        \State 	$it \gets crearIt(e.ListaSanciones)$ \Comment $O(1)$
+            \While{(it.siguiente).sancion < s}	\Comment $O(cadinal(sancDistintas))$
+            	\State it.avanzar() \Comment $O(1)$
+            \EndWhile
+      		\If{(it.siguiente).sancion = s} \Comment $O(1)$
+				\State Agregar($\Pi_{1}(a)$,it.siguiente.sancionados) \Comment $O(1)$
+			\Else
+            	\State AgregarComoSiguiente(tupla(it.siguiente.sancion,vacio),it.siguiente) \Comment $O(1)$
+                \State Agregar(itPlaca,it.siguiente.sancionados) \Comment $O(1)$
+            \EndIf
 }
 Info DiccAgentes::Obtener(Nat a){
 
