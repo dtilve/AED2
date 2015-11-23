@@ -172,8 +172,87 @@ DiccAgentes::~DiccAgentes(){
 Conj<Placa>::Iterador DiccAgentes::Claves(){
 	return conjuntoDeAgentes;
 }
-void DiccAgentes::Definir(Placa a, Posicion p){
+// struct NodoLista{
+//             Nat sanciones;
+//             Conj<Placa> sancionados;
+//         };
 
+//         struct NodoVector{
+//             Nat sanciones;
+//             Lista<NodoLista>::Iterador sancionados;
+//         };
+
+//         Nat FuncionDeHash(Nat a);
+//typedef Nat Placa;
+
+//struct Info{
+//    Posicion pos;
+//    Nat sanciones;
+//    Nat capturas;
+//    Lista<Nat>::Iterador its;
+//    Conj<Placa>::Iterador itcs;
+//};
+
+//struct Agente{
+//    Placa placa;
+//    Info info;
+//};
+
+//         Conj<Placa>	                     conjuntoDeAgentes;
+//         Vector<Agente>                    arregloDeAgentes;
+//         Vector<Conj<Iterador>>            tablaHash;
+//         Nat                               mayor;
+//         Nat                               menor;
+//         Lista<NodoLista>                  ListasSanciones;
+//         Vector<NodoVector>                ArregloDeSanciones;
+
+void DiccAgentes::Definir(Placa a, Posicion p){
+	//agrego la placa al conjunto 
+	if(EsVacio(conjuntoDeAgentes)){
+		conjuntoDeAgentes = Conj();
+		conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
+	}
+	
+	//lo creo
+	Agente agenteNuevo;
+	agenteNuevo.placa=a;
+	agenteNuevo.info.pos=p;
+	agenteNuevo.info.sanciones=0;
+	agenteNuevo.info.capturas=0;
+	agenteNuevo.info.its=ListasSanciones.Iterador();
+	agenteNuevo.info.itcs=/*completar!!!*/;
+
+	Vector<Agente> arregloNuevo;
+	
+	//lo agrego al arreglo de agentes
+	Nat i =0;
+	while(i<Longitud(arregloDeAgentes)){
+		if(arregloDeAgentes[i].placa < a){
+			arregloNuevo.AgregarAtras(arregloDeAgentes[i]);
+		}else{
+			arregloNuevo.AgregarAtras(agenteNuevo);
+			Nat posicionAgenteNuevo = i;
+			arregloNuevo.AgregarAtras(arregloDeAgentes[i]);
+		}
+	}
+	arregloDeAgentes=arregloNuevo;
+	
+	//lo agrego a la tabla de hash
+	//TENGO QUE CREAR LA TABLA??? que onda con la longitud del vector? ya esta como deberia
+	Nat t = FuncionDeHash(a);
+	AgregarRapido(tablaHash[t])=arregloDeAgentes.Iterador();
+	int i=0;
+	while(arregloDeAgentes[i].placa != a){
+		tablaHash[i].Avenzar();
+	}
+	
+	mayor
+	
+	menor
+	
+	ListasSanciones
+	
+	ArregloDeSanciones
 }
 Info DiccAgentes::Obtener(Nat a){
 
