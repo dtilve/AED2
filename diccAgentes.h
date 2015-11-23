@@ -171,7 +171,7 @@ DiccAgentes::~DiccAgentes(){
     ListasSanciones.~Lista();
 }
 Conj<Placa>::Iterador DiccAgentes::Claves(){
-	this->conjuntoDeAgentes;
+	return conjuntoDeAgentes;
 }
 void DiccAgentes::Definir(Placa a, Posicion p){
 
