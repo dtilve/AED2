@@ -183,7 +183,7 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 		n.sancionados.AgregarRapido(a);
 		it1.AgregarComoSiguiente(n);
 	}
-	 Conj<Nat>::Iterador it2 = it1.siguiente.sancionados.CrearIt();
+	Conj<Nat>::Iterador it2 = it1.siguiente.sancionados.CrearIt();
 	while(it2.HaySiguiente() && it2.Siguiente() != p){
 		it2.Avanzar();
 	}
@@ -212,13 +212,25 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 Info DiccAgentes::Obtener(Nat a){
 	Nat ord = FuncionDeHash(a);
 	Nat i=0;
-	Con
-	while(i < Cardinal(tablaHash[ord])){
-		
+	Conj<Nat>::Iterador it1 = tablaHash[ord].CrearIt();
+	while(it1.HaySiguiente() && (it1.Siguiente.placa != a)){
+		it1.Avanzar();
 	}
+	return (it1.info);
 }
 Info DiccAgentes::ObtenerLog(Nat a){
-
+	Nat ini =0;
+	Nat fin =Longitud(arregloDeAgentes)-1;
+	Nat medio=0;
+	while(ini<fin){
+		medio=fin/2;
+		if(arregloDeAgentes[medio].placa < a){
+			medio=ini;
+		}else{
+			medio=fin;
+		}
+	}	
+	return (arregloDeAgentes[medio]);
 }
 bool DiccAgentes::Definido(Nat a){
 
