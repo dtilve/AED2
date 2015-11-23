@@ -26,7 +26,7 @@ namespace aed2
 	public:
 		DiccAgentes(); //vacio
 
-        DiccAgentes(Nat minimo,Nat maximo);
+        	DiccAgentes(Nat minimo,Nat maximo);
 
 		~DiccAgentes();
 
@@ -53,13 +53,9 @@ namespace aed2
 			// \InterfazFuncion{CrearIt}{\In{da}{diccAgentes}}{itDiccAgentes(act,arr)}
 			// [Crea un iterador]
 			// [El iterador se inv\'alida si y s\'olo si se elimina el elemento siguiente del iterador sin utilizar la funcion \NombreFuncion{EliminarSiguiente}.]
-
-			~Iterador();
-
+		~Iterador();
 			// Iterador(const typename Lista<T>::Iterador& otro); ///esto va????
-
 			// Iterador& operator = (const typename Lista<T>::Iterador& otro); ///esto va????
-
 			bool HayAnterior() const;
 			// \InterfazFuncion{HayAnterior}{\In{it}{itDiccAgentes(act,arr)}}{bool}
 			// [Devuelve \texttt{true} si y s\'olo si en el iterador todavía quedan elementos para retroceder.]
@@ -233,15 +229,22 @@ Info DiccAgentes::ObtenerLog(Nat a){
 	return (arregloDeAgentes[medio]);
 }
 bool DiccAgentes::Definido(Nat a){
-
+	Nat ord = FuncionDeHash(a);
+	Nat i=0;
+	Conj<Nat>::Iterador it1 = tablaHash[ord].CrearIt();
+	while(it1.HaySiguiente() && (it1.Siguiente.placa != a)){
+		it1.Avanzar();
+	}
+	return (it1.placa == a);
 }
+
 //implementacion iterador
-DiccAgentes::Iterador::Iterador(){/*
+DiccAgentes::Iterador::Iterador(){ //por que esta comentado ? :) just to know.. parece estar bien asi
 	arregloDeAgentesIt = this->arregloDeAgentes;
-	act = 0;*/
+	act = 0;
 }
 DiccAgentes::Iterador::~Iterador(){
-
+	
 }
 bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
@@ -249,10 +252,10 @@ bool DiccAgentes::Iterador::HayAnterior() const{
 bool DiccAgentes::Iterador::HaySiguiente() const{
 	return (this->act != (Longitud(this->arregloDeAgentes)-1);
 }
-Agente& DiccAgentes::Iterador::Anterior(){
-/*	return arregloDeAgentesIt(act-1);*/
+Agente& DiccAgentes::Iterador::Anterior(){ //por que esta comentado ? :) just to know.. parece estar bien asi
+	// return arregloDeAgentesIt(act-1);
 }
-Agente& DiccAgentes::Iterador::Siguiente(){
+Agente& DiccAgentes::Iterador::Siguiente(){ //por que esta comentado ? :) just to know.. parece estar bien asi
 /*	return arregloDeAgentesIt(act);*/
 }
 void DiccAgentes::Iterador::Avanzar(){
@@ -261,13 +264,14 @@ void DiccAgentes::Iterador::Avanzar(){
 void DiccAgentes::Iterador::Retroceder(){
 	act--;
 }
-void DiccAgentes::Iterador::AgregarComoAnterior(Agente elem){
-//	arregloDeAgentes[act-1]=elem;
-}//esto es asi???
-void DiccAgentes::Iterador::AgregarComoSiguiente(Agente elem){
+void DiccAgentes::Iterador::AgregarComoAnterior(Agente elem){ //por que esta comentado ? :) just to know.. parece estar bien asi
+	// arregloDeAgentes[act-1]=elem;
+}
+void DiccAgentes::Iterador::AgregarComoSiguiente(Agente elem){ //por que esta comentado ? :) just to know.. parece estar bien asi
 //	arregloDeAgentes[act+1]=elem;
-}//esto es asi???
-/*bool operator == (const typename DiccAgentes::Iterador& otro) const{
+}
+
+/*bool operator == (const typename DiccAgentes::Iterador& otro) const{ ///no vecesitamos un operador ==???
 	int i=0;
 	int n=Longitud(this->arregloDeAgentesIt);
 	bool b=true;
@@ -279,11 +283,12 @@ void DiccAgentes::Iterador::AgregarComoSiguiente(Agente elem){
 	}
 	return(b);
 }*/
-//tuplaAg=<placa,sanciones,capturas,itVector,itConj>???
+
 void DiccAgentes::Iterador::Premiar(){
-	// \State ((it.arr)$_{i}$).capturas=((it.arr)$_{i}$).capturas + 1 \Comment $O(1)$
+	this->Siguiente.info.capturas=this->Siguiente.info.capturas+1;
 }
 void DiccAgentes::Iterador::Sancionar(){
+	
 	  //          \State $borrar(it.arr_{it.act}.itcs,it.arr_{it.act}.its)$ \Comment $O(1)$
    //         \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
 			// 	\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
@@ -298,7 +303,7 @@ void DiccAgentes::Iterador::Sancionar(){
 			// \Statex \underline{Complejidad:} $O(1)$
 }
 void DiccAgentes::Iterador::Mover(Posicion p){
-	// \State $\Pi_{1}$((it.arr)$_{it.act}$.info) = p $O(1)$
+	this->Siguiente.info.pos = p;
 }
 
 #endif
