@@ -95,19 +95,26 @@ namespace aed2
 			// \tupItem{arr}{vector(tupla(Agente,Info))}
 		};
 	private:
-    	struct diccAgentes{
-    		Conj<nat>	conjuntoDeAgentes;
-    		vector<tuplaAg> arregloDeAgentes;
-    		vector<conj<Iterador>> tablaHash;
-    		nat mayor;
-    		nat menor;
-    		Lista<nat,Conj(nat)> ListasSanciones;
-    		vector<nat,itLista> ArregloDeSanciones;
-    	};
-	Nat FuncionDeHash(Nat a);
-	// \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
-	// [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
-	};
+	    	struct diccAgentes{
+	    		Conj<nat>	conjuntoDeAgentes;
+	    		vector<tuplaAg> arregloDeAgentes;
+	    		vector<conj<Iterador>> tablaHash;
+	    		nat mayor;
+	    		nat menor;
+	    		Lista<nat,Conj(nat)> ListasSanciones;
+	    		vector<nat,itLista> ArregloDeSanciones;
+	    	};
+	    	struct tuplaAg{
+	    		nat placa
+	    		nat sanciones
+	    		nat capturas
+	    		Iterador(Vector()) itVector
+	    		Iterador(Conj()) itConj
+	    	}
+		Nat FuncionDeHash(Nat a);
+		// \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
+		// [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
+		};
 }
 //tuplaAg=<placa,sanciones,capturas,itVector,itConj>???
 DiccAgentes::DiccAgentes(){
@@ -142,7 +149,7 @@ DiccAgentes::Iterador::Iterador()~{
 bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
 }
-bool DiccAgentes::Iterador:: DiccAgentes::Iterador::HaySiguiente() const{
+bool DiccAgentes::Iterador::HaySiguiente() const{
 	return (this->act != (Longitud(this->arregloDeAgentes)-1);
 }
 tuplaAg& DiccAgentes::Iterador::Anterior(){
