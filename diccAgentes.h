@@ -1,10 +1,3 @@
-//REVISAR
-
-//constructor por defecto y con parametros
-// tipo info
-// tipo itConj
-//destructor
-
 #ifndef AED2_CAMPUS_H_
 #define AED2_CAMPUS_H_
 
@@ -126,7 +119,7 @@ namespace aed2
             Lista<NodoLista>::Iterador sancionados;
         };
 
-        Conj<Placa>	                      conjuntoDeAgentes;
+        Conj<Placa>	                  conjuntoDeAgentes;
         Vector<Agente>                    arregloDeAgentes;
         Vector<Conj<Iterador>>            tablaHash;
         Nat                               mayor;
@@ -208,10 +201,10 @@ Conj<Placa>::Iterador DiccAgentes::Claves(){
 
 void DiccAgentes::Definir(Placa a, Posicion p){
 	//agrego la placa al conjunto 
-	if(EsVacio(conjuntoDeAgentes)){
-		conjuntoDeAgentes = Conj();
-		conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
-	}
+	// if(EsVacio(conjuntoDeAgentes)){
+	// 	conjuntoDeAgentes = Conj();
+	conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
+	// }
 	
 	//lo creo
 	Agente agenteNuevo;
