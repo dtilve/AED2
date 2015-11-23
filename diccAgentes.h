@@ -288,9 +288,15 @@ void DiccAgentes::Iterador::Premiar(){
 	this->Siguiente.info.capturas=this->Siguiente.info.capturas+1;
 }
 void DiccAgentes::Iterador::Sancionar(){
-	
-	  //          \State $borrar(it.arr_{it.act}.itcs,it.arr_{it.act}.its)$ \Comment $O(1)$
-   //         \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
+	this->Siguiente.info.sanciones=this->Siguiente.info.sanciones+1;
+	this->Siguiente.info.itcs.borrar();
+	if(this->Siguiente.info.its.sancion==this->Siguiente.info.sanciones){
+		this->Siguiente.info.its.Avanzar();
+		this->Siguiente.info.its.Agregar(this->Siguiente.placa);
+	}else{
+		
+	}
+	//         \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
 			// 	\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
    //             \State $Agregar(it.arr_{it.act},it.arr_{it.act}.itcs)$ \Comment $O(1)$
    //         \Else
