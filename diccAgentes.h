@@ -168,14 +168,32 @@ Conj<Placa>::Iterador DiccAgentes::Claves(){
 
 void DiccAgentes::Definir(Placa a, Posicion p){
         conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
-        
+
+        Nat s =0; //cantidad de sanciones del agente nuevo
+        Lista<NodoLista>::Iterador it1 = ListasSanciones.Iterador();
+        while(it.HaySiguiente() && it1.sanciones < s){
+        	it1.avanzar();
+        }
+	if(it1.siguiente.sancion=s){
+		it1.siguiente.sancionados.Agregar(a);
+	}else{
+		NodoLista n;
+		n.sancion = s;
+		n.sancionados = Conj();
+		n.sancionados.AgregarRapido(a);
+		it1.AgregarComoSiguiente(n);
+	}
+	 Conj<Nat>::Iterador it2 = it1.siguiente.sancionados.CrearIt();
+	while(it2.HaySiguiente() && it2.Siguiente() != p){
+		it2.Avanzar();
+	}
 	Agente agenteNuevo;
 	agenteNuevo.placa=a;
 	agenteNuevo.info.pos=p;
 	agenteNuevo.info.sanciones=0;
 	agenteNuevo.info.capturas=0;
-	agenteNuevo.info.its=ListasSanciones.Iterador();
-	agenteNuevo.info.itcs=/*completar!!!*/;
+	agenteNuevo.info.its=it1;
+	agenteNuevo.info.itcs=it2;
 
 	Vector<Agente> arregloNuevo;
 	Nat i =0;
@@ -189,24 +207,15 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 		}
 	}
 	arregloDeAgentes=arregloNuevo;
-
-        
-        
-        Nat s =0; //cantidad de sanciones del agente nuevo
-        it = ListasSanciones.Iterador()
-        \State 	$it \gets crearIt(e.ListaSanciones)$ \Comment $O(1)$
-            \While{(it.siguiente).sancion < s}	\Comment $O(cadinal(sancDistintas))$
-            	\State it.avanzar() \Comment $O(1)$
-            \EndWhile
-      		\If{(it.siguiente).sancion = s} \Comment $O(1)$
-				\State Agregar($\Pi_{1}(a)$,it.siguiente.sancionados) \Comment $O(1)$
-			\Else
-            	\State AgregarComoSiguiente(tupla(it.siguiente.sancion,vacio),it.siguiente) \Comment $O(1)$
-                \State Agregar(itPlaca,it.siguiente.sancionados) \Comment $O(1)$
-            \EndIf
 }
-Info DiccAgentes::Obtener(Nat a){
 
+Info DiccAgentes::Obtener(Nat a){
+	Nat ord = FuncionDeHash(a);
+	Nat i=0;
+	Con
+	while(i < Cardinal(tablaHash[ord])){
+		
+	}
 }
 Info DiccAgentes::ObtenerLog(Nat a){
 
