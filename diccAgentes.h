@@ -140,7 +140,6 @@ namespace aed2
     };
 };
 
-//tuplaAg=<placa,sanciones,capturas,itVector,itConj>???
 DiccAgentes::DiccAgentes(){
     conjuntoDeAgentes = Conj<Placa>();
     arregloDeAgentes = Vector<Agente>();
@@ -197,7 +196,7 @@ bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
 }
 bool DiccAgentes::Iterador::HaySiguiente() const{
-/*	return (this->act != (Longitud(this->arregloDeAgentes)-1);*/
+	return (this->act != (Longitud(this->arregloDeAgentes)-1);
 }
 Agente& DiccAgentes::Iterador::Anterior(){
 /*	return arregloDeAgentesIt(act-1);*/
