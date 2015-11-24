@@ -13,47 +13,24 @@ namespace aed2
         Posicion pos;
         Nat sanciones;
         Nat capturas;
-    };
-
-    struct NodoLista{
-            Nat sanciones;
-            Conj<Placa> sancionados;
-
-            NodoLista(Nat s, Conj<Placa> conjSancionados) : sanciones(s), sancionados(conjSancionados){}
-        };
-
-    struct NodoVector{
-        Nat sanciones;
-        Lista<NodoLista>::Iterador sancionados;
-    };
-
-    struct InfoAgente{
-        Posicion pos;
-        Nat sanciones;
-        Nat capturas;
-        Lista<NodoLista>::Iterador its;
+        Lista<Nat>::Iterador its;
         Conj<Placa>::Iterador itcs;
     };
 
     struct Agente{
         Placa placa;
-        InfoAgente info;
+        Info info;
     };
 
 	class DiccAgentes{
 	public:
-
-        class Iterador;
-
 		DiccAgentes(); //vacio
 
-        DiccAgentes(Nat minimo,Nat maximo);
+        	DiccAgentes(Nat minimo,Nat maximo);
 
 		~DiccAgentes();
 
-		Iterador CrearIt();
-
-		Conj<Placa> Claves();
+		Conj<Placa>::Iterador Claves();
 		//\InterfazFuncion{Claves}{\In{da}{diccAgentes}}{itConj(Agente)}
 		//[Devuelve un iterador al conjunto de claves, es decir, las placas.]
 		//[Se genera aliasing porque el iterador apunta a las claves del diccionario. El iterador no tiene la capacidad de modificar el conjunto.]
@@ -69,7 +46,6 @@ namespace aed2
 		bool Definido(Nat a);
 		//\InterfazFuncion{Definido?}{\In{a}{Agente}, }}{bool}
 		//[Chequea si el agente pasado por parametro esta definido en el diccionario.]
-
 		class Iterador
 		{
 			public:
@@ -77,7 +53,7 @@ namespace aed2
 			// \InterfazFuncion{CrearIt}{\In{da}{diccAgentes}}{itDiccAgentes(act,arr)}
 			// [Crea un iterador]
 			// [El iterador se inv\'alida si y s\'olo si se elimina el elemento siguiente del iterador sin utilizar la funcion \NombreFuncion{EliminarSiguiente}.]
-            ~Iterador();
+		~Iterador();
 			// Iterador(const typename Lista<T>::Iterador& otro); ///esto va????
 			// Iterador& operator = (const typename Lista<T>::Iterador& otro); ///esto va????
 			bool HayAnterior() const;
@@ -86,11 +62,11 @@ namespace aed2
 			bool HaySiguiente() const;
 			// \InterfazFuncion{HaySiguiente}{\In{it}{itDiccAgentes(act,arr)}}{bool}
 			// [Devuelve \texttt{true} si y s\'olo si en el iterador todavía quedan elementos para avanzar.]
-			Info& Anterior();  //// van los dos CONST????
+			Agente& Anterior();  //// van los dos CONST????
 			// \InterfazFuncion{Anterior}{\In{it}{itDiccAgentes(act,arr)}}{nodo}
 			// [Devuelve el elemento anterior del iterador.]
 			// [$res$ es modificable si y slo si $it$ es modificable.]
-			Info& Siguiente();  //// van los dos CONST????
+			Agente& Siguiente();  //// van los dos CONST????
 			// \InterfazFuncion{siguiente}{\In{it}{itDiccAgentes(act,arr)}}{nodo}
 			// [Devuelve el elemento siguiente a la posici\'on del iterador.]
 			// [$res$ es modificable si y s\'olo si $it$ es modificable.]
@@ -100,11 +76,11 @@ namespace aed2
 			void Retroceder();
 			// \InterfazFuncion{Retroceder}{\Inout{it}{itDiccAgentes(act,arr)}}{}
 			// [Retrocede el iterador a la posici\'on anterior.]
-			void AgregarComoAnterior(const Info elem);
+			void AgregarComoAnterior(const Agente elem);
 			// \InterfazFuncion{AgregarComoAnterior}{\Inout{it}{itDiccAgentes(act,arr)}, \In{a}{$\langle Agente,Info \rangle$}}{}
 			// [agrega el elemento $a$ a la lista iterada, entre las posici\'ones anterior y siguiente del iterador, dejando al iterador posici\'onado de forma tal que al llamar a \NombreFuncion{Anterior} se obtenga $a$.]
 			// [el elemento $a$ se agrega por referencia.]
-			void AgregarComoSiguiente(const Info elem);
+			void AgregarComoSiguiente(const Agente elem);
 			// \InterfazFuncion{AgregarComoSiguiente}{\Inout{it}{itDiccAgentes(act,arr)}, \In{a}{$\langle Agente,Info \rangle$}}{}
 			// [agrega el elemento $a$ a la lista iterada, entre las posici\'ones anterior y siguiente del iterador, dejando al iterador posici\'onado de forma tal que al llamar a \NombreFuncion{Siguiente} se obtenga $a$.]
 			// [el elemento $a$ se agrega por referencia.]
@@ -121,20 +97,25 @@ namespace aed2
 			// \InterfazFuncion{Mover}{\In{it}{itDiccAgentes(act,arr)}, \Inout{da}{diccAgentes}}{}
 			// [Mueve al agente apuntado por el iterador.]
 			// [Se genera aliasing por el iterador que esta apuntando a un agente de la estructura.]
-
-
-        };
-
         private:
-
             Vector<Agente>* arregloDeAgentesIt;
             Nat act;
             // \tupItem{act}{nat}
             // \tupItem{arr}{vector(tupla(Agente,Info))}
+        };
+    private:
 
-        private:
+        struct NodoLista{
+            Nat sanciones;
+            Conj<Placa> sancionados;
+        };
 
-        Conj<Placa>	                      conjuntoDeAgentes;
+        struct NodoVector{
+            Nat sanciones;
+            Lista<NodoLista>::Iterador sancionados;
+        };
+
+        Conj<Placa>	                  conjuntoDeAgentes;
         Vector<Agente>                    arregloDeAgentes;
         Vector<Conj<Iterador>>            tablaHash;
         Nat                               mayor;
@@ -146,6 +127,7 @@ namespace aed2
         // \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
         // [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
     };
+};
 
 DiccAgentes::DiccAgentes(){
     conjuntoDeAgentes = Conj<Placa>();
@@ -176,46 +158,51 @@ DiccAgentes::~DiccAgentes(){
     }
     ListasSanciones.~Lista();
 }
-Conj<Placa> DiccAgentes::Claves(){
+Conj<Placa>::Iterador DiccAgentes::Claves(){
 	return conjuntoDeAgentes;
 }
 
 void DiccAgentes::Definir(Placa a, Posicion p){
-    //Agrego a Claves
-    conjuntoDeAgentes.AgregarRapido(a);
-    //Agrego a ListaSanciones y su conjunto
-    Lista<NodoLista>::Iterador itLista = ListasSanciones.CrearIt();
-    if (itLista.Siguiente().sanciones != 0){
-        Conj<Placa> conjSancionados;
-        const NodoLista n(0,conjSancionados);
-        itLista.AgregarComoSiguiente(n);
-    }
-    itLista.Siguiente().sancionados.AgregarRapido(a);
-    Conj<Placa>::Iterador itConj = itLista.Siguiente().sancionados.CrearIt();
-    while(itConj.Siguiente() != a){
-        itConj.Avanzar();
-    }
-    //Agrego al vector con toda la info
-    Agente nuevoAgente;
-    nuevoAgente.placa = a;
-    nuevoAgente.info.pos = p;
-    nuevoAgente.info.capturas = 0;
-    nuevoAgente.info.sanciones = 0;
-    nuevoAgente.info.its = itLista;
-    nuevoAgente.info.itcs = itConj;
-    Vector<Agente> vec;
-    Iterador it = CrearIt();
-    Nat i = 0;
-    while(i < arregloDeAgentes.Longitud()){
-        if(a < arregloDeAgentes[i].placa)
-            vec.AgregarAtras(nuevoAgente);
-        else
-            it.Avanzar();
-        vec.AgregarAtras(arregloDeAgentes[i]);
-        i++;
-    }
-    arregloDeAgentes = vec;
-    //Agrego a la tabla de Hash
+        conjuntoDeAgentes = conjuntoDeAgentes.AgregarRapido(a);
+
+        Nat s =0; //cantidad de sanciones del agente nuevo
+        Lista<NodoLista>::Iterador it1 = ListasSanciones.Iterador();
+        while(it.HaySiguiente() && it1.sanciones < s){
+        	it1.avanzar();
+        }
+	if(it1.siguiente.sancion=s){
+		it1.siguiente.sancionados.Agregar(a);
+	}else{
+		NodoLista n;
+		n.sancion = s;
+		n.sancionados = Conj();
+		n.sancionados.AgregarRapido(a);
+		it1.AgregarComoSiguiente(n);
+	}
+	Conj<Nat>::Iterador it2 = it1.siguiente.sancionados.CrearIt();
+	while(it2.HaySiguiente() && it2.Siguiente() != p){
+		it2.Avanzar();
+	}
+	Agente agenteNuevo;
+	agenteNuevo.placa=a;
+	agenteNuevo.info.pos=p;
+	agenteNuevo.info.sanciones=0;
+	agenteNuevo.info.capturas=0;
+	agenteNuevo.info.its=it1;
+	agenteNuevo.info.itcs=it2;
+
+	Vector<Agente> arregloNuevo;
+	Nat i =0;
+	while(i<Longitud(arregloDeAgentes)){
+		if(arregloDeAgentes[i].placa < a){
+			arregloNuevo.AgregarAtras(arregloDeAgentes[i]);
+		}else{
+			arregloNuevo.AgregarAtras(agenteNuevo);
+			Nat posicionAgenteNuevo = i;
+			arregloNuevo.AgregarAtras(arregloDeAgentes[i]);
+		}
+	}
+	arregloDeAgentes=arregloNuevo;
 }
 
 Info DiccAgentes::Obtener(Nat a){
@@ -238,7 +225,7 @@ Info DiccAgentes::ObtenerLog(Nat a){
 		}else{
 			medio=fin;
 		}
-	}
+	}	
 	return (arregloDeAgentes[medio]);
 }
 bool DiccAgentes::Definido(Nat a){
@@ -251,18 +238,13 @@ bool DiccAgentes::Definido(Nat a){
 	return (it1.placa == a);
 }
 
-Iterador DiccAgentes::CrearIt(){
-    act = 0;
-    arregloDeAgentesIt = arregloDeAgentes;
-}
-
 //implementacion iterador
 DiccAgentes::Iterador::Iterador(){ //por que esta comentado ? :) just to know.. parece estar bien asi
 	arregloDeAgentesIt = this->arregloDeAgentes;
 	act = 0;
 }
 DiccAgentes::Iterador::~Iterador(){
-
+	
 }
 bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
@@ -312,7 +294,7 @@ void DiccAgentes::Iterador::Sancionar(){
 		this->Siguiente.info.its.Avanzar();
 		this->Siguiente.info.its.Agregar(this->Siguiente.placa);
 	}else{
-
+		
 	}
 	//         \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
 			// 	\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
@@ -328,8 +310,6 @@ void DiccAgentes::Iterador::Sancionar(){
 }
 void DiccAgentes::Iterador::Mover(Posicion p){
 	this->Siguiente.info.pos = p;
-}
-
 }
 
 #endif
