@@ -11,7 +11,10 @@ class ArregloDimensionable {
 		ArregloDimensionable();												// constructor por defecto
 		ArregloDimensionable( int tamanio );								// constructor con paŕmetros
 		ArregloDimensionable( const ArregloDimensionable<DataType>& otroArreglo );	// constructor por copia
-		~ArregloDimensionable();											// destructor por defecto
+		~ArregloDimensionable();// destructor por defecto
+
+		ArregloDimensionable<DataType> crearArregloDimensionableVacio(int tamanio);
+		bool esArregloDeNULL();
 
 		void insertarAtras( DataType elem);
 		int tamanio() const;
@@ -47,6 +50,7 @@ ArregloDimensionable<DataType>::ArregloDimensionable( int tamanio ){
 	_ultimo  = 0;
 	_arreglo = new DataType[_espacio];
 }
+
 
 template<typename DataType>
 ArregloDimensionable<DataType>::ArregloDimensionable( const ArregloDimensionable<DataType>& otroArreglo ){
@@ -127,4 +131,27 @@ ostream& operator<<( ostream& flujo, const ArregloDimensionable<DataType>& otroA
 	return flujo;
 }
 
+template <typename DataType>
+ArregloDimensionable<DataType> ArregloDimensionable<DataType>::crearArregloDimensionableVacio(int tamanio){
+	this->_espacio = tamanio;
+	this->_arreglo = new DataType[_espacio];
+	int i;
+	for (i = 0; i < tamanio; i++)
+	{
+		this->_arreglo[i] = NULL;
+	}
+	this->_ultimo = 0;
+	return *this;
+}
+
+template <typename DataType>
+bool ArregloDimensionable<DataType>::esArregloDeNULL(){
+	int i;
+	int j = 0;
+	for (i = 0; i < this->_espacio; i++)
+	{
+		if (this->_arreglo[i] == NULL) j++;
+	}
+	return j == this->_espacio-1;
+}
 #endif // ARREGLO_DIMENSIONABLE_H
