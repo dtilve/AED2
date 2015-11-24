@@ -1,9 +1,9 @@
-#include "aed2.h"
+#include "Conj.h"
+#include "TiposBasicos.h"
 #include "Tipos.h"
-#include "iostream"
+#include "ArregloDimensionable.h"
 
 using namespace aed2;
-using namespace std;
 
 class diccNombres
 {
@@ -23,14 +23,10 @@ class diccNombres
     struct info{
     	Posicion pos;
     	Conj<Nombre>::Iterador clave;
-
-    	bool operator != (const info& i2) const{
-            return (pos != i2.pos) || !(clave == i2.clave);
-        }
     };
 
     struct Nodo{
-    	Arreglo<Nodo*> alfabeto;
+    	ArregloDimensionable<Nodo*> alfabeto;
     	Conj<info>::Iterador* significado;
     	Nodo* anterior;
     	bool esNombre;
@@ -39,24 +35,7 @@ class diccNombres
   Conj<Nombre> _claves;
   Conj<info> _definiciones;
   Nodo* _primero;
-
-  Arreglo<Nodo*> crearArregloVacio(){
-	Arreglo<Nodo*> a(256);
-	for( Nat i = 0; i < 256; i++ ){
-		a.Definir(i,NULL);
-	}
-	return a;
-}
-
-  bool esArregloDeNULL(Arreglo<Nodo*> a){
-	Nat i = 0;
-	while(i < a.Tamanho() && a[i] == NULL)
-		i++;
-	return i == a.Tamanho();
-}
-
 };
-
 
 // definicion del diccionario
 
@@ -65,8 +44,8 @@ diccNombres::diccNombres(){
 	this->_definiciones = Conj<info>();
 
 	Nodo* node = new Nodo;
-	Arreglo<Nodo*> a;
-	node->alfabeto = crearArregloVacio();
+	ArregloDimensionable<Nodo*> array;
+	node->alfabeto = array.crearArregloDimensionableVacio(256);
 	node->significado = NULL;
 	node->anterior = NULL;
 	node->esNombre = false;
@@ -76,11 +55,11 @@ diccNombres::diccNombres(){
 
 bool diccNombres::Definido(Nombre n){
 	Nodo* actual = this->_primero;
-	Nat i;
+	int i;
 	for(i = 0; i < n.length() && actual!= NULL; i++)
 	{
 		int indice = (int) n[i];
-		actual =  actual->alfabeto[indice];
+		actual =  actual->alfabeto.iesimo(indice);
 	}
 	if (actual == NULL || actual->significado == NULL)
 	{
@@ -90,9 +69,9 @@ bool diccNombres::Definido(Nombre n){
 }
 
 void diccNombres::Definir(Nombre n, Posicion p){
-	Nat i;
+	int i;
 	Nodo* actual = this->_primero;
-	Nat indice;
+	int indice;
 	if (!this->Definido(n))
 	{
 		Conj<Nombre>::Iterador itClaveNueva = this->_claves.AgregarRapido(n);
@@ -107,12 +86,12 @@ void diccNombres::Definir(Nombre n, Posicion p){
 		for(i = 0; i < n.length(); i++)
 		{
 			indice = (int) n[i];
-			if (actual->alfabeto[indice] == NULL)
+			if (actual->alfabeto.iesimo(indice) == NULL)
 			{
 				proximo = new Nodo;
-				actual->alfabeto[indice] = proximo;
-				Arreglo<Nodo*> array;
-				proximo->alfabeto = crearArregloVacio();
+				actual->alfabeto.iesimo(indice) = proximo;
+				ArregloDimensionable<Nodo*> array;
+				proximo->alfabeto = array.crearArregloDimensionableVacio(256);
 				proximo->anterior = actual;
 				proximo->significado = NULL;
 				if (i == n.length() - 1)
@@ -135,15 +114,15 @@ void diccNombres::Definir(Nombre n, Posicion p){
 				else
 				{
 				int indice = (int) n[i];
-				proximo = actual->alfabeto[indice];
+				proximo = actual->alfabeto.iesimo(indice);
 				}
 				actual = proximo;
 			}
 		}
 		proximo = new Nodo;
-		actual->alfabeto[indice] = proximo;
-		Arreglo<Nodo*> array;
-		proximo->alfabeto = crearArregloVacio();
+		actual->alfabeto.iesimo(indice) = proximo;
+		ArregloDimensionable<Nodo*> array;
+		proximo->alfabeto = array.crearArregloDimensionableVacio(256);
 		proximo->anterior = actual;
 		proximo->significado = infoPointer;
 		proximo->esNombre = false;
@@ -152,9 +131,9 @@ void diccNombres::Definir(Nombre n, Posicion p){
 	{
 		for(i = 0; i < n.length() ; i++)
 		{
-			Arreglo<Nodo*> array = actual->alfabeto;
+			ArregloDimensionable<Nodo*> array = actual->alfabeto;
 			int indice = (int) n[i];
-			actual = array[indice];
+			actual = array.iesimo(indice);
 		}
 		Conj<info>::Iterador itInfo = *actual->significado;
 		info informacion= itInfo.Siguiente();
@@ -165,12 +144,12 @@ void diccNombres::Definir(Nombre n, Posicion p){
 
 Posicion diccNombres::Obtener(Nombre n){
 	Nodo* actual = this->_primero;
-	Nat i = 0;
+	int i = 0;
 	for(i = 0; i <= n.length(); i++)
 	{
-		Arreglo<Nodo*> array = actual->alfabeto;
+		ArregloDimensionable<Nodo*> array = actual->alfabeto;
 		int indice = (int) n[i];
-		actual = array[indice];
+		actual = array.iesimo(indice);
 	}
 	Conj<info>::Iterador itInfo = *actual->significado;
 	return itInfo.Siguiente().pos;
@@ -179,12 +158,12 @@ Posicion diccNombres::Obtener(Nombre n){
 void diccNombres::Borrar(const Nombre n){
 	Nodo* actual = this->_primero;
 	Nodo* proximo;
-	Nat i;
+	int i;
 	for (i = 0; i < n.length(); i++)
 	{
 		int indice = (int) n[i];
-		Arreglo<Nodo*> array = actual->alfabeto;
-		proximo = array[indice];
+		ArregloDimensionable<Nodo*> array = actual->alfabeto;
+		proximo = array.iesimo(indice);
 		actual = proximo;
 	}
 	Conj<info>::Iterador itI = *actual->significado;
@@ -196,17 +175,17 @@ void diccNombres::Borrar(const Nombre n){
 	for (i = 0; i < n.length(); i++)
 	{
 		int indice = (int) n[i];
-		Arreglo<Nodo*> array = actual->alfabeto;
-		proximo = array[indice];
+		ArregloDimensionable<Nodo*> array = actual->alfabeto;
+		proximo = array.iesimo(indice);
 		actual = proximo;
 	}
-	if (esArregloDeNULL(actual->alfabeto))
+	if (actual->alfabeto.esArregloDeNULL())
 	{
 		for (i = n.length() -1; 0 <= i && !actual->esNombre; i--)
 		{
-			Arreglo<Nodo*> array = actual->alfabeto;
+			ArregloDimensionable<Nodo*> array = actual->alfabeto;
 			int indice = (int) n[i];
-			array[indice] = NULL;
+			array.iesimo(indice) = NULL;
 			Nodo* previo;
 			previo = actual->anterior;
 			delete actual;
