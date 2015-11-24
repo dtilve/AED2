@@ -110,10 +110,10 @@ namespace aed2
 		private:
 
     		Campus 					campusObstaculos;
-    		Vector<Vector<Celda>>  		campusCompleto;
-    		diccNombres 			estudiantes;
-    		diccNombres 			hippies;
-    		diccAgentes 			diccAg;
+    		Vector<Vector<Celda>>  			campusCompleto;
+    		diccNombres 				estudiantes;
+    		diccNombres 				hippies;
+    		diccAgentes 				diccAg;
     		Placa 					masVigilante;
     		bool 					huboSanciones;
 
@@ -157,20 +157,20 @@ namespace aed2
 
 	//Devuelve la posicion del agente pasado por parametro.
 	//Pre:
-	Posicion CampusSeguro::PosAgente(const CampusSeguro& cs, Nat as){
-
+	Posicion CampusSeguro::PosAgente(Nat as){
+		return diccAg.Obtener(as).pos;
 	}
 
 	//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 	//Pre:
-	Nat CampusSeguro::CantSanciones(const CampusSeguro& cs, Nat as){
-
+	Nat CampusSeguro::CantSanciones(Nat as){
+		return.diccAg.Obtener(as).sanciones;
 	}
 
 	//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 	//Pre:
-	Nat CampusSeguro::CantHippiesAtrapados(const Campus& c, Nat as){
-
+	Nat CampusSeguro::CantHippiesAtrapados(Nat as){
+		return.diccAg.Obtener(as).capturas;
 	}
 
 	//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
