@@ -55,7 +55,8 @@ class Driver
 
    
     private:
-
+		Campus c;
+		CampusSeguro cs;
     /************************************************************************
      * TODO: Va a ser necesario instanciar privadamente el Modulo principal *
      * con el cuál interactuar. Además, pueden declarar todas las           *
