@@ -24,10 +24,10 @@ namespace aed2
 			void AgregarObstaculo(Posicion p);
 
 			//Devuelve la cantidad de filas que tiene el campus
-			Nat Filas();
+			const Nat Filas();
 
 			//Devuelve la cantidad de columnas que tiene el campus.
-			Nat Columnas();
+			const Nat Columnas();
 
 			//Chequea si la posicion p esta ocupada.
 			//Pre: p es una posicion valida de p
@@ -53,7 +53,7 @@ namespace aed2
 
 			//Devuelve la distancia que hay entre p1 y p2.
 			//Pre: tanto p1 como p2 deben ser posiciones validas.
-			Nat Distancia(Posicion p1, Posicion p2);
+			const Nat Distancia(Posicion p1, Posicion p2);
 
 			//Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo
 			//se utilizara esta funcion. Seran datos a interpretar por el invocador.
@@ -105,12 +105,12 @@ namespace aed2
 	}
 
 	//Devuelve la cantidad de filas que tiene el campus
-	Nat Campus::Filas(){
+	const Nat Campus::Filas(){
 		return filas;
 	}
 
 	//Devuelve la cantidad de columnas que tiene el campus.
-	Nat Campus::Columnas(){
+	const Nat Campus::Columnas(){
 		return columnas;
 	}
 
@@ -158,7 +158,7 @@ namespace aed2
 	}
 
 	//Devuelve la distancia que hay entre p1 y p2.
-	Nat Campus::Distancia(Posicion p1, Posicion p2){
+	const Nat Campus::Distancia(Posicion p1, Posicion p2){
 		Nat dist;
 		if (p1.x>p2.x) dist= p1.x-p2.x;
 			else dist=p2.x-p1.x;
