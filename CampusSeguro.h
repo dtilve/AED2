@@ -34,7 +34,7 @@ namespace aed2
 			Campus suCampus();
 
 			//Devuelve un iterador al conjunto de estudiantes del campus.
-			Iterado<Conj<Nombre>> Estudiantes();
+			Iterador<Conj<Nombre>> Estudiantes();
 
 			//Devuelve un iterador al conjunto de hippies del campus
 			Iterador<Conj<Nombre>> Hippies();
