@@ -320,17 +320,29 @@ namespace aed2
 		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
 		p = this.BuscarEstudianteMasCercano(Posicion p);
 		this.campusCompleto[p.x-1][p.y-1].tipo = "hippie";
-		this.campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();;
+		this.campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();
 		//this.campusCompleto[p.x-1][p.y-1].hippie = ;
 		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
-		ActualizarCampusSeguro(p);
+		this.ActualizarCampusSeguro(p);
 	}
 
 	//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
 	//situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverAgente(Nat as){
-		agente ag;
+		Posicion p;
+		p = this.diccAg.ObtenerLog(as).pos;
+		this.campusCompleto[p.x-1][p.y-1].tipo = "libre";
+		this.campusCompleto[p.x-1][p.y-1].estudiante = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		p = BuscarHippiesMasCercano(p);
+		this.campusCompleto[p.x-1][p.y-1].tipo = "agente";
+		this.campusCompleto[p.x-1][p.y-1].estudiante = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].agente = this.moverAgente(as);
+		this.ActualizarCampusSeguro(p);
+		
 	}
 
 	//Devuelve la cantidad de hippies que estan presentes en el campus.
