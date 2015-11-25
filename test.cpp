@@ -10,54 +10,27 @@
 using namespace std;
 using namespace aed2;
 
-void DiccAgentesModificar(Nat i){
-    cout << "Test numero " << i << endl;
-    Nat maximo = 4*i+1;
-    Nat minimo = i/4;
-    DiccAgentes d(minimo,maximo);
-    Nat j = 0;
-    while (j <= i){
-        d.Definir(minimo+j,Posicion(j,j+1));
-        j++;
-    }
-    ASSERT_EQ(d.Definido(minimo+j+1),false);
-    ASSERT_EQ(d.Definido(minimo+j-1),true);
-
-    j = 0;
-    while(j < i){
-        Nat k = 0;
-        DiccAgentes::Iterador it = d.CrearIt();
-        while(k <= i){
-            cout << it.SiguienteClave() << endl;
-            it.Sancionar();
-            it.Avanzar();
-            k++;
-        }
-        j++;
-    }
-    cout << endl;
-
+void DiccAgentesCrear(){
+    DiccAgentes d(0,100);
+    d.~DiccAgentes();
 }
 
-void MegaTest(){
-
-    Conj<Nat> c;
-    c.AgregarRapido(1);
-
-    Conj<Nat>::Iterador itc = c.CrearIt();
-    cout << itc.Siguiente() << endl;
-
-    Nat i = 0;
-    while(i <= 0){
-        DiccAgentesModificar(36);
-        i++;
-    }
+void DiccAgentesDefinir(){
+    //Definiendo agentes
+    DiccAgentes d(0,4);
+    d.Definir(0,Posicion(0,1));
+    d.Definir(1,Posicion(1,2));
+    d.Definir(2,Posicion(2,3));
+    //d.Definir(3,Posicion(3,4));
+    //d.Definir(4,Posicion(4,5));
+    cout << d.Claves().Cardinal() << endl;
 }
 
 // ---------------------------------------------------------------------
 
 int main(int argc, char **argv)
 {
-    RUN_TEST(MegaTest);
+    RUN_TEST(DiccAgentesCrear);
+    RUN_TEST(DiccAgentesDefinir);
 	return 0;
 }
