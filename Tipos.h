@@ -10,11 +10,15 @@ namespace aed2{
 	typedef String Nombre;
 
     struct Posicion{
-                Nat x;
-                Nat y;
-                Posicion() : x(1), y(1) {}
-                Posicion(Nat x0, Nat y0) : x(x0), y(y0) {}
-    };
+   			Nat x;
+   			Nat y;
+            Posicion() : x(1), y(1) {}
+            Posicion(Nat x0, Nat y0) : x(x0), y(y0) {}
+};
+
+    std::ostream& operator<<(std::ostream& os, const Posicion& p){
+            os << "(" << p.x << "," << p.y << ")" ;
+    }
 
     bool operator==(const Posicion& p1, const Posicion& p2){
         return p1.x == p2.x && p1.y == p2.y;
