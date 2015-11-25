@@ -289,7 +289,22 @@ namespace aed2
 	//Pre:
 	void CampusSeguro::MoverEstudiante(Nombre est, Direccion d){
 		Posicion p = this.estudiantes.Obtener(est);
-		
+		this.campusCompleto[p.x-1][p.y-1].tipo = "libre";
+		this.campusCompleto[p.x-1][p.y-1].estudiante = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		if (d==izq) p.x= p.x-1;
+		if (d==der) p.x= p.x+1;
+		if (d==arriba) p.y= p.y-1;
+		if (d==abajo) p.y= p.y+1;
+		if (this.campusObstaculos.posValida(p))
+		{
+			this.campusCompleto[p.x-1][p.y-1].tipo = "estudiante";
+			//this.campusCompleto[p.x-1][p.y-1].estudiante= ;
+			this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+			this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		}
+		else this.estudiantes.Borrar(est);
 	}
 
 	//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
