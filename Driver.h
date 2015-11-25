@@ -130,13 +130,13 @@ Nat iesimoAgente(Nat i) const{
 	}
 	return it.Siguiente();
 }
-  Nat cantEstudiantes() const{
-  	return cs.CantEstudiantes();
-  }
- Nat cantHippies() const{
- 	return cs.CantHippies();
- }
- Nat cantAgentes() const{
+Nat cantEstudiantes() const{
+	return cs.CantEstudiantes();
+}
+Nat cantHippies() const{
+	return cs.CantHippies();
+}
+Nat cantAgentes() const{
 	Iterador<Conj<Placa>> it = cs.Agentes();
 	int i=0;
 	while(it.HaySiguiente()){
@@ -144,7 +144,7 @@ Nat iesimoAgente(Nat i) const{
 		i++;
 	}
 	return i;
- }
+}
 Posicion posEstudianteYHippie(Nombre n) const{
 	return cs.PosicionEstudianteYHippie(n);
 }
