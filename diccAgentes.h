@@ -58,7 +58,7 @@ namespace aed2
         class Iterador;
 
         DiccAgentes();
-        //Constructor por defecto. Crea un diccionario nuevo vacío con máximo 1 y mínimo 0.
+        //Constructor por defecto. Crea un diccionario nuevo vacío con máximo 1 y mínimo 0..
 
         DiccAgentes(Nat minimo,Nat maximo);
         //Crea un diccionario nuevo vacío con el rango de agentes especificado en los parámetros.
