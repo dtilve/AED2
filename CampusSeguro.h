@@ -205,18 +205,18 @@ namespace aed2
 	}
 
 	//Devuelve un conjunto de iteradores a los estudiantes del campus.
-	Conj<Nombre> CampusSeguro::Estudiantes(){
-		//return this->estudiantes.Claves();
+	Iterador<Conj<Nombre>> CampusSeguro::Estudiantes(){
+		return this->estudiantes.Claves();
 	}
 
 	//Devuelve un conjunto de iteradores a los hippies del campus
-	Conj<Nombre> CampusSeguro::Hippies(){
-		//return this->hippies.Claves();
+	Iterador<Conj<Nombre>> CampusSeguro::Hippies(){
+		return this->hippies.Claves();
 	}
 
 
 	//Devuelve un conjunto de iteradores a los agentes del campus.
-	Conj<Placa> CampusSeguro::Agentes(){
+	Iterador<Conj<Placa>> CampusSeguro::Agentes(){
 		return this->diccAg.Claves();
 	}
 
@@ -255,14 +255,22 @@ namespace aed2
 	//la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::IngresarEstudiante(Nombre est, Posicion p){
-
+		this.campusCompleto[p.x-1][p.y-1].tipo = "estudiante";
+		//this.campusCompleto[p.x-1][p.y-1].estudiante = ;
+		this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		actualizarCampusSeguro(p);
 	}
 
 	//Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en la
 	//grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::IngresarHippie(Nombre hip, Posicion p){
-
+		this.campusCompleto[p.x-1][p.y-1].tipo = "hippie";
+		this.campusCompleto[p.x-1][p.y-1].estudiante = Conj<Nombre>().CrearIt();
+		//this.campusCompleto[p.x-1][p.y-1].hippie = ;
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		actualizarCampusSeguro(p);
 	}
 
 	//Mueve al estudiante pasado por parametro dentro de campus hacia la direccion pasada por
@@ -270,7 +278,8 @@ namespace aed2
 	//sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverEstudiante(Nombre est, Direccion d){
-
+		Posicion p = this.estudiantes.Obtener(est);
+		
 	}
 
 	//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
