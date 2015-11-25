@@ -119,6 +119,16 @@ namespace aed2
     		Placa 					masVigilante;
     		bool 					huboSanciones;
 
+            void ActualizarCampusSeguro(const Posicion p);
+            void ChequearEstudiantes(const Posicion p,Conj<Nombre> estudiantesAconvertir);
+            void ChequearHippies(const Posicion p,Conj<Nombre> hippiesAeliminar,Dicc<Nombre,Posicion> estudiantesAagregar);
+            Conj<Posicion> FiltrarAdyacentes(String filtro,Posicion p);
+            void PremiarAlrededor(Posicion p);
+            bool Rodeado(Posicion p);
+            void SancionarAlrededor(Posicion p);
+            bool TodosEstudiantes(Posicion p);
+            Posicion BuscarEstudianteMasCercano(Posicion p);
+            Posicion BuscarHippieMasCercano(Posicion p);
 
 	};
 
@@ -304,7 +314,7 @@ namespace aed2
 
 	//Devuelve la cantidad de estudiantes que estan presentes en el campus.
 	//Pre:
-	Nat CampusSEguro::CantEstudiantes(){
+	Nat CampusSeguro::CantEstudiantes(){
 
 	}
 
@@ -327,6 +337,171 @@ namespace aed2
 	Conj<Nat> CampusSeguro::ConKSanciones(Nat k){
 
 	}
+
+    Conj<Posicion> CampusSeguro::FiltrarAdyacentes(String filtro,Posicion p){
+        Conj<Posicion> res;
+        Nat i = p.x-1;
+        Nat j = p.y-1;
+        if(campusObstaculos.posValida(Posicion(p.x+1,p.y)) && campusCompleto[i+1][j].tipo == filtro)
+            res.AgregarRapido(Posicion(p.x+1,p.y));
+        if(campusObstaculos.posValida(Posicion(p.x,p.y+1)) && campusCompleto[i][j+1].tipo == filtro)
+            res.AgregarRapido(Posicion(p.x,p.y+1));
+        if(campusObstaculos.posValida(Posicion(p.x-1,p.y)) && campusCompleto[i-1][j].tipo == filtro)
+            res.AgregarRapido(Posicion(p.x-1,p.y));
+        if(campusObstaculos.posValida(Posicion(p.x,p.y-1)) && campusCompleto[i][j-1].tipo == filtro)
+            res.AgregarRapido(Posicion(p.x,p.y-1));
+        return res;
+    }
+
+    void CampusSeguro::ChequearEstudiantes(const Posicion p,Conj<Nombre> estudiantesAconvertir){
+            Conj<Posicion> ps = FiltrarAdyacentes("estudiante",p);
+            if(campusCompleto[p.x-1][p.y-1].tipo == "estudiante")
+                ps.AgregarRapido(p);
+            Conj<Posicion>::Iterador itPos = ps.CrearIt();
+            Nat i = 0;
+            Nat j = 0;
+            Posicion posActual = Posicion(0,0);
+            while(itPos.HaySiguiente()){
+                posActual = itPos.Siguiente();
+                if(Rodeado(posActual) && FiltrarAdyacentes("agente",posActual).Cardinal() >= 1){
+                    SancionarAlrededor(p);
+                    huboSanciones = true;
+                }
+                if(FiltrarAdyacentes("hippie",posActual).Cardinal() >= 2){
+                    i = posActual.x-1;
+                    j = posActual.y-1;
+                    estudiantesAconvertir.AgregarRapido(campusCompleto[i][j].estudiante.Siguiente());
+                }
+                itPos.Avanzar();
+            }
+        }
+
+    void CampusSeguro::ChequearHippies(const Posicion p,Conj<Nombre> hippiesAeliminar,Dicc<Nombre,Posicion> estudiantesAagregar){
+        Conj<Posicion> ps = FiltrarAdyacentes("hippie",p);
+        if(campusCompleto[p.x-1][p.y-1].tipo == "hippie")
+            ps.AgregarRapido(p);
+        Conj<Posicion>::Iterador itPos = ps.CrearIt();
+        Nat i = 0;
+        Nat j = 0;
+        Posicion posActual = Posicion(0,0);
+        while(itPos.HaySiguiente()){
+            i = posActual.x-1;
+            j = posActual.y-1;
+            if(Rodeado(posActual) && FiltrarAdyacentes("agente",posActual).Cardinal() >= 1){
+                PremiarAlrededor(p);
+                hippiesAeliminar.AgregarRapido(campusCompleto[i][j].hippie.Siguiente());
+            }
+        if(Rodeado(posActual) && TodosEstudiantes(posActual))
+            estudiantesAagregar.DefinirRapido(campusCompleto[i][j].hippie.Siguiente(),posActual);
+        itPos.Avanzar();
+        }
+    }
+
+    void CampusSeguro::ActualizarCampusSeguro(const Posicion p){
+        Conj<Nombre> hippiesAeliminar;
+        Dicc<Nombre,Posicion> estudiantesAagregar;
+        Conj<Nombre> estudiantesAconvertir;
+        ChequearEstudiantes(p,estudiantesAconvertir);
+        ChequearHippies(p,hippiesAeliminar,estudiantesAagregar);
+        Conj<Nombre>::Iterador itNombres1 = estudiantesAconvertir.CrearIt();
+        while(itNombres1.HaySiguiente()){
+            hippies.Definir(itNombres1.Siguiente(),estudiantes.Obtener(itNombres1.Siguiente()));
+            estudiantes.Borrar(itNombres1.Siguiente());
+            itNombres1.Avanzar();
+        }
+        Conj<Nombre>::Iterador itNombres2 = hippiesAeliminar.CrearIt();
+        while(itNombres2.HaySiguiente()){
+            hippies.Borrar(itNombres2.Siguiente());
+            itNombres2.Avanzar();
+        }
+        Dicc<Nombre,Posicion>::Iterador itNombres3 = estudiantesAagregar.CrearIt();
+        while(itNombres3.HaySiguiente()){
+            estudiantes.Definir(itNombres3.SiguienteClave(),itNombres3.SiguienteSignificado());
+            itNombres3.Avanzar();
+        }
+    }
+
+    void CampusSeguro::PremiarAlrededor(Posicion p){
+        Conj<Posicion> ags = FiltrarAdyacentes("agente",p);
+        Conj<Posicion>::Iterador itAgs = ags.CrearIt();
+        Nat i = 0;
+        Nat j = 0;
+        while(itAgs.HaySiguiente()){
+            i = itAgs.Siguiente().x-1;
+            j = itAgs.Siguiente().y-1;
+            campusCompleto[i][j].agente.Premiar();
+            itAgs.Avanzar();
+        }
+    }
+
+    bool CampusSeguro::Rodeado(Posicion p){
+        Nat i = p.x-1;
+        Nat j = p.y-1;
+        bool derecha = !campusObstaculos.posValida(Posicion(p.x+1,p.y)) || campusCompleto[i+1][j].tipo != "libre";
+        bool abajo = !campusObstaculos.posValida(Posicion(p.x,p.y+1)) || campusCompleto[i][j+1].tipo != "libre";
+        bool izquierda = !campusObstaculos.posValida(Posicion(p.x-1,p.y)) || campusCompleto[i-1][j].tipo != "libre";
+        bool arriba = !campusObstaculos.posValida(Posicion(p.x,p.y-1)) || campusCompleto[i][j-1].tipo != "libre";
+        return derecha && izquierda && arriba && abajo;
+    }
+
+    void CampusSeguro::SancionarAlrededor(Posicion p){
+        Conj<Posicion> ags = FiltrarAdyacentes("agente",p);
+        Conj<Posicion>::Iterador itAgs = ags.CrearIt();
+        Nat i = 0;
+        Nat j = 0;
+        while(itAgs.HaySiguiente()){
+            i = itAgs.Siguiente().x-1;
+            j = itAgs.Siguiente().y-1;
+            campusCompleto[i][j].agente.Sancionar();
+            itAgs.Avanzar();
+        }
+    }
+
+    bool CampusSeguro::TodosEstudiantes(Posicion p){
+        Nat i = p.x-1;
+        Nat j = p.y-1;
+        bool derecha = !campusObstaculos.posValida(Posicion(p.x+1,p.y)) || campusCompleto[i+1][j].tipo == "estudiante";
+        bool abajo = !campusObstaculos.posValida(Posicion(p.x,p.y+1)) || campusCompleto[i][j+1].tipo == "estudiante";
+        bool izquierda = !campusObstaculos.posValida(Posicion(p.x-1,p.y)) || campusCompleto[i-1][j].tipo == "estudiante";
+        bool arriba = !campusObstaculos.posValida(Posicion(p.x,p.y-1)) || campusCompleto[i][j-1].tipo == "estudiante";
+        return derecha && izquierda && arriba && abajo;
+    }
+
+    Posicion CampusSeguro::BuscarEstudianteMasCercano(Posicion p){
+        Posicion candidato = Posicion(0,0);
+        if(!estudiantes.DiccVacio()){
+            Conj<Posicion>::Iterador it = estudiantes.Significados().CrearIt();
+            Posicion candidato = it.Siguiente();
+            while(it.HaySiguiente()){
+                if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
+                    candidato = it.Siguiente();
+                it.Avanzar();
+            }
+        }else{
+            Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
+            Posicion candidato = it.Siguiente();
+        }
+        return candidato;
+    }
+
+
+
+    Posicion CampusSeguro::BuscarHippieMasCercano(Posicion p){
+        Posicion candidato = Posicion(0,0);
+        if(!hippies.DiccVacio()){
+            Conj<Posicion>::Iterador it = hippies.Significados().CrearIt();
+            Posicion candidato = it.Siguiente();
+            while(it.HaySiguiente()){
+                if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
+                    candidato = it.Siguiente();
+                it.Avanzar();
+            }
+        }else{
+            Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
+            Posicion candidato = it.Siguiente();
+        }
+        return candidato;
+    }
 
 }
 

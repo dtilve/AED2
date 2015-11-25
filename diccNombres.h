@@ -17,6 +17,7 @@ class diccNombres
     bool Definido(Nombre n);
     Conj<Nombre>::Iterador Claves();
     bool DiccVacio();
+    Conj<Posicion> Significados();
 
   private:
 
@@ -222,6 +223,16 @@ Conj<Nombre>::Iterador diccNombres::Claves(){
 
 bool diccNombres::DiccVacio(){
 	return this->_claves.EsVacio();
+}
+
+Conj<Posicion> diccNombres::Significados(){
+    Conj<Posicion> res;
+    Conj<info>::Iterador it = _definiciones.CrearIt();
+    while(it.HaySiguiente()){
+        res.AgregarRapido(it.Siguiente().pos);
+        it.Avanzar();
+    }
+    return res;
 }
 
 
