@@ -3,12 +3,15 @@
 
 #include <ostream>
 #include "aed2.h"
-#include "tipos.h"
+#include "Tipos.h"
 
 namespace aed2
 {
 	class Campus{
 		public:
+
+		    //Constructor por defecto
+		    Campus();
 
 			//devuelve el campus
 			Campus(const Nat ancho, const Nat alto);
@@ -69,12 +72,11 @@ namespace aed2
 
 	};
 
-    bool operator==(const Posicion& p1, const Posicion& p2){
-        return p1.x == p2.x && p1.y == p2.y;
-    }
-
-    bool operator!=(const Posicion& p1, const Posicion& p2){
-        return !(p1 == p2);
+    Campus::Campus(){
+        Vector<Vector<bool>> m;
+        filas = 1;
+        columnas = 1;
+        matriz = m;
     }
 
 	Campus::Campus(const Nat ancho, const Nat alto){
