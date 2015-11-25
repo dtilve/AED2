@@ -114,13 +114,18 @@ namespace aed2
 			Conj<Nat> ConKSanciones(Nat k);
 
 		private:
+		
+		struct MaxVigilante{
+			Placa placa;
+			Nat capturas;
+		}
 
     		Campus 					campusObstaculos;
     		Vector<Vector<Celda>>  			campusCompleto;
     		diccNombres 				estudiantes;
     		diccNombres 				hippies;
     		DiccAgentes 				diccAg;
-    		Placa 					masVigilante;
+    		MasVigilante				masVigilante;
     		bool 					huboSanciones;
 		
 		friend typename diccNombres::Claves();// o friend class diccNombres;
@@ -371,7 +376,7 @@ namespace aed2
 	//Devuelve el agente que atrapo la mayor cantidad de hippies.
 	//Pre:
 	Nat CampusSeguro::MasVigilante(){
-		return this.masVigilante;
+		return this.masVigilante.placa;
 	}
 
 	//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
@@ -487,8 +492,11 @@ namespace aed2
             i = itAgs.Siguiente().x-1;
             j = itAgs.Siguiente().y-1;
             campusCompleto[i][j].agente.Premiar();
+            if(itAgs.Siguiente().capturas > masVigilante.capturas)
+		masVigilante = MasVigilante(itAgs.SiguienteClave(),itAgs.Siguiente.capturas);	                	
             itAgs.Avanzar();
         }
+        
     }
 
     bool CampusSeguro::Rodeado(Posicion p){
