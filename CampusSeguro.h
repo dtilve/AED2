@@ -34,11 +34,11 @@ namespace aed2
 			Iterado<Conj<Nombre>> Estudiantes();
 
 			//Devuelve un iterador al conjunto de hippies del campus
-			Conj<Nombre> Hippies();
+			Iterador<Conj<Nombre>> Hippies();
 
 
 			//Devuelve un iterador al conjunto de agentes del campus.
-			Conj<Placa> Agentes();
+			Iterador<Conj<Placa>> Agentes();
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:
