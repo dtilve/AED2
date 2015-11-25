@@ -240,7 +240,7 @@ namespace aed2
 
 	//Devuelve un conjunto de iteradores a los agentes del campus.
 	Iterador<Conj<Placa>> CampusSeguro::Agentes(){
-		return this->diccAg.Claves();
+		return this->diccAg.Claves().CrearIt(); //////////////// le pongo crear it por el driver
 	}
 
 	//Devuelve la posicion del estudiante o hippie pasado por parametro.
