@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "aed2.h"
-#include "auxiliares.h"
+#include "tipos.h"
 
 using namespace std;
 

@@ -2,22 +2,11 @@
 #define CAMPUS_H_
 
 #include <ostream>
-#include "aed2/TiposBasicos.h"
-#include "aed2/Conj.h"
-#include "aed2/Vector.h"
+#include "aed2.h"
+#include "tipos.h"
 
 namespace aed2
 {
-    struct Posicion{
-    			Nat x;
-    			Nat y;
-
-                Posicion() : x(1), y(1) {}
-                Posicion(Nat x0, Nat y0) : x(x0), y(y0) {}
-    		};
-
-    enum Direccion {izq, der, abajo, arriba};
-
 	class Campus{
 		public:
 

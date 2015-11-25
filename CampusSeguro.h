@@ -3,10 +3,9 @@
 
 #include <ostream>
 #include "Campus.h"
-#include "aed2/TiposBasicos.h"
-#include "aed2/Vector.h"
-#include "aed2/Conj.h"
-#include "aed2/Dicc.h"
+#include "DiccNombres.h"
+#include "DiccAgentes.h"
+#include "aed2.h"
 
 namespace aed2
 {
@@ -15,16 +14,16 @@ namespace aed2
 
     struct Celda{
         String tipo;
-        Iterador<Nombre> estudiante;
-        Iterador<Nombre> hippie;
-        Iterador<Placa> agente;
+        Conj<Nombre>::Iterador estudiante;
+        Conj<Nombre>::Iterador hippie;
+        DiccAgentes::Iterador agente;
     };
 
 	class CampusSeguro{
 		public:
 			//Constructor
 			CampusSeguro();
-			
+
 			//Devuelve el campus
 			Campus();
 
@@ -119,9 +118,9 @@ namespace aed2
 
 
 	};
-	
+
 	CampusSeguro::CampusSeguro();
-	
+
 	Campus CampusSeguro::Campus(){
 		return this.campusObstaculos;
 	}
@@ -148,7 +147,7 @@ namespace aed2
 		Posicion res;
 		if this.estudiantes.Definido(nombre)
 		{
-			res= this.estudiante.Obtener;	
+			res= this.estudiante.Obtener;
 		}
 		else res= this.hippies.Obtener;
 		return res;
@@ -188,7 +187,7 @@ namespace aed2
 				}
 				else
 				{
-					if da.Claves().Pertenece(Posicion(i,j)) 
+					if da.Claves().Pertenece(Posicion(i,j))
 					{
 						this.campusCompleto[i][j].tipo = "agente";
 						//this.campusCompleto[i][j].agente = Iterador(Obtener())
@@ -197,7 +196,7 @@ namespace aed2
 					{
 						this.campusComple[i][j].agente = Iterador();
 						this.campusCompleto[i][j].tipo = "libre";
-					}	
+					}
 				}
 				this.campusCompleto[i][j].estudiante = Iterador();
 				this.campusCompleto[i][j].hippie = Iterador();
@@ -205,7 +204,7 @@ namespace aed2
 			}
 			i++;
 		}
-		//this.diccAg = una copia de da; haces un while y vas iterando y agregando 
+		//this.diccAg = una copia de da; haces un while y vas iterando y agregando
 		this.estudiantes = diccNombres();
 		this.hippies = diccNombres();
 		this.huboSanciones = false;
