@@ -23,7 +23,10 @@ namespace aed2
 		public:
 			//Constructor
 			CampusSeguro();
-
+			
+			//Destructor
+			~CampusSeguro();
+			
 			//Constructor por parámetros
 			CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da);
 
@@ -216,7 +219,14 @@ namespace aed2
 	Campus CampusSeguro::suCampus(){
 		return this->campusObstaculos;
 	}
-
+	
+	
+	~CampusSeguro(){
+		this.estudiantes.~diccNombres();
+		this.hippies.~diccNombres();
+		this.diccAg.~DiccAgentes();
+	}
+	
 	//Devuelve un conjunto de iteradores a los estudiantes del campus.
 	Iterador<Conj<Nombre>> CampusSeguro::Estudiantes(){
 		return this->estudiantes.Claves();
