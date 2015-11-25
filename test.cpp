@@ -23,14 +23,12 @@ void DiccAgentesModificar(Nat i){
     ASSERT_EQ(d.Definido(minimo+j+1),false);
     ASSERT_EQ(d.Definido(minimo+j-1),true);
 
-    cout << "sanciones: " << d.Obtener(minimo).pos << endl;
-
     j = 0;
-    /*while(j < i){
+    while(j < i){
         Nat k = 0;
         DiccAgentes::Iterador it1 = d.CrearIt();
         DiccAgentes::Iterador it2 = d.CrearIt();
-        while(k <= i){
+        while(k <= j){
             cout << "agente numero: " << it1.SiguienteClave() << endl;
             cout << "sanciones: " << it1.Siguiente().sanciones << endl;
             it1.Sancionar();
@@ -41,7 +39,7 @@ void DiccAgentesModificar(Nat i){
         }
         cout << "al final las sancoines son: " << d.Obtener(minimo+j).sanciones << endl;
         j++;
-    }*/
+    }
     cout << endl;
 
 }
@@ -55,10 +53,26 @@ void MegaTest(){
     cout << itc.Siguiente() << endl;
 
     Nat i = 0;
-    while(i <= 0){
-        DiccAgentesModificar(36);
+    while(i <= 10){
+        DiccAgentesModificar(i);
         i++;
     }
+}
+
+void DiccAgentesTestVacio(){
+    DiccAgentes d(32,57);
+
+    DiccAgentes::Iterador it = d.CrearIt();
+
+    ASSERT_EQ(it.HaySiguiente(),false);
+
+    cout << "Claves: " << d.Claves() << endl;
+
+    ASSERT_EQ(d.Definido(56),false);
+
+    cout << "Con K sanciones lineal: " << d.conKSancionesLineal(5) << endl;
+
+    cout << "Con K sanciones log: " <<  d.conKSancionesLog(7) << endl;
 }
 
 // ---------------------------------------------------------------------
@@ -66,5 +80,6 @@ void MegaTest(){
 int main(int argc, char **argv)
 {
     RUN_TEST(MegaTest);
+    RUN_TEST(DiccAgentesTestVacio)
 	return 0;
 }

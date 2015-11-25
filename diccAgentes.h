@@ -263,7 +263,7 @@ Info DiccAgentes::Obtener(Placa a){
 	Info agente;
 	agente.pos = itConjIt.Siguiente().Siguiente().pos;
 	agente.capturas = itConjIt.Siguiente().Siguiente().capturas;
-	agente.capturas = itConjIt.Siguiente().Siguiente().sanciones;
+	agente.sanciones = itConjIt.Siguiente().Siguiente().sanciones;
 	return agente;
 }
 //Ligeras modificaciones, pero el algoritmo es el mismo.
@@ -325,22 +325,26 @@ Conj<Placa> DiccAgentes::conKSancionesLineal(Nat k){
 //Modificada para que sea correcta.
 
 Conj<Placa> DiccAgentes::conKSancionesLog(Nat k){
-    Lista<NodoLista> it;
-    Nat i = 0;
-    Nat f = ArregloDeSanciones.Longitud()-1;
-    Nat medio = 0;
-    if (ArregloDeSanciones[f].sanciones == k)
-        i = f;
-    while(i+1 < f){
-        medio = (i+f)/2;
-        if (ArregloDeSanciones[medio].sanciones <= k)
-            i = medio;
-        else
-            f = medio;
-    }
     Conj<Placa> res;
-    if (ArregloDeSanciones[i].sanciones == k)
-        res = ArregloDeSanciones[i].sancionados.Siguiente().sancionados;
+    if(!ArregloDeSanciones.EsVacio()){
+        Lista<NodoLista> it;
+        Nat i = 0;
+        Nat f = ArregloDeSanciones.Longitud()-1;
+        Nat medio = 0;
+        if (ArregloDeSanciones[f].sanciones == k)
+            i = f;
+        while(i+1 < f){
+            medio = (i+f)/2;
+            if (ArregloDeSanciones[medio].sanciones <= k)
+                i = medio;
+            else
+                f = medio;
+        }
+        if (ArregloDeSanciones[i].sanciones == k)
+            res = ArregloDeSanciones[i].sancionados.Siguiente().sancionados;
+    }else{
+        res = Conj<Placa>();
+    }
     return res;
 }
 //Modificada para que sea correcta.
@@ -381,7 +385,7 @@ bool DiccAgentes::Iterador::HayAnterior() const{
 }
 
 bool DiccAgentes::Iterador::HaySiguiente() const{
-	return (this->act < (this->arregloDeAgentesIt->Longitud()-1));
+	return (this->act < (this->arregloDeAgentesIt->Longitud()));
 }
 
 Info DiccAgentes::Iterador::Anterior() const{
@@ -429,23 +433,18 @@ void DiccAgentes::Iterador::Premiar(){
 }
 
 void DiccAgentes::Iterador::Sancionar(){
-    cout << "antes: " << arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados << endl;
     arregloDeAgentesIt->operator[](act).info.sanciones++;
-    //cout << "a ver si es esto... " << arregloDeAgentesIt[act].info.itcs.Siguiente() << endl;
 	arregloDeAgentesIt->operator[](act).info.itcs.EliminarSiguiente();
 	arregloDeAgentesIt->operator[](act).info.its.Avanzar();
 	if (arregloDeAgentesIt->operator[](act).info.its.HaySiguiente() && arregloDeAgentesIt->operator[](act).info.its.Siguiente().sanciones == arregloDeAgentesIt->operator[](act).info.sanciones){
-        cout << "entre por la rama true" << endl;
         arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt->operator[](act).placa);
         arregloDeAgentesIt->operator[](act).info.itcs = arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.CrearIt();
 	}else{
-	    cout << "entre por la rama false" << endl;
 	    NodoLista n(arregloDeAgentesIt->operator[](act).info.sanciones,Conj<Placa>());
         arregloDeAgentesIt->operator[](act).info.its.AgregarComoSiguiente(n);
         arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt->operator[](act).placa);
         arregloDeAgentesIt->operator[](act).info.itcs = arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.CrearIt();
 	}
-	cout << "despues: " << arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados << endl;
 }
 //Agregadas un par de cosas para que el algoritmo sea correcto.
 
