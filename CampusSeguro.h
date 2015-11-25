@@ -311,7 +311,17 @@ namespace aed2
 	//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverHippie(Nombre hip){
-
+		Posicion p = this.estudiantes.Obtener(hip);
+		this.campusCompleto[p.x-1][p.y-1].tipo = "libre";
+		this.campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();;
+		this.campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		p = this.BuscarEstudianteMasCercano(Posicion p);
+		this.campusCompleto[p.x-1][p.y-1].tipo = "hippie";
+		this.campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();;
+		//this.campusCompleto[p.x-1][p.y-1].hippie = ;
+		this.campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+		ActualizarCampusSeguro(p);
 	}
 
 	//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
