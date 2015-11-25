@@ -101,6 +101,8 @@ namespace aed2
 
             Iterador operator = (const Iterador& otro);
 
+            ~Iterador();
+
 			bool HayAnterior() const;
 			//Devuelve true si y sólo si en el iterador todavía quedan elementos para retroceder.
 
@@ -139,10 +141,10 @@ namespace aed2
 
             private:
 
-                Vector<Agente> arregloDeAgentesIt;
+                Vector<Agente>* arregloDeAgentesIt;
                 Nat act;
 
-                Iterador(Nat i,Vector<Agente> vec);
+                Iterador(Nat i,Vector<Agente>* vec);
                 //Función privada que asigna directamente los argumentos a su parte privada
 
                 friend Iterador DiccAgentes::CrearIt();
@@ -344,18 +346,18 @@ Conj<Placa> DiccAgentes::conKSancionesLog(Nat k){
 //Modificada para que sea correcta.
 
 DiccAgentes::Iterador DiccAgentes::CrearIt(){
-    return Iterador(0,arregloDeAgentes);
+    return Iterador(0,&arregloDeAgentes);
 }
 
 ///implementacion iterador
 
 DiccAgentes::Iterador::Iterador(){
 	Vector<Agente> v;
-	arregloDeAgentesIt = v;
+	arregloDeAgentesIt = &v;
 	act = 0;
 }
 
-DiccAgentes::Iterador::Iterador(Nat i,Vector<Agente> vec){
+DiccAgentes::Iterador::Iterador(Nat i,Vector<Agente>* vec){
     arregloDeAgentesIt = vec;
     act = i;
 }
@@ -370,32 +372,36 @@ DiccAgentes::Iterador DiccAgentes::Iterador::operator = (const Iterador& otro){
     act = otro.act;
 }
 
+DiccAgentes::Iterador::~Iterador(){
+
+}
+
 bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
 }
 
 bool DiccAgentes::Iterador::HaySiguiente() const{
-	return (this->act < (this->arregloDeAgentesIt.Longitud()-1));
+	return (this->act < (this->arregloDeAgentesIt->Longitud()-1));
 }
 
 Info DiccAgentes::Iterador::Anterior() const{
 	Info info;
-	info.pos = arregloDeAgentesIt[act-1].info.pos;
-	info.sanciones = arregloDeAgentesIt[act-1].info.sanciones;
-	info.capturas = arregloDeAgentesIt[act-1].info.capturas;
+	info.pos = arregloDeAgentesIt->operator[](act-1).info.pos;
+	info.sanciones = arregloDeAgentesIt->operator[](act-1).info.sanciones;
+	info.capturas = arregloDeAgentesIt->operator[](act-1).info.capturas;
 	return info;
 }
 
 Info DiccAgentes::Iterador::Siguiente() const{ //por que esta comentado ? :) just to know.. parece estar bien asi
 	Info info;
-	info.pos = arregloDeAgentesIt[act].info.pos;
-	info.sanciones = arregloDeAgentesIt[act].info.sanciones;
-	info.capturas = arregloDeAgentesIt[act].info.capturas;
+	info.pos = arregloDeAgentesIt->operator[](act).info.pos;
+	info.sanciones = arregloDeAgentesIt->operator[](act).info.sanciones;
+	info.capturas = arregloDeAgentesIt->operator[](act).info.capturas;
 	return info;
 }
 
 Placa DiccAgentes::Iterador::SiguienteClave() const{
-    return arregloDeAgentesIt[act].placa;
+    return arregloDeAgentesIt->operator[](act).placa;
 }
 
 void DiccAgentes::Iterador::Avanzar(){
@@ -408,10 +414,10 @@ void DiccAgentes::Iterador::Retroceder(){
 
 bool DiccAgentes::Iterador::operator == (const typename DiccAgentes::Iterador& otro) const{
 	Nat i = 0;
-	while(i < arregloDeAgentesIt.Longitud() && arregloDeAgentesIt[i] == otro.arregloDeAgentesIt[i]){
+	while(i < arregloDeAgentesIt->Longitud() && arregloDeAgentesIt->operator[](i) == otro.arregloDeAgentesIt->operator[](i)){
             i++;
 	}
-	return act == otro.act && i == arregloDeAgentesIt.Longitud();
+	return act == otro.act && i == arregloDeAgentesIt->Longitud();
 }
 
 bool DiccAgentes::Iterador::operator != (const typename DiccAgentes::Iterador& otro) const{
@@ -419,32 +425,32 @@ bool DiccAgentes::Iterador::operator != (const typename DiccAgentes::Iterador& o
 }
 
 void DiccAgentes::Iterador::Premiar(){
-	arregloDeAgentesIt[act].info.capturas++;
+	arregloDeAgentesIt->operator[](act).info.capturas++;
 }
 
 void DiccAgentes::Iterador::Sancionar(){
-    cout << "antes: " << arregloDeAgentesIt[act].info.its.Siguiente().sancionados << endl;
-    arregloDeAgentesIt[act].info.sanciones++;
+    cout << "antes: " << arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados << endl;
+    arregloDeAgentesIt->operator[](act).info.sanciones++;
     //cout << "a ver si es esto... " << arregloDeAgentesIt[act].info.itcs.Siguiente() << endl;
-	arregloDeAgentesIt[act].info.itcs.EliminarSiguiente();
-	arregloDeAgentesIt[act].info.its.Avanzar();
-	if (arregloDeAgentesIt[act].info.its.HaySiguiente() && arregloDeAgentesIt[act].info.its.Siguiente().sanciones == arregloDeAgentesIt[act].info.sanciones){
+	arregloDeAgentesIt->operator[](act).info.itcs.EliminarSiguiente();
+	arregloDeAgentesIt->operator[](act).info.its.Avanzar();
+	if (arregloDeAgentesIt->operator[](act).info.its.HaySiguiente() && arregloDeAgentesIt->operator[](act).info.its.Siguiente().sanciones == arregloDeAgentesIt->operator[](act).info.sanciones){
         cout << "entre por la rama true" << endl;
-        arregloDeAgentesIt[act].info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt[act].placa);
-        arregloDeAgentesIt[act].info.itcs = arregloDeAgentesIt[act].info.its.Siguiente().sancionados.CrearIt();
+        arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt->operator[](act).placa);
+        arregloDeAgentesIt->operator[](act).info.itcs = arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.CrearIt();
 	}else{
 	    cout << "entre por la rama false" << endl;
-	    NodoLista n(arregloDeAgentesIt[act].info.sanciones,Conj<Placa>());
-        arregloDeAgentesIt[act].info.its.AgregarComoSiguiente(n);
-        arregloDeAgentesIt[act].info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt[act].placa);
-        arregloDeAgentesIt[act].info.itcs = arregloDeAgentesIt[act].info.its.Siguiente().sancionados.CrearIt();
+	    NodoLista n(arregloDeAgentesIt->operator[](act).info.sanciones,Conj<Placa>());
+        arregloDeAgentesIt->operator[](act).info.its.AgregarComoSiguiente(n);
+        arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.AgregarRapido(arregloDeAgentesIt->operator[](act).placa);
+        arregloDeAgentesIt->operator[](act).info.itcs = arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados.CrearIt();
 	}
-	cout << "despues: " << arregloDeAgentesIt[act].info.its.Siguiente().sancionados << endl;
+	cout << "despues: " << arregloDeAgentesIt->operator[](act).info.its.Siguiente().sancionados << endl;
 }
 //Agregadas un par de cosas para que el algoritmo sea correcto.
 
 void DiccAgentes::Iterador::Mover(Posicion p){
-	arregloDeAgentesIt[act].info.pos = p;
+	arregloDeAgentesIt->operator[](act).info.pos = p;
 }
 
 }

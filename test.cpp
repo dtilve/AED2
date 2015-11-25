@@ -23,18 +23,25 @@ void DiccAgentesModificar(Nat i){
     ASSERT_EQ(d.Definido(minimo+j+1),false);
     ASSERT_EQ(d.Definido(minimo+j-1),true);
 
+    cout << "sanciones: " << d.Obtener(minimo).pos << endl;
+
     j = 0;
-    while(j < i){
+    /*while(j < i){
         Nat k = 0;
-        DiccAgentes::Iterador it = d.CrearIt();
+        DiccAgentes::Iterador it1 = d.CrearIt();
+        DiccAgentes::Iterador it2 = d.CrearIt();
         while(k <= i){
-            cout << it.SiguienteClave() << endl;
-            it.Sancionar();
-            it.Avanzar();
+            cout << "agente numero: " << it1.SiguienteClave() << endl;
+            cout << "sanciones: " << it1.Siguiente().sanciones << endl;
+            it1.Sancionar();
+            ASSERT_EQ(d.Definido(minimo+k),true);
+            cout << "sanciones: " << d.Obtener(minimo+k).sanciones << endl;
+            it1.Avanzar();
             k++;
         }
+        cout << "al final las sancoines son: " << d.Obtener(minimo+j).sanciones << endl;
         j++;
-    }
+    }*/
     cout << endl;
 
 }
