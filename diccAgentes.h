@@ -9,59 +9,58 @@ using namespace std;
 
 namespace aed2
 {
-    typedef Nat Placa;
-
-    struct Info{
-        Posicion pos;
-        Nat sanciones;
-        Nat capturas;
-    };
+	typedef Nat Placa;
+	
+	struct Info{
+		Posicion pos;
+		Nat sanciones;
+		Nat capturas;
+	};
 
 	class DiccAgentes{
 	public:
 
-	    struct NodoLista{
-                    Nat sanciones;
-                    Conj<Placa> sancionados;
+		struct NodoLista{
+			Nat sanciones;
+			Conj<Placa> sancionados;
+			
+			NodoLista(Nat s, Conj<Placa> conjSancionados) : sanciones(s), sancionados(conjSancionados){}
+		};
 
-                    NodoLista(Nat s, Conj<Placa> conjSancionados) : sanciones(s), sancionados(conjSancionados){}
-                };
+		struct NodoVector{
+			Nat sanciones;
+			Lista<NodoLista>::Iterador sancionados;
+		};
 
-            struct NodoVector{
-                Nat sanciones;
-                Lista<NodoLista>::Iterador sancionados;
-            };
+		struct InfoAgente{
+			Posicion pos;
+			Nat sanciones;
+			Nat capturas;
+			Lista<NodoLista>::Iterador its;
+			Conj<Placa>::Iterador itcs;
+			bool operator == (const InfoAgente otro) const{
+				return pos == otro.pos && sanciones == otro.sanciones && capturas == otro.capturas && its == otro.its && itcs == otro.itcs;
+			}
+		};
 
-            struct InfoAgente{
-                Posicion pos;
-                Nat sanciones;
-                Nat capturas;
-                Lista<NodoLista>::Iterador its;
-                Conj<Placa>::Iterador itcs;
-                bool operator == (const InfoAgente otro) const{
-                    return pos == otro.pos && sanciones == otro.sanciones && capturas == otro.capturas && its == otro.its && itcs == otro.itcs;
-                }
-            };
+		struct Agente{
+			Placa placa;
+			InfoAgente info;
+			bool operator == (const Agente otro) const{
+				return placa == otro.placa && info == otro.info;
+			}
+			bool operator != (const Agente otro) const{
+				return !(this->operator==(otro));
+			}
+		};
 
-            struct Agente{
-                Placa placa;
-                InfoAgente info;
-                bool operator == (const Agente otro) const{
-                    return placa == otro.placa && info == otro.info;
-                }
-
-                bool operator != (const Agente otro) const{
-                    return !(this->operator==(otro));
-                }
-            };
-
-        class Iterador;
-
-        DiccAgentes();
-        //Constructor por defecto. Crea un diccionario nuevo vacío con máximo 1 y mínimo 0..
-
-        DiccAgentes(Nat minimo,Nat maximo);
-        //Crea un diccionario nuevo vacío con el rango de agentes especificado en los parámetros.
+	        class Iterador;
+	
+	        DiccAgentes();
+	        //Constructor por defecto. Crea un diccionario nuevo vacío con máximo 1 y mínimo 0..
+	
+	        DiccAgentes(Nat minimo,Nat maximo);
+	        //Crea un diccionario nuevo vacío con el rango de agentes especificado en los parámetros.
 
 		~DiccAgentes();
 		//Destructor por defecto.
@@ -69,26 +68,27 @@ namespace aed2
 		Iterador CrearIt();
 		//Crea un iterador del diccionario.
 
-		Conj<Placa> Claves();
+		const Conj<Placa> Claves();
 		//Devuelve el conjunto de claves, es decir, las placas.
 
 		void Definir(Placa a,Posicion p);
-        //Define un agente en el diccionario.
+	        //Define un agente en el diccionario.
 
-		Info Obtener(Nat a);
+		const Info Obtener(Nat a);
 		//Devuelve la información de un agente
 
-		Info ObtenerLog(Nat a);
+		const Info ObtenerLog(Nat a);
 		//Devuelve la información de un agente
 
 		bool Definido(Nat a);
 		//Chequea si el agente pasado por parametro está definido en el diccionario.
 
-        Conj<Placa> conKSancionesLineal(Nat k);
-        //Devuelve el conjunto de agentes que poseen k sanciones con complejidad lineal.
+	        Conj<Placa> conKSancionesLineal(Nat k);
+	        //Devuelve el conjunto de agentes que poseen k sanciones con complejidad lineal.
+	
+	        Conj<Placa> conKSancionesLog(Nat k);
+	        //Devuelve el conjunto de agentes que poseen k sanciones con complejidad logarítmica.
 
-        Conj<Placa> conKSancionesLog(Nat k);
-        //Devuelve el conjunto de agentes que poseen k sanciones con complejidad logarítmica.
 
 		class Iterador
 		{
@@ -97,11 +97,11 @@ namespace aed2
 			Iterador();
 			//Constructor por defecto.
 
-            Iterador(const Iterador& otro);
-
-            Iterador operator = (const Iterador& otro);
-
-            ~Iterador();
+			Iterador(const Iterador& otro);
+			
+			Iterador operator = (const Iterador& otro);
+			
+			~Iterador();
 
 			bool HayAnterior() const;
 			//Devuelve true si y sólo si en el iterador todavía quedan elementos para retroceder.
@@ -109,10 +109,10 @@ namespace aed2
 			bool HaySiguiente() const;
 			//Devuelve true si y sólo si en el iterador todavía quedan elementos para avanzar.
 
-			Info Anterior() const;
+			const Info Anterior() const;
 			//Devuelve el elemento anterior del iterador.
 
-			Info Siguiente() const;
+			const Info Siguiente() const;
 			//Devuelve el elemento siguiente a la posición del iterador.
 
 			Placa SiguienteClave() const;
@@ -138,7 +138,7 @@ namespace aed2
 
 			void Mover(Posicion p);
 			//Mueve al agente apuntado por el iterador.
-
+			
             private:
 
                 Vector<Agente>* arregloDeAgentesIt;
@@ -170,91 +170,91 @@ namespace aed2
     };
 
 DiccAgentes::DiccAgentes(){
-    conjuntoDeAgentes = Conj<Placa>();
-    arregloDeAgentes = Vector<Agente>();
-    tablaHash = Vector<Conj<Iterador>>();
-    mayor = 1;
-    menor = 0;
-    ListasSanciones = Lista<NodoLista>();
-    ArregloDeSanciones = Vector<NodoVector>();
+	conjuntoDeAgentes = Conj<Placa>();
+	arregloDeAgentes = Vector<Agente>();
+	tablaHash = Vector<Conj<Iterador>>();
+	mayor = 1;
+	menor = 0;
+	ListasSanciones = Lista<NodoLista>();
+	ArregloDeSanciones = Vector<NodoVector>();
 }
 //Modificada para que sea correcta.
 
 DiccAgentes::DiccAgentes(Nat minimo,Nat maximo){
-    conjuntoDeAgentes = Conj<Placa>();
-    arregloDeAgentes = Vector<Agente>();
-    tablaHash = Vector<Conj<Iterador>>();
-    mayor = maximo;
-    menor = minimo;
-    ListasSanciones = Lista<NodoLista>();
-    ArregloDeSanciones = Vector<NodoVector>();
+	conjuntoDeAgentes = Conj<Placa>();
+	arregloDeAgentes = Vector<Agente>();
+	tablaHash = Vector<Conj<Iterador>>();
+	mayor = maximo;
+	menor = minimo;
+	ListasSanciones = Lista<NodoLista>();
+	ArregloDeSanciones = Vector<NodoVector>();
 }
 
 DiccAgentes::~DiccAgentes(){
-    conjuntoDeAgentes.~Conj();
-    Nat i = 0;
-    while(i < tablaHash.Longitud()){
-        tablaHash[i].~Conj();
-        i++;
-    }
-    ListasSanciones.~Lista();
+	conjuntoDeAgentes.~Conj();
+	Nat i = 0;
+	while(i < tablaHash.Longitud()){
+		tablaHash[i].~Conj();
+		i++;
+	}
+	ListasSanciones.~Lista();
 }
 
-Conj<Placa> DiccAgentes::Claves(){
+const Conj<Placa> DiccAgentes::Claves(){
 	return conjuntoDeAgentes;
 }
 
 void DiccAgentes::Definir(Placa a, Posicion p){
-    //Agrego a Claves
-    conjuntoDeAgentes.AgregarRapido(a);
-    //Agrego a ListaSanciones y su conjunto
-    Lista<NodoLista>::Iterador itLista = ListasSanciones.CrearIt();
-    if (!itLista.HaySiguiente() || itLista.Siguiente().sanciones != 0){
-        Conj<Placa> conjSancionados;
-        const NodoLista n(0,conjSancionados);
-        itLista.AgregarComoSiguiente(n);
-    }
-    itLista.Siguiente().sancionados.AgregarRapido(a);
-    Conj<Placa>::Iterador itConj = itLista.Siguiente().sancionados.CrearIt();
-    while(itConj.Siguiente() != a){
-        itConj.Avanzar();
-    }
-    //Agrego al vector con toda la info
-    Agente nuevoAgente;
-    nuevoAgente.placa = a;
-    nuevoAgente.info.pos = p;
-    nuevoAgente.info.capturas = 0;
-    nuevoAgente.info.sanciones = 0;
-    nuevoAgente.info.its = itLista;
-    nuevoAgente.info.itcs = itConj;
-    Nat i = 0;
-    while(i < arregloDeAgentes.Longitud() && a > arregloDeAgentes[i].placa){
-        i++;
-    }
-    arregloDeAgentes.Agregar(i,nuevoAgente);
-    //Armando una nueva tabla de Hash
-    Vector<Conj<Iterador>> nuevaTabla;
-    Nat cantAgentes = conjuntoDeAgentes.Cardinal();
-    while(nuevaTabla.Longitud() < cantAgentes){
-        nuevaTabla.AgregarAtras(Conj<Iterador>());
-    }
-    //Agregando a los agentes a esta
-    Iterador it = CrearIt();
-    i = 0;
-    while(i < arregloDeAgentes.Longitud()){
-        Nat indice = FuncionDeHash(arregloDeAgentes[i].placa);
-        Iterador itAux(it);
-        nuevaTabla[indice].AgregarRapido(itAux);
-        it.Avanzar();
-        i++;
-    }
-    tablaHash = nuevaTabla;
+	//Agrego a Claves
+	conjuntoDeAgentes.AgregarRapido(a);
+	//Agrego a ListaSanciones y su conjunto
+	Lista<NodoLista>::Iterador itLista = ListasSanciones.CrearIt();
+	if (!itLista.HaySiguiente() || itLista.Siguiente().sanciones != 0){
+	        Conj<Placa> conjSancionados;
+	        const NodoLista n(0,conjSancionados);
+	        itLista.AgregarComoSiguiente(n);
+	}
+	itLista.Siguiente().sancionados.AgregarRapido(a);
+	Conj<Placa>::Iterador itConj = itLista.Siguiente().sancionados.CrearIt();
+	while(itConj.Siguiente() != a){
+		itConj.Avanzar();
+	}
+	//Agrego al vector con toda la info
+	Agente nuevoAgente;
+	nuevoAgente.placa = a;
+	nuevoAgente.info.pos = p;
+	nuevoAgente.info.capturas = 0;
+	nuevoAgente.info.sanciones = 0;
+	nuevoAgente.info.its = itLista;
+	nuevoAgente.info.itcs = itConj;
+	Nat i = 0;
+	while(i < arregloDeAgentes.Longitud() && a > arregloDeAgentes[i].placa){
+        	i++;
+	}
+	arregloDeAgentes.Agregar(i,nuevoAgente);
+	//Armando una nueva tabla de Hash
+	Vector<Conj<Iterador>> nuevaTabla;
+	Nat cantAgentes = conjuntoDeAgentes.Cardinal();
+	while(nuevaTabla.Longitud() < cantAgentes){
+	        nuevaTabla.AgregarAtras(Conj<Iterador>());
+	}
+	//Agregando a los agentes a esta
+	Iterador it = CrearIt();
+	i = 0;
+	while(i < arregloDeAgentes.Longitud()){
+	        Nat indice = FuncionDeHash(arregloDeAgentes[i].placa);
+	        Iterador itAux(it);
+	        nuevaTabla[indice].AgregarRapido(itAux);
+	        it.Avanzar();
+	        i++;
+    	}
+	tablaHash = nuevaTabla;
 }
 //Nos vimos obligados a cambiar completamente la función definir
 //debido a que en el diseño no agregábamos al respectivo agente
 //en la tabla de Hash.
 
-Info DiccAgentes::Obtener(Placa a){
+const Info DiccAgentes::Obtener(Placa a){
 	Nat n = FuncionDeHash(a);
 	Conj<Iterador>::Iterador itConjIt = tablaHash[n].CrearIt();
 	while(itConjIt.HaySiguiente() && (itConjIt.Siguiente().SiguienteClave() != a)){
@@ -268,7 +268,7 @@ Info DiccAgentes::Obtener(Placa a){
 }
 //Ligeras modificaciones, pero el algoritmo es el mismo.
 
-Info DiccAgentes::ObtenerLog(Placa a){
+const Info DiccAgentes::ObtenerLog(Placa a){
 	Nat i =0;
 	Nat f = arregloDeAgentes.Longitud()-1;
 	if(arregloDeAgentes[f].placa == a)
@@ -281,10 +281,10 @@ Info DiccAgentes::ObtenerLog(Placa a){
 			f = medio;
 		}
 	}
-    Info agente;
-    agente.pos = arregloDeAgentes[i].info.pos;
-    agente.sanciones = arregloDeAgentes[i].info.sanciones;
-    agente.capturas = arregloDeAgentes[i].info.capturas;
+	Info agente;
+	agente.pos = arregloDeAgentes[i].info.pos;
+	agente.sanciones = arregloDeAgentes[i].info.sanciones;
+	agente.capturas = arregloDeAgentes[i].info.capturas;
 	return agente;
 }
 //Ligeras modificaciones, pero el algoritmo es el mismo.
@@ -306,21 +306,21 @@ bool DiccAgentes::Definido(Placa a){
 //del vector.
 
 Conj<Placa> DiccAgentes::conKSancionesLineal(Nat k){
-    Lista<NodoLista>::Iterador it = ListasSanciones.CrearIt();
-    Conj<Placa> agentesConKSanciones;
-    Vector<NodoVector> vectorNuevo;
-    while(it.HaySiguiente()){
-        Lista<NodoLista>::Iterador itAux = it;
-        NodoVector n;
-        n.sanciones = it.Siguiente().sanciones;
-        n.sancionados = itAux;
-        vectorNuevo.AgregarAtras(n);
-        if(it.Siguiente().sanciones == k)
-            agentesConKSanciones = it.Siguiente().sancionados;
-        it.Avanzar();
-    }
-    ArregloDeSanciones = vectorNuevo;
-    return agentesConKSanciones;
+	Lista<NodoLista>::Iterador it = ListasSanciones.CrearIt();
+	Conj<Placa> agentesConKSanciones;
+	Vector<NodoVector> vectorNuevo;
+	while(it.HaySiguiente()){
+	        Lista<NodoLista>::Iterador itAux = it;
+	        NodoVector n;
+	        n.sanciones = it.Siguiente().sanciones;
+	        n.sancionados = itAux;
+	        vectorNuevo.AgregarAtras(n);
+	        if(it.Siguiente().sanciones == k)
+	            agentesConKSanciones = it.Siguiente().sancionados;
+	        it.Avanzar();
+	}
+	ArregloDeSanciones = vectorNuevo;
+	return agentesConKSanciones;
 }
 //Modificada para que sea correcta.
 
@@ -388,7 +388,7 @@ bool DiccAgentes::Iterador::HaySiguiente() const{
 	return (this->act < (this->arregloDeAgentesIt->Longitud()));
 }
 
-Info DiccAgentes::Iterador::Anterior() const{
+const Info DiccAgentes::Iterador::Anterior() const{
 	Info info;
 	info.pos = arregloDeAgentesIt->operator[](act-1).info.pos;
 	info.sanciones = arregloDeAgentesIt->operator[](act-1).info.sanciones;
@@ -396,7 +396,7 @@ Info DiccAgentes::Iterador::Anterior() const{
 	return info;
 }
 
-Info DiccAgentes::Iterador::Siguiente() const{ //por que esta comentado ? :) just to know.. parece estar bien asi
+const Info DiccAgentes::Iterador::Siguiente() const{ //por que esta comentado ? :) just to know.. parece estar bien asi
 	Info info;
 	info.pos = arregloDeAgentesIt->operator[](act).info.pos;
 	info.sanciones = arregloDeAgentesIt->operator[](act).info.sanciones;
