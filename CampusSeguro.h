@@ -42,11 +42,11 @@ namespace aed2
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:
-			Posicion PosicionEstudianteYHippie(Nombre nombre);
+			const Posicion PosicionEstudianteYHippie(Nombre nombre);
 
 			//Devuelve la posicion del agente pasado por parametro.
 			//Pre:
-			Posicion PosAgente(Nat as);
+			const Posicion PosAgente(Nat as);
 
 			//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 			//Pre:
@@ -234,7 +234,7 @@ namespace aed2
 
 	//Devuelve la posicion del estudiante o hippie pasado por parametro.
 	//Pre:
-	Posicion CampusSeguro::PosicionEstudianteYHippie(Nombre nombre){
+	const Posicion CampusSeguro::PosicionEstudianteYHippie(Nombre nombre){
 		Posicion res;
 		if (this->estudiantes.Definido(nombre))
 		{
@@ -247,7 +247,7 @@ namespace aed2
 
 	//Devuelve la posicion del agente pasado por parametro.
 	//Pre:
-	Posicion CampusSeguro::PosAgente(Nat as){
+	const Posicion CampusSeguro::PosAgente(Nat as){
 		return diccAg.Obtener(as).pos;
 	}
 
