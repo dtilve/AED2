@@ -41,72 +41,73 @@ namespace aed2
 			Iterador<Conj<Placa>> Agentes();
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
-			//Pre:
+			//Pre:Nombre pertenece al diccionario de hipies o estudiantes.
 			const Posicion PosicionEstudianteYHippie(Nombre nombre);
 
 			//Devuelve la posicion del agente pasado por parametro.
-			//Pre:
+			//Pre: as pertenece al diccionario de agentes.
 			const Posicion PosAgente(Nat as);
 
 			//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
-			//Pre:
+			//Pre: as pertenece al diccionario de agentes.
 			Nat CantSanciones(Nat as);
 
 			//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
-			//Pre:
+			//Pre: as pertenece al diccionario de agentes.
 			Nat CantHippiesAtrapados(Nat as);
 
 			//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
 			//correspondientes.
-			//Pre:
+			//Pre:para cada agente definido en diccionario agentes debe tener una posicion valida y desocupada
+			//y cada agente debe ser distinto al resto de los agentes del diccionario
 			CampusSeguro ComenzarRastrillaje(Dicc<Placa,Posicion> da);
 
 			//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
 			//la grilla con respecto a sus vecinos.
-			//Pre:
+			//Pre: p debe ser una posicion de ingreso y debe estar desocupada, est no debe estar definido ni como
+			//estudiante ni como hippie
 			void IngresarEstudiante(Nombre est, Posicion p);
 
 			//Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en la
 			//grilla con respecto a sus vecinos.
-			//Pre:
+			//Pre: p debe ser una posicion de ingreso y debe estar desocupada, hip no debe estar definido ni como
+			//estudiante ni como hippie
 			void IngresarHippie(Nombre hip, Posicion p);
 
 			//Mueve al estudiante pasado por parametro dentro de campus hacia la direccion pasada por
 			//parametro y realiza los cambios necesarios de acuerdo a la nueva situacion en la grilla con respecto a
 			//sus vecinos.
-			//Pre:
+			//Pre: est debe pertenecer a estudiantes y o bien la posicion a la q se mueve es una posicion valida o el
+			//estudiante se retira.
 			void MoverEstudiante(Nombre est, Direccion d);
 
 			//Mueve al hippie pasado por parametro dentro de campus y realiza los cambios necesarios de
 			//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
-			//Pre:
+			//Pre: hip debe pertenecer a hippies y debe existir una posicion vacia entre las posiciones vecinas
 			void MoverHippie(Nombre hip);
 
 			//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
 			//situacion en la grilla con respecto a sus vecinos.
-			//Pre:
+			//Pre: as debe pertenecer a gentes. Luego la cantidad de sanciones debe ser <= 3 y debe existir una 
+			//posicion vacia entre las posiciones vecinas
 			void MoverAgente(Nat as);
 
 			//Devuelve la cantidad de hippies que estan presentes en el campus.
-			//Pre:
 			Nat CantHippies();
 
 			//Devuelve la cantidad de estudiantes que estan presentes en el campus.
-			//Pre:
 			Nat CantEstudiantes();
 
 			//Devuelve el agente que atrapo la mayor cantidad de hippies.
-			//Pre:
 			Nat MasVigilante();
 
 			//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
 			//parametro.
-			//Pre:
+			//Pre: as debe pertenecer al diccionario de agentes
 			Conj<Nat> ConMismasSanciones(Nat as);
 
 			//Devuelve el conjunto de agentes que tiene k sanciones
 			//parametro.
-			//Pre:
 			Conj<Nat> ConKSanciones(Nat k);
 
 		private:
