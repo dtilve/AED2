@@ -24,14 +24,14 @@ namespace aed2
 			//Constructor
 			CampusSeguro();
 
-			//Constructor por par·metros
+			//Constructor por par√°metros
 			CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da);
 
 			//Devuelve el campus
 			Campus suCampus();
 
 			//Devuelve un iterador al conjunto de estudiantes del campus.
-			Conj<Nombre> Estudiantes();
+			Iterado<Conj<Nombre>> Estudiantes();
 
 			//Devuelve un iterador al conjunto de hippies del campus
 			Conj<Nombre> Hippies();
