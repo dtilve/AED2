@@ -164,20 +164,52 @@ namespace aed2
 	//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 	//Pre:
 	Nat CampusSeguro::CantSanciones(Nat as){
-		return.diccAg.Obtener(as).sanciones;
+		return diccAg.Obtener(as).sanciones;
 	}
 
 	//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 	//Pre:
 	Nat CampusSeguro::CantHippiesAtrapados(Nat as){
-		return.diccAg.Obtener(as).capturas;
+		return diccAg.Obtener(as).capturas;
 	}
 
 	//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
 	//correspondientes.
 	//Pre:
-	CampusSeguro CampusSeguro::ComenzarRastrillaje(Dicc<Placa,Posicion> da, const Campus& c){
-
+	CampusSeguro CampusSeguro::ComenzarRastrillaje(diccAgentes da, const Campus& c){
+		Nat i=0;
+		Nat j=0;
+		while (i<this.campusObstaculos.Columnas)
+		{
+			while (j<this.campusObstaculos.Filas){
+				if this.campusObstaculos.estaOcupada(Posicion(i,j))
+				{
+					this.campusCompleto[i][j].tipo = "obstaculo";
+				}
+				else
+				{
+					if da.Claves().Pertenece(Posicion(i,j)) 
+					{
+						this.campusCompleto[i][j].tipo = "agente";
+						//this.campusCompleto[i][j].agente = Iterador(Obtener())
+					}
+					else
+					{
+						this.campusComple[i][j].agente = Iterador();
+						this.campusCompleto[i][j].tipo = "libre";
+					}	
+				}
+				this.campusCompleto[i][j].estudiante = Iterador();
+				this.campusCompleto[i][j].hippie = Iterador();
+				j++;
+			}
+			i++;
+		}
+		//this.diccAg = una copia de da; haces un while y vas iterando y agregando 
+		this.estudiantes = diccNombres();
+		this.hippies = diccNombres();
+		this.huboSanciones = false;
+		return this;
 	}
 
 	//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
