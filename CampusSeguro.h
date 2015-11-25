@@ -34,14 +34,14 @@ namespace aed2
 			Campus suCampus();
 
 			//Devuelve un iterador al conjunto de estudiantes del campus.
-			Iterador<Conj<Nombre>> Estudiantes();
+			Conj<Nombre>::Iterador Estudiantes();
 
 			//Devuelve un iterador al conjunto de hippies del campus
-			Iterador<Conj<Nombre>> Hippies();
+			Conj<Nombre>::Iterador Hippies();
 
 
 			//Devuelve un iterador al conjunto de agentes del campus.
-			Iterador<Conj<Placa>> Agentes();
+			Conj<Placa>::Iterador Agentes();
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:Nombre pertenece al diccionario de hipies o estudiantes.
@@ -228,18 +228,18 @@ namespace aed2
 	}
 	
 	//Devuelve un conjunto de iteradores a los estudiantes del campus.
-	Iterador<Conj<Nombre>> CampusSeguro::Estudiantes(){
+	Conj<Nombre>::Iterador CampusSeguro::Estudiantes(){
 		return this->estudiantes.Claves();
 	}
 
 	//Devuelve un conjunto de iteradores a los hippies del campus
-	Iterador<Conj<Nombre>> CampusSeguro::Hippies(){
+	Conj<Nombre>::Iterador CampusSeguro::Hippies(){
 		return this->hippies.Claves();
 	}
 
 
 	//Devuelve un conjunto de iteradores a los agentes del campus.
-	Iterador<Conj<Placa>> CampusSeguro::Agentes(){
+	Conj<Placa>::Iterador CampusSeguro::Agentes(){
 		return this->diccAg.Claves().CrearIt(); //////////////// le pongo crear it por el driver
 	}
 
