@@ -10,14 +10,11 @@ namespace aed2
 	class Campus{
 		public:
 
-		    //Constructor por defecto
-		    Campus();
+		    	//Constructor por defecto
+		    	Campus();
 
 			//devuelve el campus
 			Campus(const Nat ancho, const Nat alto);
-
-			//Destructor
-			~Campus();
 
 			//Agrega un obstaculo al campus en una posicion valida y desocupada
 			//Pre: p es una posicion valida y no esta ocupada
@@ -93,9 +90,6 @@ namespace aed2
 	    }
 	    columnas = ancho;
 	    filas = alto;
-	}
-
-	Campus::~Campus(){
 	}
 
 	//Agrega un obstaculo al campus en una posicion valida y desocupada
