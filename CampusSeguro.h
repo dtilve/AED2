@@ -118,7 +118,9 @@ namespace aed2
     		DiccAgentes 				diccAg;
     		Placa 					masVigilante;
     		bool 					huboSanciones;
-
+		
+		friend typename diccNombres::Claves();// o friend class diccNombres;
+		
             void ActualizarCampusSeguro(const Posicion p);
             void ChequearEstudiantes(const Posicion p,Conj<Nombre> estudiantesAconvertir);
             void ChequearHippies(const Posicion p,Conj<Nombre> hippiesAeliminar,Dicc<Nombre,Posicion> estudiantesAagregar);
@@ -328,39 +330,46 @@ namespace aed2
 	//situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverAgente(Nat as){
-
+		agente ag;
 	}
 
 	//Devuelve la cantidad de hippies que estan presentes en el campus.
 	//Pre:
 	Nat CampusSeguro::CantHippies(){
-
+		return cardinal(hippies->_claves);
 	}
 
 	//Devuelve la cantidad de estudiantes que estan presentes en el campus.
 	//Pre:
 	Nat CampusSeguro::CantEstudiantes(){
-
+		return cardinal(estudiantes->_claves);
 	}
 
 	//Devuelve el agente que atrapo la mayor cantidad de hippies.
 	//Pre:
 	Nat CampusSeguro::MasVigilante(){
-
+		return this.masVigilante;
 	}
 
 	//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
 	//parametro.
 	//Pre:
 	Conj<Nat> CampusSeguro::ConMismasSanciones(Nat as){
-
+		return this.diccAg.conKSancionesLog(this.diccAg.Obtener(as).sanciones); //complejidad? Falta conMismasSanciones en diccAg
 	}
 
 	//Devuelve el conjunto de agentes que tiene k sanciones
 	//parametro.
 	//Pre:
 	Conj<Nat> CampusSeguro::ConKSanciones(Nat k){
-
+		Conj<Placa> res;
+		if (this.huboSanciones)
+		{
+			res = this.diccAg.conKSancionesLineal(k);
+			this.huboSanciones = false;
+		}
+		else res = this.diccAg.conKSancionesLog(k);
+		return res;
 	}
 
     Conj<Posicion> CampusSeguro::FiltrarAdyacentes(String filtro,Posicion p){
