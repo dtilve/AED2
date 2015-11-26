@@ -383,7 +383,7 @@ namespace aed2
 	//parametro.
 	//Pre:
 	Conj<Nat> CampusSeguro::ConMismasSanciones(Nat as){
-		return this.diccAg.conKSancionesLog(this.diccAg.Obtener(as).sanciones); //complejidad? Falta conMismasSanciones en diccAg
+		return this.diccAg.conMismasSanciones(as); 
 	}
 
 	//Devuelve el conjunto de agentes que tiene k sanciones
