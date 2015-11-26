@@ -89,7 +89,8 @@ namespace aed2
 	        Conj<Placa> conKSancionesLog(Nat k);
 	        //Devuelve el conjunto de agentes que poseen k sanciones con complejidad logarítmica.
 
-
+		Conj<Nat> ConMismasSanciones(Nat as);
+		
 		class Iterador
 		{
 			public:
@@ -347,6 +348,11 @@ Conj<Placa> DiccAgentes::conKSancionesLog(Nat k){
     }
     return res;
 }
+
+Conj<Nat> DiccAgentes::ConMismasSanciones(Nat as){
+	
+}
+
 //Modificada para que sea correcta.
 
 DiccAgentes::Iterador DiccAgentes::CrearIt(){
