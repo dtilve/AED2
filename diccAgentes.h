@@ -350,7 +350,13 @@ Conj<Placa> DiccAgentes::conKSancionesLog(Nat k){
 }
 
 Conj<Nat> DiccAgentes::ConMismasSanciones(Nat as){
-	
+	Nat i = FuncionDeHash(as);
+	Conj<Nat> ret;
+	Conj<Iterador> it = tablaHash[i].CrearIt();
+	while(it.HaySiguiente() && it.Siguiente().Placa != as)
+		it.Avanzar();
+	if (it.Siguiente().Placa = as) ret = it.Siguiente().itc.Sancionados;
+	return ret;
 }
 
 //Modificada para que sea correcta.
