@@ -11,11 +11,11 @@ class diccNombres
 
     diccNombres();
 
-    void Definir(Nombre n, Posicion p);
+    Conj<Nombre>::const_Iterador& Definir(Nombre n, Posicion p);
     void Borrar(const Nombre n);
     Posicion Obtener(Nombre n);
     bool Definido(Nombre n);
-    Conj<Nombre>::Iterador Claves();
+    const Conj<Nombre>::const_Iterador Claves() const;
     bool DiccVacio();
     Conj<Posicion> Significados();
 
@@ -90,10 +90,11 @@ bool diccNombres::Definido(Nombre n){
 	else return true;
 }
 
-void diccNombres::Definir(Nombre n, Posicion p){
+Conj<Nombre>::const_Iterador& diccNombres::Definir(Nombre n, Posicion p){
 	Nat i;
 	Nodo* actual = this->_primero;
 	Nat indice;
+	Conj<Nombre>::Iterador itClaveNueva;
 	if (!this->Definido(n))
 	{
 		Conj<Nombre>::Iterador itClaveNueva = this->_claves.AgregarRapido(n);
@@ -160,7 +161,10 @@ void diccNombres::Definir(Nombre n, Posicion p){
 		Conj<info>::Iterador itInfo = *actual->significado;
 		info informacion= itInfo.Siguiente();
 		informacion.pos = p;
+		itClaveNueva = informacion.clave;
 	}
+	Conj<Nombre>::const_Iterador itRet(itClaveNueva);
+	return itRet;
 }
 
 
@@ -217,7 +221,7 @@ void diccNombres::Borrar(const Nombre n){
 	else actual->esNombre = false;
 }
 
-Conj<Nombre>::Iterador diccNombres::Claves(){
+const Conj<Nombre>::const_Iterador diccNombres::Claves() const{
 	return this->_claves.CrearIt();
 }
 

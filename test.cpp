@@ -1,6 +1,5 @@
 #include "mini_test.h"
-#include "diccNombres.h"
-#include "DiccAgentes.h"
+#include "CampusSeguro.h"
 
 #include <string>
 #include <iostream>
@@ -96,8 +95,5 @@ void DiccAgentesTestVacio(){
 
 int main(int argc, char **argv)
 {
-    RUN_TEST(test_simple);
-    RUN_TEST(MegaTest);
-    RUN_TEST(DiccAgentesTestVacio);
 	return 0;
 }

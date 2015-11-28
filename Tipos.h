@@ -18,6 +18,7 @@ namespace aed2{
 
     std::ostream& operator<<(std::ostream& os, const Posicion& p){
             os << "(" << p.x << "," << p.y << ")" ;
+            return os;
     }
 
     bool operator==(const Posicion& p1, const Posicion& p2){
