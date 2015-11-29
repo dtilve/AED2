@@ -2,6 +2,7 @@
 #define CAMPUS_H_
 
 #include <ostream>
+#include <cassert>
 #include "aed2.h"
 #include "Tipos.h"
 
@@ -10,8 +11,8 @@ namespace aed2
 	class Campus{
 		public:
 
-		    	//Constructor por defecto
-		    	Campus();
+            //Constructor por defecto
+		    Campus();
 
 			//devuelve el campus
 			Campus(const Nat ancho, const Nat alto);
@@ -111,7 +112,8 @@ namespace aed2
 	//Chequea si la posicion p esta ocupada.
 	//Pre: p es una posicion valida de p
 	bool Campus::EstaOcupada(Posicion p){
-		return (matriz[p.x -1][p.y -1] == true);
+        assert(posValida(p));
+		return (matriz[p.x-1][p.y-1] == true);
 	}
 
 	//Chequea si p pertenece a las posiciones del campus.

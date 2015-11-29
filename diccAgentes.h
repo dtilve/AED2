@@ -102,8 +102,6 @@ namespace aed2
 
 			Iterador& operator = (const Iterador& otro);
 
-			~Iterador();
-
 			bool HayAnterior() const;
 			//Devuelve true si y sólo si en el iterador todavía quedan elementos para retroceder.
 
@@ -158,7 +156,7 @@ namespace aed2
         private:
 
             Conj<Placa>	                      conjuntoDeAgentes;
-            Vector<AgenteCompleto>                    arregloDeAgentes;
+            Vector<AgenteCompleto>            arregloDeAgentes;
             Vector<Conj<Iterador>>            tablaHash;
             Nat                               mayor;
             Nat                               menor;
@@ -198,7 +196,7 @@ DiccAgentes::~DiccAgentes(){
 	conjuntoDeAgentes.~Conj();
 	Nat i = 0;
 	while(i < tablaHash.Longitud()){
-		tablaHash[i].~Conj();
+		tablaHash.Eliminar(i);
 		i++;
 	}
 	ListasSanciones.~Lista();
@@ -251,7 +249,7 @@ void DiccAgentes::Definir(Placa a, Posicion p){
 	        nuevaTabla[indice].AgregarRapido(itAux);
 	        it.Avanzar();
 	        i++;
-    	}
+	}
 	tablaHash = nuevaTabla;
 }
 //Nos vimos obligados a cambiar completamente la función definir
@@ -390,10 +388,6 @@ DiccAgentes::Iterador &DiccAgentes::Iterador::operator = (const Iterador& otro){
     return *this;
 }
 
-DiccAgentes::Iterador::~Iterador(){
-
-}
-
 bool DiccAgentes::Iterador::HayAnterior() const{
 	return (this->act != 0);
 }
@@ -410,7 +404,7 @@ const Info DiccAgentes::Iterador::Anterior() const{
 	return info;
 }
 
-const Info DiccAgentes::Iterador::Siguiente() const{ //por que esta comentado ? :) just to know.. parece estar bien asi
+const Info DiccAgentes::Iterador::Siguiente() const{
 	Info info;
 	info.pos = arregloDeAgentesIt->operator[](act).info.pos;
 	info.sanciones = arregloDeAgentesIt->operator[](act).info.sanciones;

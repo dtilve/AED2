@@ -14,9 +14,11 @@ namespace aed2
 
     struct Celda{
         String tipo;
-        Conj<Nombre>::const_Iterador& estudiante;
-        Conj<Nombre>::const_Iterador& hippie;
+        Conj<Nombre>::const_Iterador estudiante;
+        Conj<Nombre>::const_Iterador hippie;
         DiccAgentes::Iterador agente;
+
+        Celda() : tipo("") , estudiante(Conj<Nombre>().CrearIt()) , hippie(Conj<Nombre>().CrearIt()) , agente(DiccAgentes().CrearIt()){}
     };
 
 	class CampusSeguro{
@@ -134,8 +136,8 @@ namespace aed2
             //friend typename diccNombres::Claves();// o friend class diccNombres;
 
             void ActualizarCampusSeguro(const Posicion p);
-            void ChequearEstudiantes(const Posicion p,Conj<Nombre> estudiantesAconvertir);
-            void ChequearHippies(const Posicion p,Conj<Nombre> hippiesAeliminar,Dicc<Nombre,Posicion> estudiantesAagregar);
+            void ChequearEstudiantes(const Posicion p,Conj<Nombre>& estudiantesAconvertir);
+            void ChequearHippies(const Posicion p,Conj<Nombre>& hippiesAeliminar,Dicc<Nombre,Posicion>& estudiantesAagregar);
             Conj<Posicion> FiltrarAdyacentes(String filtro,Posicion p);
             void PremiarAlrededor(Posicion p);
             bool Rodeado(Posicion p);
@@ -183,25 +185,27 @@ namespace aed2
 	//correspondientes.
 	//Pre:
 	CampusSeguro::CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da){
+        campusObstaculos = c;
 		Nat i=0;
 		Nat j=0;
 		while (i<this->campusObstaculos.Columnas())
 		{
+		    j = 0;
+		    Vector<Celda> v;
 			while (j<this->campusObstaculos.Filas()){
-				if (this->campusObstaculos.EstaOcupada(Posicion(i,j)))
+                Celda celda;
+				if (this->campusObstaculos.EstaOcupada(Posicion(i+1,j+1)))
 				{
-					this->campusCompleto[i][j].tipo = "obstaculo";
+					celda.tipo = "obstaculo";
 				}
 				else
 				{
-                    this->campusCompleto[i][j].tipo = "libre";
-
+                    celda.tipo = "libre";
 				}
-				this->campusCompleto[i][j].estudiante = Conj<Nombre>().CrearIt();
-				this->campusCompleto[i][j].hippie = Conj<Nombre>().CrearIt();
-				this->campusCompleto[i][j].agente = DiccAgentes().CrearIt();
+				v.AgregarAtras(celda);
 				j++;
 			}
+			campusCompleto.AgregarAtras(v);
 			i++;
 		}
 		estudiantes = diccNombres();
@@ -210,7 +214,7 @@ namespace aed2
 		masVigilante = MaxVigilante(itAgentes.SiguienteClave(),0);
 		Nat minimo = calcularMin(da);
 		Nat maximo = calcularMax(da);
-		diccAg = DiccAgentes(minimo,maximo);
+		DiccAgentes diccAg(minimo,maximo);
 		while(itAgentes.HaySiguiente()){
             diccAg.Definir(itAgentes.SiguienteClave(),itAgentes.SiguienteSignificado());
             itAgentes.Avanzar();
@@ -218,8 +222,9 @@ namespace aed2
 		DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
 		while(itDiccAgentes.HaySiguiente()){
             Posicion p = itDiccAgentes.Siguiente().pos;
-            this->campusCompleto[p.x][p.y].tipo = "agente";
-            this->campusCompleto[p.x][p.y].agente = itDiccAgentes;
+            this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
+            this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
+            itDiccAgentes.Avanzar();
 		}
 		this->huboSanciones = false;
 	}
@@ -248,7 +253,7 @@ namespace aed2
 
 	//Devuelve un conjunto de iteradores a los agentes del campus.
 	const Conj<Placa>::const_Iterador CampusSeguro::Agentes() const{
-		return this->diccAg.Claves().CrearIt(); //////////////// le pongo crear it por el driver
+		return this->diccAg.Claves().CrearIt();
 	}
 
 	//Devuelve la posicion del estudiante o hippie pasado por parametro.
@@ -432,10 +437,11 @@ namespace aed2
         return res;
     }
 
-    void CampusSeguro::ChequearEstudiantes(const Posicion p,Conj<Nombre> estudiantesAconvertir){
+    void CampusSeguro::ChequearEstudiantes(const Posicion p,Conj<Nombre>& estudiantesAconvertir){
             Conj<Posicion> ps = FiltrarAdyacentes("estudiante",p);
             if(campusCompleto[p.x-1][p.y-1].tipo == "estudiante")
                 ps.AgregarRapido(p);
+            cout << "cardinal de ps: " << ps.Cardinal() << endl;
             Conj<Posicion>::Iterador itPos = ps.CrearIt();
             Nat i = 0;
             Nat j = 0;
@@ -455,7 +461,7 @@ namespace aed2
             }
         }
 
-    void CampusSeguro::ChequearHippies(const Posicion p,Conj<Nombre> hippiesAeliminar,Dicc<Nombre,Posicion> estudiantesAagregar){
+    void CampusSeguro::ChequearHippies(const Posicion p,Conj<Nombre>& hippiesAeliminar,Dicc<Nombre,Posicion>& estudiantesAagregar){
         Conj<Posicion> ps = FiltrarAdyacentes("hippie",p);
         if(campusCompleto[p.x-1][p.y-1].tipo == "hippie")
             ps.AgregarRapido(p);
@@ -464,15 +470,17 @@ namespace aed2
         Nat j = 0;
         Posicion posActual = Posicion(0,0);
         while(itPos.HaySiguiente()){
+            posActual = itPos.Siguiente();
             i = posActual.x-1;
             j = posActual.y-1;
             if(Rodeado(posActual) && FiltrarAdyacentes("agente",posActual).Cardinal() >= 1){
                 PremiarAlrededor(p);
                 hippiesAeliminar.AgregarRapido(campusCompleto[i][j].hippie.Siguiente());
             }
-        if(Rodeado(posActual) && TodosEstudiantes(posActual))
-            estudiantesAagregar.DefinirRapido(campusCompleto[i][j].hippie.Siguiente(),posActual);
-        itPos.Avanzar();
+            if(Rodeado(posActual) && TodosEstudiantes(posActual)){
+                estudiantesAagregar.DefinirRapido(campusCompleto[i][j].hippie.Siguiente(),posActual);
+            }
+            itPos.Avanzar();
         }
     }
 
@@ -481,6 +489,7 @@ namespace aed2
         Dicc<Nombre,Posicion> estudiantesAagregar;
         Conj<Nombre> estudiantesAconvertir;
         ChequearEstudiantes(p,estudiantesAconvertir);
+        cout << estudiantesAconvertir << endl;
         ChequearHippies(p,hippiesAeliminar,estudiantesAagregar);
         Conj<Nombre>::Iterador itNombres1 = estudiantesAconvertir.CrearIt();
         while(itNombres1.HaySiguiente()){
@@ -553,7 +562,7 @@ namespace aed2
         Posicion candidato = Posicion(0,0);
         if(!estudiantes.DiccVacio()){
             Conj<Posicion>::Iterador it = estudiantes.Significados().CrearIt();
-            Posicion candidato = it.Siguiente();
+            candidato = it.Siguiente();
             while(it.HaySiguiente()){
                 if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
                     candidato = it.Siguiente();
@@ -561,7 +570,7 @@ namespace aed2
             }
         }else{
             Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
-            Posicion candidato = it.Siguiente();
+            candidato = it.Siguiente();
         }
         return candidato;
     }
@@ -572,7 +581,7 @@ namespace aed2
         Posicion candidato = Posicion(0,0);
         if(!hippies.DiccVacio()){
             Conj<Posicion>::Iterador it = hippies.Significados().CrearIt();
-            Posicion candidato = it.Siguiente();
+            candidato = it.Siguiente();
             while(it.HaySiguiente()){
                 if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
                     candidato = it.Siguiente();
@@ -580,7 +589,7 @@ namespace aed2
             }
         }else{
             Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
-            Posicion candidato = it.Siguiente();
+            candidato = it.Siguiente();
         }
         return candidato;
     }
