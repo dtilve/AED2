@@ -37,7 +37,7 @@ namespace aed2
 			Campus suCampus();
 
 			//Devuelve un iterador al conjunto de estudiantes del campus.
-			const Conj<Nombre>::const_Iterador Estudiantes() const;
+			Conj<Nombre>::const_Iterador Estudiantes() const;
 
 			//Devuelve un iterador al conjunto de hippies del campus
 			const Conj<Nombre>::const_Iterador Hippies() const;
@@ -48,19 +48,19 @@ namespace aed2
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:Nombre pertenece al diccionario de hipies o estudiantes.
-			const Posicion PosicionEstudianteYHippie(Nombre nombre);
+			Posicion PosicionEstudianteYHippie(Nombre nombre) const;
 
 			//Devuelve la posicion del agente pasado por parametro.
 			//Pre: as pertenece al diccionario de agentes.
-			const Posicion PosAgente(Nat as);
+			Posicion PosAgente(Nat as) const;
 
 			//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 			//Pre: as pertenece al diccionario de agentes.
-			Nat CantSanciones(Nat as);
+			Nat CantSanciones(Nat as) const;
 
 			//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 			//Pre: as pertenece al diccionario de agentes.
-			Nat CantHippiesAtrapados(Nat as);
+			Nat CantHippiesAtrapados(Nat as) const;
 
 			//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
 			//la grilla con respecto a sus vecinos.
@@ -93,22 +93,22 @@ namespace aed2
 			void MoverAgente(Nat as);
 
 			//Devuelve la cantidad de hippies que estan presentes en el campus.
-			Nat CantHippies();
+			Nat CantHippies() const;
 
 			//Devuelve la cantidad de estudiantes que estan presentes en el campus.
-			Nat CantEstudiantes();
+			Nat CantEstudiantes() const;
 
 			//Devuelve el agente que atrapo la mayor cantidad de hippies.
-			Nat MasVigilante();
+			Nat MasVigilante() const;
 
 			//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
 			//parametro.
 			//Pre: as debe pertenecer al diccionario de agentes
-			Conj<Nat> ConMismasSanciones(Nat as);
+			const Conj<Nat> ConMismasSanciones(Nat as) const;
 
 			//Devuelve el conjunto de agentes que tiene k sanciones
 			//parametro.
-			Conj<Nat> ConKSanciones(Nat k);
+			const Conj<Nat> ConKSanciones(Nat k);
 
 		private:
 
@@ -143,9 +143,6 @@ namespace aed2
 
 	};
 
-//	CampusSeguro::CampusSeguro(){
-//	}
-
     Nat calcularMin(Dicc<Placa,Posicion> da){
         Dicc<Placa,Posicion>::Iterador it = da.CrearIt();
         Nat candidato;
@@ -174,6 +171,14 @@ namespace aed2
             it.Avanzar();
         }
         return candidato;
+    }
+
+    CampusSeguro::CampusSeguro(){
+        Dicc<Placa,Posicion> d;
+        d.Definir(1,Posicion(1,1));
+        d.Definir(2,Posicion(2,1));
+        Campus c(3,3);
+        CampusSeguro(c,d);
     }
 
     //Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
@@ -206,21 +211,22 @@ namespace aed2
 		estudiantes = diccNombres();
 		hippies = diccNombres();
 		Dicc<Placa,Posicion>::Iterador itAgentes = da.CrearIt();
-		masVigilante = MaxVigilante(itAgentes.SiguienteClave(),0);
-		Nat minimo = calcularMin(da);
-		Nat maximo = calcularMax(da);
-		diccAg = DiccAgentes(minimo,maximo);
-		//DiccAgentes diccAg(minimo,maximo);
-		while(itAgentes.HaySiguiente()){
-            diccAg.Definir(itAgentes.SiguienteClave(),itAgentes.SiguienteSignificado());
-            itAgentes.Avanzar();
-		}
-		DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
-		while(itDiccAgentes.HaySiguiente()){
-            Posicion p = itDiccAgentes.Siguiente().pos;
-            this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
-            this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
-            itDiccAgentes.Avanzar();
+		if(da.CantClaves() > 0){
+            masVigilante = MaxVigilante(itAgentes.SiguienteClave(),0);
+            Nat minimo = calcularMin(da);
+            Nat maximo = calcularMax(da);
+            diccAg = DiccAgentes(minimo,maximo);
+            while(itAgentes.HaySiguiente()){
+                diccAg.Definir(itAgentes.SiguienteClave(),itAgentes.SiguienteSignificado());
+                itAgentes.Avanzar();
+            }
+            DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
+            while(itDiccAgentes.HaySiguiente()){
+                Posicion p = itDiccAgentes.Siguiente().pos;
+                this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
+                this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
+                itDiccAgentes.Avanzar();
+            }
 		}
 		this->huboSanciones = true;
 	}
@@ -234,7 +240,7 @@ namespace aed2
 	//}
 
 	//Devuelve un conjunto de iteradores a los estudiantes del campus.
-	const Conj<Nombre>::const_Iterador CampusSeguro::Estudiantes() const{
+	Conj<Nombre>::const_Iterador CampusSeguro::Estudiantes() const{
 		return this->estudiantes.Claves();
 	}
 
@@ -251,7 +257,7 @@ namespace aed2
 
 	//Devuelve la posicion del estudiante o hippie pasado por parametro.
 	//Pre:
-	const Posicion CampusSeguro::PosicionEstudianteYHippie(Nombre nombre){
+	Posicion CampusSeguro::PosicionEstudianteYHippie(Nombre nombre) const{
 		Posicion res;
 		if (this->estudiantes.Definido(nombre))
 		{
@@ -264,19 +270,19 @@ namespace aed2
 
 	//Devuelve la posicion del agente pasado por parametro.
 	//Pre:
-	const Posicion CampusSeguro::PosAgente(Nat as){
+	Posicion CampusSeguro::PosAgente(Nat as) const{
 		return diccAg.Obtener(as).pos;
 	}
 
 	//Devuelve la cantidad de sanciones que tiene el agente pasado por parametro.
 	//Pre:
-	Nat CampusSeguro::CantSanciones(Nat as){
+	Nat CampusSeguro::CantSanciones(Nat as) const{
 		return diccAg.Obtener(as).sanciones;
 	}
 
 	//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 	//Pre:
-	Nat CampusSeguro::CantHippiesAtrapados(Nat as){
+	Nat CampusSeguro::CantHippiesAtrapados(Nat as) const{
 		return diccAg.Obtener(as).capturas;
 	}
 
@@ -322,6 +328,7 @@ namespace aed2
 			this->campusCompleto[p.x-1][p.y-1].estudiante= estudiantes.Definir(est,p);
 			this->campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
 			this->campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
+			this->ActualizarCampusSeguro(p);
 		}
 		else this->estudiantes.Borrar(est);
 	}
@@ -364,7 +371,7 @@ namespace aed2
 
 	//Devuelve la cantidad de hippies que estan presentes en el campus.
 	//Pre:
-	Nat CampusSeguro::CantHippies(){
+	Nat CampusSeguro::CantHippies() const{
 		Conj<Nombre>::const_Iterador it = Hippies();
 		Nat cuenta = 0;
 		while(it.HaySiguiente()){
@@ -376,7 +383,7 @@ namespace aed2
 
 	//Devuelve la cantidad de estudiantes que estan presentes en el campus.
 	//Pre:
-	Nat CampusSeguro::CantEstudiantes(){
+	Nat CampusSeguro::CantEstudiantes() const{
 		Conj<Nombre>::const_Iterador it = Estudiantes();
 		Nat cuenta = 0;
 		while(it.HaySiguiente()){
@@ -388,21 +395,21 @@ namespace aed2
 
 	//Devuelve el agente que atrapo la mayor cantidad de hippies.
 	//Pre:
-	Nat CampusSeguro::MasVigilante(){
+	Nat CampusSeguro::MasVigilante() const{
 		return this->masVigilante.placa;
 	}
 
 	//Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por
 	//parametro.
 	//Pre:
-	Conj<Nat> CampusSeguro::ConMismasSanciones(Nat as){
+	const Conj<Nat> CampusSeguro::ConMismasSanciones(Nat as) const{
 		return this->diccAg.ConMismasSanciones(as);
 	}
 
 	//Devuelve el conjunto de agentes que tiene k sanciones
 	//parametro.
 	//Pre:
-	Conj<Nat> CampusSeguro::ConKSanciones(Nat k){
+	const Conj<Nat> CampusSeguro::ConKSanciones(Nat k){
 		Conj<Placa> res;
 		if (this->huboSanciones)
 		{

@@ -6,7 +6,7 @@
 #include "aed2/Conj.h"
 #include "aed2/Dicc.h"
 
-//#include ...
+#include "CampusSeguro.h"
 
 namespace aed2 {
 
@@ -14,8 +14,8 @@ class Driver
 {
 	public:
 
-	        Driver();
-	        ~Driver();
+        Driver();
+        ~Driver();
 
         	/// Generadores del Campus
 		void crearCampus(Nat ancho, Nat alto);
@@ -29,16 +29,16 @@ class Driver
         	/// Generadores de CampusSeguro
 		void comenzarRastrillaje(const Dicc<Agente,Posicion>& d);
 		void ingresarEstudiante(Nombre n, Posicion p);
-		void ingresarHippie(Nombre n, Posicion p); 
+		void ingresarHippie(Nombre n, Posicion p);
 		void moverEstudiante(Nombre n, Direccion d);
 		void moverHippie(Nombre n);
 		void moverAgente(Agente pl);
-		
+
         	/// Observadores de CampusSeguro
 		Nombre iesimoEstudiante(Nat i) const;
 		Nombre iesimoHippie(Nat i) const;
 		Nat iesimoAgente(Nat i) const;
- 
+
   		Nat cantEstudiantes() const;
  		Nat cantHippies() const;
  		Nat cantAgentes() const;
@@ -53,91 +53,94 @@ class Driver
 		const Conj<Agente> conMismasSanciones(Agente a) const;
 		const Conj<Agente> conKSanciones(Nat k);
 
-   
+
     private:
-		Campus c;
+        Campus c;
 		CampusSeguro cs;
-    /************************************************************************
-     * TODO: Va a ser necesario instanciar privadamente el Modulo principal *
-     * con el cuál interactuar. Además, pueden declarar todas las           *
-     * funciones auxiliares que les hagan falta.                            *
-     ************************************************************************/
 
 }; // class Driver
 
-Driver(){
-	c=Campus();
-	cs=CampusSeguro();
+Driver::Driver(){
 }
-~Driver(){
-	c.~Campus();
-	cs.~CampusSeguro();
+
+Driver::~Driver(){
 }
-void crearCampus(Nat ancho, Nat alto){
+
+void Driver::crearCampus(Nat ancho, Nat alto){
 	c=Campus(ancho,alto);
 }
-void agregarObstaculo(Posicion p){
+
+void Driver::agregarObstaculo(Posicion p){
 	c.AgregarObstaculo(p);
 }
-Nat filas() const{
+
+Nat Driver::filas() const{
 	return c.Filas();
 }
-Nat columnas() const{
+
+Nat Driver::columnas() const{
 	return c.Columnas();
 }
-bool ocupada(Posicion p) const{
+
+bool Driver::ocupada(Posicion p) const{
 	return c.EstaOcupada(p);
 }
-void comenzarRastrillaje(const Dicc<Agente,Posicion>& d){
-	cs.ComenzarRastrillaje(d);
+
+void Driver::comenzarRastrillaje(const Dicc<Agente,Posicion>& d){
+	cs = CampusSeguro(c,d);
 }
-void ingresarEstudiante(Nombre n, Posicion p){
+
+void Driver::ingresarEstudiante(Nombre n, Posicion p){
 	cs.IngresarEstudiante(n,p);
 }
-void ingresarHippie(Nombre n, Posicion p){
+
+void Driver::ingresarHippie(Nombre n, Posicion p){
 	cs.IngresarHippie(n,p);
 }
-void moverEstudiante(Nombre n, Direccion d){
+
+void Driver::moverEstudiante(Nombre n, Direccion d){
 	cs.MoverEstudiante(n,d);
 }
-void moverHippie(Nombre n){
-	cs.MoverHippie(n);		
+void Driver::moverHippie(Nombre n){
+	cs.MoverHippie(n);
 }
-void moverAgente(Agente pl){
+void Driver::moverAgente(Agente pl){
 	cs.MoverAgente(pl);
 }
-Nombre iesimoEstudiante(Nat i) const{
-	Iterador<Conj<Nombre>> it = cs.Estudiantes();
-	int j=0;
+Nombre Driver::iesimoEstudiante(Nat i) const{
+	Conj<Nombre>::const_Iterador it = cs.Estudiantes();
+	Nat j=0;
+	while((j<i) && (it.HaySiguiente())){
+		it.Avanzar();
+		j++;
+	}
+	return it.Siguiente();
+}
+Nombre Driver::iesimoHippie(Nat i) const{
+	Conj<Nombre>::const_Iterador it = cs.Hippies();
+	Nat j=0;
+	while((j<i) && (it.HaySiguiente())){
+		it.Avanzar();
+		j++;
+	}
+	return it.Siguiente();
+}
+Nat Driver::iesimoAgente(Nat i) const{
+	Conj<Placa>::const_Iterador it = cs.Agentes();
+	Nat j=0;
 	while((j<i) && (it.HaySiguiente())){
 		it.Avanzar();
 	}
 	return it.Siguiente();
 }
-Nombre iesimoHippie(Nat i) const{
-	Iterador<Conj<Nombre>> it = cs.Hippies();
-	int j=0;
-	while((j<i) && (it.HaySiguiente())){
-		it.Avanzar();
-	}
-	return it.Siguiente();
-}
-Nat iesimoAgente(Nat i) const{
-	Iterador<Conj<Placa>> it = cs.Agentes();
-	int j=0;
-	while((j<i) && (it.HaySiguiente())){
-		it.Avanzar();
-	}
-	return it.Siguiente();
-}
-Nat cantEstudiantes() const{
+Nat Driver::cantEstudiantes() const{
 	return cs.CantEstudiantes();
 }
-Nat cantHippies() const{
+Nat Driver::cantHippies() const{
 	return cs.CantHippies();
 }
-Nat cantAgentes() const{
-	Iterador<Conj<Placa>> it = cs.Agentes();
+Nat Driver::cantAgentes() const{
+	Conj<Placa>::const_Iterador it = cs.Agentes();
 	int i=0;
 	while(it.HaySiguiente()){
 		it.Avanzar();
@@ -145,25 +148,25 @@ Nat cantAgentes() const{
 	}
 	return i;
 }
-Posicion posEstudianteYHippie(Nombre n) const{
+Posicion Driver::posEstudianteYHippie(Nombre n) const{
 	return cs.PosicionEstudianteYHippie(n);
 }
-Posicion posAgente(Agente pl) const{
+Posicion Driver::posAgente(Agente pl) const{
 	return cs.PosAgente(pl);
 }
-Nat cantSanciones(Agente pl) const{
+Nat Driver::cantSanciones(Agente pl) const{
 	return cs.CantSanciones(pl);
 }
-Nat cantHippiesAtrapados(Agente pl) const{
+Nat Driver::cantHippiesAtrapados(Agente pl) const{
 	return cs.CantHippiesAtrapados(pl);
 }
-Agente masVigilante() const{
+Agente Driver::masVigilante() const{
 	return cs.MasVigilante();
 }
-const Conj<Agente> conMismasSanciones(Agente a) const{
+const Conj<Agente> Driver::conMismasSanciones(Agente a) const{
 	return cs.ConMismasSanciones(a);
 }
-const Conj<Agente> conKSanciones(Nat k){
+const Conj<Agente> Driver::conKSanciones(Nat k){
 	return cs.ConKSanciones(k);
 }
 

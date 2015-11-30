@@ -13,12 +13,12 @@ class diccNombres
 
     Conj<Nombre>::const_Iterador Definir(Nombre n, Posicion p);
     void Borrar(const Nombre n);
-     Posicion Obtener(Nombre n) ;
-    bool Definido(Nombre n);
+    Posicion Obtener(Nombre n)  const;
+    bool Definido(Nombre n) const;
     const Conj<Nombre>::const_Iterador Claves() const;
     bool DiccVacio();
 
-    Conj<Posicion> Significados();
+    Conj<Posicion> Significados() const;
 
   private:
 
@@ -92,7 +92,7 @@ diccNombres::diccNombres(){
 	this->_primero = node;
 }
 
-bool diccNombres::Definido(Nombre n){
+bool diccNombres::Definido(Nombre n) const{
 
 
 	Nat i = 0;
@@ -139,10 +139,11 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 		Conj<info>::Iterador* itInfoPointer = new Conj<info>::Iterador;
 		*itInfoPointer = this->_definiciones.AgregarRapido(*definicion);
 
-		Nodo* proximo;
+
 
 		for(i = 0; i < n.length(); i++)
 		{
+		    Nodo* proximo;
 			indice = (int) n[i];
 			if (actual->alfabeto[indice] == NULL)
 			{
@@ -207,7 +208,7 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 }
 
 
- Posicion  diccNombres::Obtener(Nombre n){
+ Posicion  diccNombres::Obtener(Nombre n) const{
 
 	Nodo* actual = this->_primero;
 	int indice;
@@ -239,34 +240,34 @@ void diccNombres::Borrar(const Nombre n){
 	itI.EliminarSiguiente();
 
 	actual->significado = NULL;
-	actual->anterior = NULL;
+	//actual->anterior = NULL;
 
 
 	actual = this->_primero;
-	for (i = 0; i < n.length(); i++)
+	for (i = 0; i < n.length()-1; i++)
 	{
-
 		indice = (int) n[i];
 		actual = actual->alfabeto[indice];
-
 	}
+
+	actual->esNombre = false;
+
+	indice = (int) n[i];
+    actual = actual->alfabeto[indice];
 
 	if (esArregloDeNULL(actual->alfabeto))
 	{
 
 		for (i = n.length() -1; 0 < i && !actual->esNombre; i--)
 		{
-
 			indice = (int) n[i];
 			actual->alfabeto[indice] = NULL;
-
 
 			proximo = actual->anterior;
 			delete actual->significado;
 			delete actual;
 
 			actual = proximo;
-
 		}
 	}
 	else
@@ -285,9 +286,9 @@ bool diccNombres::DiccVacio(){
 	return this->_claves.EsVacio();
 }
 
-Conj<Posicion> diccNombres::Significados(){
+Conj<Posicion> diccNombres::Significados() const{
     Conj<Posicion> res;
-    Conj<info>::Iterador it = _definiciones.CrearIt();
+    Conj<info>::const_Iterador it = _definiciones.CrearIt();
     while(it.HaySiguiente()){
         res.AgregarRapido(it.Siguiente().pos);
         it.Avanzar();
