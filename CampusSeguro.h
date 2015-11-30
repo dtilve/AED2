@@ -23,11 +23,12 @@ namespace aed2
 
 	class CampusSeguro{
 		public:
+
 			//Constructor
 			CampusSeguro();
 
 			//Destructor
-			~CampusSeguro();
+			//~CampusSeguro();
 
 			//Constructor por parámetros
 			CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da);
@@ -60,12 +61,6 @@ namespace aed2
 			//Devuelve la cantidad de hippies que atrapo el agente pasado por parametro.
 			//Pre: as pertenece al diccionario de agentes.
 			Nat CantHippiesAtrapados(Nat as);
-
-			//Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
-			//correspondientes.
-			//Pre:para cada agente definido en diccionario agentes debe tener una posicion valida y desocupada
-			//y cada agente debe ser distinto al resto de los agentes del diccionario
-			CampusSeguro ComenzarRastrillaje(Dicc<Placa,Posicion> da);
 
 			//Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situacion en
 			//la grilla con respecto a sus vecinos.
@@ -214,7 +209,8 @@ namespace aed2
 		masVigilante = MaxVigilante(itAgentes.SiguienteClave(),0);
 		Nat minimo = calcularMin(da);
 		Nat maximo = calcularMax(da);
-		DiccAgentes diccAg(minimo,maximo);
+		diccAg = DiccAgentes(minimo,maximo);
+		//DiccAgentes diccAg(minimo,maximo);
 		while(itAgentes.HaySiguiente()){
             diccAg.Definir(itAgentes.SiguienteClave(),itAgentes.SiguienteSignificado());
             itAgentes.Avanzar();
@@ -226,7 +222,7 @@ namespace aed2
             this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
             itDiccAgentes.Avanzar();
 		}
-		this->huboSanciones = false;
+		this->huboSanciones = true;
 	}
 
 	Campus CampusSeguro::suCampus(){
@@ -234,11 +230,8 @@ namespace aed2
 	}
 
 
-	CampusSeguro::~CampusSeguro(){
-		this->estudiantes.~diccNombres();
-		this->hippies.~diccNombres();
-		this->diccAg.~DiccAgentes();
-	}
+	//CampusSeguro::~CampusSeguro(){
+	//}
 
 	//Devuelve un conjunto de iteradores a los estudiantes del campus.
 	const Conj<Nombre>::const_Iterador CampusSeguro::Estudiantes() const{
@@ -337,27 +330,25 @@ namespace aed2
 	//acuerdo a la nueva situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverHippie(Nombre hip){
-		Posicion p = this->estudiantes.Obtener(hip);
-		this->campusCompleto[p.x-1][p.y-1].tipo = "libre";
-		this->campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();;
-		this->campusCompleto[p.x-1][p.y-1].hippie = Conj<Nombre>().CrearIt();
-		this->campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
-		p = this->BuscarEstudianteMasCercano(p);
-		this->campusCompleto[p.x-1][p.y-1].tipo = "hippie";
-		this->campusCompleto[p.x-1][p.y-1].estudiante= Conj<Nombre>().CrearIt();
-		this->campusCompleto[p.x-1][p.y-1].hippie = hippies.Definir(hip,p);
-		this->campusCompleto[p.x-1][p.y-1].agente = DiccAgentes().CrearIt();
-		this->ActualizarCampusSeguro(p);
+		Posicion pInicial = this->hippies.Obtener(hip);
+		Posicion pFinal = this->BuscarEstudianteMasCercano(pInicial);
+		this->campusCompleto[pFinal.x-1][pFinal.y-1].tipo = "hippie";
+		this->campusCompleto[pFinal.x-1][pFinal.y-1].estudiante= Conj<Nombre>().CrearIt();
+		this->campusCompleto[pFinal.x-1][pFinal.y-1].hippie = hippies.Definir(hip,pFinal);
+		this->campusCompleto[pFinal.x-1][pFinal.y-1].agente = DiccAgentes().CrearIt();
+		this->campusCompleto[pInicial.x-1][pInicial.y-1].tipo = "libre";
+		this->campusCompleto[pInicial.x-1][pInicial.y-1].estudiante= Conj<Nombre>().CrearIt();;
+		this->campusCompleto[pInicial.x-1][pInicial.y-1].hippie = Conj<Nombre>().CrearIt();
+		this->campusCompleto[pInicial.x-1][pInicial.y-1].agente = DiccAgentes().CrearIt();
+		this->ActualizarCampusSeguro(pFinal);
 	}
 
 	//Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva
 	//situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverAgente(Nat as){
-		Posicion pInicial;
-		Posicion pFinal;
-		pInicial = this->diccAg.ObtenerLog(as).pos;
-		pFinal = BuscarHippieMasCercano(pInicial);
+		Posicion pInicial = this->diccAg.ObtenerLog(as).pos;
+		Posicion pFinal = BuscarHippieMasCercano(pInicial);
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].tipo = "agente";
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].estudiante = Conj<Nombre>().CrearIt();
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].hippie = Conj<Nombre>().CrearIt();
@@ -441,7 +432,6 @@ namespace aed2
             Conj<Posicion> ps = FiltrarAdyacentes("estudiante",p);
             if(campusCompleto[p.x-1][p.y-1].tipo == "estudiante")
                 ps.AgregarRapido(p);
-            cout << "cardinal de ps: " << ps.Cardinal() << endl;
             Conj<Posicion>::Iterador itPos = ps.CrearIt();
             Nat i = 0;
             Nat j = 0;
@@ -474,7 +464,7 @@ namespace aed2
             i = posActual.x-1;
             j = posActual.y-1;
             if(Rodeado(posActual) && FiltrarAdyacentes("agente",posActual).Cardinal() >= 1){
-                PremiarAlrededor(p);
+                PremiarAlrededor(posActual);
                 hippiesAeliminar.AgregarRapido(campusCompleto[i][j].hippie.Siguiente());
             }
             if(Rodeado(posActual) && TodosEstudiantes(posActual)){
@@ -489,7 +479,6 @@ namespace aed2
         Dicc<Nombre,Posicion> estudiantesAagregar;
         Conj<Nombre> estudiantesAconvertir;
         ChequearEstudiantes(p,estudiantesAconvertir);
-        cout << estudiantesAconvertir << endl;
         ChequearHippies(p,hippiesAeliminar,estudiantesAagregar);
         Conj<Nombre>::Iterador itNombres1 = estudiantesAconvertir.CrearIt();
         while(itNombres1.HaySiguiente()){
@@ -561,7 +550,8 @@ namespace aed2
     Posicion CampusSeguro::BuscarEstudianteMasCercano(Posicion p){
         Posicion candidato = Posicion(0,0);
         if(!estudiantes.DiccVacio()){
-            Conj<Posicion>::Iterador it = estudiantes.Significados().CrearIt();
+            Conj<Posicion> conjPos = estudiantes.Significados();
+            Conj<Posicion>::Iterador it = conjPos.CrearIt();
             candidato = it.Siguiente();
             while(it.HaySiguiente()){
                 if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
@@ -572,7 +562,20 @@ namespace aed2
             Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
             candidato = it.Siguiente();
         }
-        return candidato;
+        //Agregado fragmento que decide en qué dirección debe ir
+        //Una vez encontrado el más cercano
+        Posicion res = Posicion(0,0);
+        Conj<Posicion> conjVecinos = FiltrarAdyacentes("libre",p);
+        if(!conjVecinos.EsVacio()){
+            Conj<Posicion>::Iterador itVecinos = conjVecinos.CrearIt();
+            res = itVecinos.Siguiente();
+            while(itVecinos.HaySiguiente()){
+                if(campusObstaculos.Distancia(itVecinos.Siguiente(),candidato) < campusObstaculos.Distancia(res,candidato))
+                    res = itVecinos.Siguiente();
+                itVecinos.Avanzar();
+            }
+        }
+        return res;
     }
 
 
@@ -580,7 +583,8 @@ namespace aed2
     Posicion CampusSeguro::BuscarHippieMasCercano(Posicion p){
         Posicion candidato = Posicion(0,0);
         if(!hippies.DiccVacio()){
-            Conj<Posicion>::Iterador it = hippies.Significados().CrearIt();
+            Conj<Posicion> conjPos = hippies.Significados();
+            Conj<Posicion>::Iterador it = conjPos.CrearIt();
             candidato = it.Siguiente();
             while(it.HaySiguiente()){
                 if(campusObstaculos.Distancia(p,it.Siguiente()) <= campusObstaculos.Distancia(p,candidato))
@@ -591,7 +595,20 @@ namespace aed2
             Conj<Posicion>::Iterador it = campusObstaculos.IngresosMasCercanos(p).CrearIt();
             candidato = it.Siguiente();
         }
-        return candidato;
+        //Agregado fragmento que decide en qué dirección debe ir
+        //Una vez encontrado el más cercano
+        Posicion res = Posicion(0,0);
+        Conj<Posicion> conjVecinos = FiltrarAdyacentes("libre",p);
+        if(!conjVecinos.EsVacio()){
+            Conj<Posicion>::Iterador itVecinos = conjVecinos.CrearIt();
+            res = itVecinos.Siguiente();
+            while(itVecinos.HaySiguiente()){
+                if(campusObstaculos.Distancia(itVecinos.Siguiente(),candidato) < campusObstaculos.Distancia(res,candidato))
+                    res = itVecinos.Siguiente();
+                itVecinos.Avanzar();
+            }
+        }
+        return res;
     }
 
 }

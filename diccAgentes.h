@@ -194,10 +194,8 @@ DiccAgentes::DiccAgentes(Nat minimo,Nat maximo){
 
 DiccAgentes::~DiccAgentes(){
 	conjuntoDeAgentes.~Conj();
-	Nat i = 0;
-	while(i < tablaHash.Longitud()){
-		tablaHash.Eliminar(i);
-		i++;
+	while(tablaHash.Longitud() > 0){
+		tablaHash.Eliminar(0);
 	}
 	ListasSanciones.~Lista();
 }
