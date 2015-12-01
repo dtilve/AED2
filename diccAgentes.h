@@ -105,10 +105,6 @@ namespace aed2
 		{
 			public:
 
-			    Nat longi(){
-                    return (*arregloDeAgentesIt).Longitud();
-			    }
-
 			Iterador();
 			//Constructor por defecto.
 
