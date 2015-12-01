@@ -102,22 +102,15 @@ bool diccNombres::Definido(Nombre n) const{
 
 	for(i = 0; (i < n.length()) && (actual->alfabeto[indice] != NULL); i++)
 	{
-
-
 		actual =  actual->alfabeto[indice];
 		indice = (int) n[i+1];
-
-
 	}
-
 	if(i < n.length() || (i==n.length() && actual->significado==NULL))
 	{
-
 		return false;
 	}
 	else
 	{
-
 		return true;
 	}
 }
@@ -217,12 +210,12 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 	{
 		indice = (int) n[i];
 		actual = actual->alfabeto[indice];
-
 	}
 	return (*actual->significado).Siguiente().pos;
 }
 
 void diccNombres::Borrar(const Nombre n){
+	cout << "borrando " << n << endl;
 	Nodo* actual = this->_primero;
 	Nodo* proximo;
 	Nat i;
@@ -258,10 +251,13 @@ void diccNombres::Borrar(const Nombre n){
 	if (esArregloDeNULL(actual->alfabeto))
 	{
 
-		for (i = n.length() -1; 0 < i && !actual->esNombre; i--)
+		for (i = n.length()-1; 0 < i && !actual->esNombre; i--)
 		{
+		    cout << "i vale ahora " << i << endl;
+			cout << n[i] << endl;
 			indice = (int) n[i];
 			actual->alfabeto[indice] = NULL;
+			cout << "testing" << endl;
 
 			proximo = actual->anterior;
 			delete actual->significado;
@@ -269,6 +265,7 @@ void diccNombres::Borrar(const Nombre n){
 
 			actual = proximo;
 		}
+		actual->alfabeto[indice] = NULL;
 	}
 	else
 	{

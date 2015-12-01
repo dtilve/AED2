@@ -126,7 +126,8 @@ Nombre Driver::iesimoHippie(Nat i) const{
 	return it.Siguiente();
 }
 Nat Driver::iesimoAgente(Nat i) const{
-	Conj<Placa>::const_Iterador it = cs.Agentes();
+	Conj<Agente> conjAgentes = cs.Agentes();
+	Conj<Agente>::const_Iterador it = conjAgentes.CrearIt();
 	Nat j=0;
 	while((j<i) && (it.HaySiguiente())){
 		it.Avanzar();
@@ -140,7 +141,8 @@ Nat Driver::cantHippies() const{
 	return cs.CantHippies();
 }
 Nat Driver::cantAgentes() const{
-	Conj<Placa>::const_Iterador it = cs.Agentes();
+    Conj<Agente> conjAgentes = cs.Agentes();
+	Conj<Agente>::const_Iterador it = conjAgentes.CrearIt();
 	int i=0;
 	while(it.HaySiguiente()){
 		it.Avanzar();

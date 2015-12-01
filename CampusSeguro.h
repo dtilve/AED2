@@ -5,13 +5,11 @@
 #include "Campus.h"
 #include "DiccNombres.h"
 #include "DiccAgentes.h"
+#include "Tipos.h"
 #include "aed2.h"
 
 namespace aed2
 {
-    typedef String Nombre;
-    typedef Nat Placa;
-
     struct Celda{
         String tipo;
         Conj<Nombre>::const_Iterador estudiante;
@@ -31,7 +29,9 @@ namespace aed2
 			//~CampusSeguro();
 
 			//Constructor por parámetros
-			CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da);
+			CampusSeguro(const Campus& c,Dicc<Agente,Posicion> da);
+
+			CampusSeguro& operator=(const CampusSeguro& otro);
 
 			//Devuelve el campus
 			Campus suCampus();
@@ -44,7 +44,7 @@ namespace aed2
 
 
 			//Devuelve un iterador al conjunto de agentes del campus.
-			const Conj<Placa>::const_Iterador Agentes() const;
+			const Conj<Agente> Agentes() const;
 
 			//Devuelve la posicion del estudiante o hippie pasado por parametro.
 			//Pre:Nombre pertenece al diccionario de hipies o estudiantes.
@@ -113,11 +113,11 @@ namespace aed2
 		private:
 
             struct MaxVigilante{
-                Placa placa;
+                Agente placa;
                 Nat capturas;
 
                 MaxVigilante(): placa(0) , capturas(0) {}
-                MaxVigilante(Placa p, Nat c) : placa(p) , capturas(c) {}
+                MaxVigilante(Agente p, Nat c) : placa(p) , capturas(c) {}
             };
 
     		Campus 					    campusObstaculos;
@@ -143,8 +143,8 @@ namespace aed2
 
 	};
 
-    Nat calcularMin(Dicc<Placa,Posicion> da){
-        Dicc<Placa,Posicion>::Iterador it = da.CrearIt();
+    Nat calcularMin(Dicc<Agente,Posicion> da){
+        Dicc<Agente,Posicion>::Iterador it = da.CrearIt();
         Nat candidato;
         if(da.CantClaves() > 0)
             candidato = it.SiguienteClave();
@@ -158,8 +158,8 @@ namespace aed2
         return candidato;
     }
 
-    Nat calcularMax(Dicc<Placa,Posicion> da){
-        Dicc<Placa,Posicion>::Iterador it = da.CrearIt();
+    Nat calcularMax(Dicc<Agente,Posicion> da){
+        Dicc<Agente,Posicion>::Iterador it = da.CrearIt();
         Nat candidato;
         if(da.CantClaves() > 0)
             candidato = it.SiguienteClave();
@@ -174,9 +174,7 @@ namespace aed2
     }
 
     CampusSeguro::CampusSeguro(){
-        Dicc<Placa,Posicion> d;
-        d.Definir(1,Posicion(1,1));
-        d.Definir(2,Posicion(2,1));
+        Dicc<Agente,Posicion> d;
         Campus c(3,3);
         CampusSeguro(c,d);
     }
@@ -184,7 +182,7 @@ namespace aed2
     //Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
 	//correspondientes.
 	//Pre:
-	CampusSeguro::CampusSeguro(const Campus& c,Dicc<Placa,Posicion> da){
+	CampusSeguro::CampusSeguro(const Campus& c,Dicc<Agente,Posicion> da){
         campusObstaculos = c;
 		Nat i=0;
 		Nat j=0;
@@ -210,7 +208,7 @@ namespace aed2
 		}
 		estudiantes = diccNombres();
 		hippies = diccNombres();
-		Dicc<Placa,Posicion>::Iterador itAgentes = da.CrearIt();
+		Dicc<Agente,Posicion>::Iterador itAgentes = da.CrearIt();
 		if(da.CantClaves() > 0){
             masVigilante = MaxVigilante(itAgentes.SiguienteClave(),0);
             Nat minimo = calcularMin(da);
@@ -222,14 +220,38 @@ namespace aed2
             }
             DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
             while(itDiccAgentes.HaySiguiente()){
+                cout << "Agente " << itDiccAgentes.SiguienteClave() << endl;
                 Posicion p = itDiccAgentes.Siguiente().pos;
                 this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
                 this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
+                cout << "Longitud: " << this->campusCompleto[p.x-1][p.y-1].agente.longi() << endl;
                 itDiccAgentes.Avanzar();
             }
 		}
 		this->huboSanciones = true;
 	}
+
+    CampusSeguro& CampusSeguro::operator=(const CampusSeguro& otro){
+        cout << "Llame al operador de asignacion de CampusSeguro" << endl;
+        campusObstaculos = otro.campusObstaculos;
+    	estudiantes = otro.estudiantes;
+    	hippies = otro.hippies;
+    	diccAg = otro.diccAg;
+    	masVigilante = otro.masVigilante;
+    	campusCompleto = otro.campusCompleto;
+    	huboSanciones = otro.huboSanciones;
+    	DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
+    	//Reasigno las posiciones donde hay agentes para que el iterador apunte de manera indicada.
+        while(itDiccAgentes.HaySiguiente()){
+            cout << "Agente " << itDiccAgentes.SiguienteClave() << endl;
+            Posicion p = itDiccAgentes.Siguiente().pos;
+            this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
+            this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
+            cout << "Longitud: " << this->campusCompleto[p.x-1][p.y-1].agente.longi() << endl;
+            itDiccAgentes.Avanzar();
+        }
+    	return *this;
+    }
 
 	Campus CampusSeguro::suCampus(){
 		return this->campusObstaculos;
@@ -251,8 +273,8 @@ namespace aed2
 
 
 	//Devuelve un conjunto de iteradores a los agentes del campus.
-	const Conj<Placa>::const_Iterador CampusSeguro::Agentes() const{
-		return this->diccAg.Claves().CrearIt();
+	const Conj<Agente> CampusSeguro::Agentes() const{
+		return this->diccAg.Claves();
 	}
 
 	//Devuelve la posicion del estudiante o hippie pasado por parametro.
@@ -354,8 +376,14 @@ namespace aed2
 	//situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverAgente(Nat as){
+	    cout << "hago el obtener" << endl;
 		Posicion pInicial = this->diccAg.ObtenerLog(as).pos;
+		cout << "calculo pFinal" << endl;
 		Posicion pFinal = BuscarHippieMasCercano(pInicial);
+		cout << "creo el iterador" << endl;
+		//DiccAgentes::Iterador it = diccAg.CrearIt();
+		cout << "siguiente clave: " << this->campusCompleto[pInicial.x-1][pInicial.y-1].agente.longi() << endl;
+
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].tipo = "agente";
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].estudiante = Conj<Nombre>().CrearIt();
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].hippie = Conj<Nombre>().CrearIt();
@@ -365,7 +393,6 @@ namespace aed2
 		this->campusCompleto[pInicial.x-1][pInicial.y-1].hippie = Conj<Nombre>().CrearIt();
 		this->campusCompleto[pInicial.x-1][pInicial.y-1].agente = DiccAgentes().CrearIt();
 		this->ActualizarCampusSeguro(pFinal);
-
 	}
 	//Modificada para que sea correcta (se invirtió el orden de las asignaciones de posiciones).
 
@@ -410,7 +437,7 @@ namespace aed2
 	//parametro.
 	//Pre:
 	const Conj<Nat> CampusSeguro::ConKSanciones(Nat k){
-		Conj<Placa> res;
+		Conj<Agente> res;
 		if (this->huboSanciones)
 		{
 			res = this->diccAg.conKSancionesLineal(k);
@@ -475,6 +502,7 @@ namespace aed2
                 hippiesAeliminar.AgregarRapido(campusCompleto[i][j].hippie.Siguiente());
             }
             if(Rodeado(posActual) && TodosEstudiantes(posActual)){
+                hippiesAeliminar.AgregarRapido(campusCompleto[i][j].hippie.Siguiente());
                 estudiantesAagregar.DefinirRapido(campusCompleto[i][j].hippie.Siguiente(),posActual);
             }
             itPos.Avanzar();
