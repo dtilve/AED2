@@ -220,11 +220,9 @@ namespace aed2
             }
             DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
             while(itDiccAgentes.HaySiguiente()){
-                cout << "Agente " << itDiccAgentes.SiguienteClave() << endl;
                 Posicion p = itDiccAgentes.Siguiente().pos;
                 this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
                 this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
-                cout << "Longitud: " << this->campusCompleto[p.x-1][p.y-1].agente.longi() << endl;
                 itDiccAgentes.Avanzar();
             }
 		}
@@ -232,7 +230,6 @@ namespace aed2
 	}
 
     CampusSeguro& CampusSeguro::operator=(const CampusSeguro& otro){
-        cout << "Llame al operador de asignacion de CampusSeguro" << endl;
         campusObstaculos = otro.campusObstaculos;
     	estudiantes = otro.estudiantes;
     	hippies = otro.hippies;
@@ -243,11 +240,9 @@ namespace aed2
     	DiccAgentes::Iterador itDiccAgentes = diccAg.CrearIt();
     	//Reasigno las posiciones donde hay agentes para que el iterador apunte de manera indicada.
         while(itDiccAgentes.HaySiguiente()){
-            cout << "Agente " << itDiccAgentes.SiguienteClave() << endl;
             Posicion p = itDiccAgentes.Siguiente().pos;
             this->campusCompleto[p.x-1][p.y-1].tipo = "agente";
             this->campusCompleto[p.x-1][p.y-1].agente = itDiccAgentes;
-            cout << "Longitud: " << this->campusCompleto[p.x-1][p.y-1].agente.longi() << endl;
             itDiccAgentes.Avanzar();
         }
     	return *this;
@@ -376,13 +371,8 @@ namespace aed2
 	//situacion en la grilla con respecto a sus vecinos.
 	//Pre:
 	void CampusSeguro::MoverAgente(Nat as){
-	    cout << "hago el obtener" << endl;
 		Posicion pInicial = this->diccAg.ObtenerLog(as).pos;
-		cout << "calculo pFinal" << endl;
 		Posicion pFinal = BuscarHippieMasCercano(pInicial);
-		cout << "creo el iterador" << endl;
-		//DiccAgentes::Iterador it = diccAg.CrearIt();
-		cout << "siguiente clave: " << this->campusCompleto[pInicial.x-1][pInicial.y-1].agente.longi() << endl;
 
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].tipo = "agente";
 		this->campusCompleto[pFinal.x-1][pFinal.y-1].estudiante = Conj<Nombre>().CrearIt();

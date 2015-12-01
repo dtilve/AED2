@@ -94,7 +94,6 @@ void test_ingresa_hippie_y_convierte() {
 	// Ahora hago ingresar un hippie,se tiene que convertir a estudiante
 	Nombre h1 = "wololoHippie";
 	campus.ingresarHippie(h1,p2);
-	cout << campus.cantEstudiantes() << endl;
 	ASSERT(campus.cantEstudiantes() == 4);
 	ASSERT(campus.cantHippies() == 0);
 }
@@ -356,10 +355,9 @@ void test_mover_hippie_a_ingreso() {
 
 	// Muevo al hippie , tiene que ir al ingreso mas cercano
 	campus.moverHippie(s);
-    cout << "chequeo p4" << endl;
-	//p4 = campus.posEstudianteYHippie(s);
+	p4 = campus.posEstudianteYHippie(s);
 
-	//ASSERT(p4.x == 1 && p4.y == 2);
+	ASSERT(p4.x == 1 && p4.y == 2);
 
 }
 
@@ -405,7 +403,6 @@ void test_rastrillaje_mover_hacia_hippie() {
 	campus.ingresarHippie(h,ph);
 
 	campus.moverAgente(a);
-	cout << "pude mover al agente" << endl;
 
 	Posicion p4 = campus.posAgente(a);
 
@@ -449,7 +446,7 @@ void test_captura_hippie_entre_agentes()
 	Nombre h = "hippie";
 
 	campus.ingresarHippie(h,ph);
-//cout << "se traba aca?" << endl;
+
 	ASSERT(campus.cantHippiesAtrapados(a) == 1);
 	ASSERT(campus.cantHippiesAtrapados(a2) == 1);
 	ASSERT(campus.cantHippiesAtrapados(a3) == 1);
@@ -853,9 +850,9 @@ int main(int argc, char **argv)
 
 	//RUN_TEST(CampusSeguroIniciar);
     //cout << endl;
-    RUN_TEST(CampusSeguroSancionesYCapturas);
+    //RUN_TEST(CampusSeguroSancionesYCapturas);
     //cout << endl;
-    RUN_TEST(CampusSeguroMover);
+    //RUN_TEST(CampusSeguroMover);
     //RUN_TEST(MegaTest);
 
 	return 0;

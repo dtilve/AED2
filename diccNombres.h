@@ -215,7 +215,6 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 }
 
 void diccNombres::Borrar(const Nombre n){
-	cout << "borrando " << n << endl;
 	Nodo* actual = this->_primero;
 	Nodo* proximo;
 	Nat i;
@@ -253,11 +252,8 @@ void diccNombres::Borrar(const Nombre n){
 
 		for (i = n.length()-1; 0 < i && !actual->esNombre; i--)
 		{
-		    cout << "i vale ahora " << i << endl;
-			cout << n[i] << endl;
 			indice = (int) n[i];
 			actual->alfabeto[indice] = NULL;
-			cout << "testing" << endl;
 
 			proximo = actual->anterior;
 			delete actual->significado;

@@ -210,7 +210,7 @@ namespace aed2
 
         private:
 
-            Vector<AgenteCompleto>* arregloDeAgentesIt;
+            const Vector<AgenteCompleto>* arregloDeAgentesIt;
             Nat act;
 
             const_Iterador(Nat i,const Vector<AgenteCompleto>* vec);
@@ -268,7 +268,6 @@ DiccAgentes::~DiccAgentes(){
 }
 
 DiccAgentes& DiccAgentes::operator=(const DiccAgentes& otro){
-    cout << "llame al operador de asignacion de DiccAgentes" << endl;
     //Dejo todo vacío
     conjuntoDeAgentes = Conj<Agente>();
 	arregloDeAgentes = Vector<AgenteCompleto>();
@@ -353,11 +352,8 @@ void DiccAgentes::Definir(Agente a, Posicion p){
 
 Info DiccAgentes::Obtener(Agente a) const{
 	Nat n = FuncionDeHash(a);
-	cout << "hashie" << endl;
 	Conj<Iterador>::const_Iterador itConjIt = tablaHash[n].CrearIt();
-	cout << "asigne" << endl;
 	while(itConjIt.HaySiguiente() && (itConjIt.Siguiente().SiguienteClave() != a)){
-		cout << "sali del while" << endl;
 		itConjIt.Avanzar();
 	}
 	Info agente;
@@ -469,21 +465,17 @@ DiccAgentes::const_Iterador DiccAgentes::CrearIt() const{
 ///implementacion iterador
 
 DiccAgentes::Iterador::Iterador(){
-    cout << "Llame al constructor por defecto" << endl;
 	Vector<AgenteCompleto> v;
 	arregloDeAgentesIt = &v;
 	act = 0;
 }
 
 DiccAgentes::Iterador::Iterador(Nat i,Vector<AgenteCompleto>* vec){
-    //cout << "Llame al constructor privado" << endl;
     arregloDeAgentesIt = vec;
     act = i;
 }
 
 DiccAgentes::Iterador::Iterador(const Iterador& otro){
-    //cout << "Llame al constructor por copia" << endl;
-    //cout << "otro.HaySiguiente(): " << otro.HaySiguiente() << endl;
     arregloDeAgentesIt = otro.arregloDeAgentesIt;
     act = otro.act;
 }
@@ -491,8 +483,6 @@ DiccAgentes::Iterador::Iterador(const Iterador& otro){
 DiccAgentes::Iterador &DiccAgentes::Iterador::operator = (const Iterador& otro){
     this->arregloDeAgentesIt = otro.arregloDeAgentesIt;
     this->act = otro.act;
-    //cout << "llame a este" << endl;
-    //cout << "longitud de este: " << (*arregloDeAgentesIt).Longitud() << endl;
     return *this;
 }
 
@@ -578,7 +568,6 @@ const Conj<Agente> DiccAgentes::Iterador::ConMismasSancionesIt() const{
 ///implementacion const iterador
 
 DiccAgentes::const_Iterador::const_Iterador(){
-    cout << "Llame al constructor por defecto" << endl;
 	Vector<AgenteCompleto> v;
 	arregloDeAgentesIt = &v;
 	act = 0;
@@ -590,8 +579,6 @@ DiccAgentes::const_Iterador::const_Iterador(Nat i,const Vector<AgenteCompleto>* 
 }
 
 DiccAgentes::const_Iterador::const_Iterador(const const_Iterador& otro){
-    //cout << "Llame al constructor por copia" << endl;
-    //cout << "otro.HaySiguiente(): " << otro.HaySiguiente() << endl;
     arregloDeAgentesIt = otro.arregloDeAgentesIt;
     act = otro.act;
 }
@@ -599,8 +586,6 @@ DiccAgentes::const_Iterador::const_Iterador(const const_Iterador& otro){
 DiccAgentes::const_Iterador &DiccAgentes::const_Iterador::operator = (const const_Iterador& otro){
     this->arregloDeAgentesIt = otro.arregloDeAgentesIt;
     this->act = otro.act;
-    //cout << "llame a este" << endl;
-    //cout << "longitud de este: " << (*arregloDeAgentesIt).Longitud() << endl;
     return *this;
 }
 
