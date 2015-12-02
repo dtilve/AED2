@@ -66,7 +66,7 @@ namespace aed2
 			Conj<Posicion> IngresosMasCercanos(Posicion p) const;
 
 		private:
-            Vector<Vector<bool>> matriz;
+            Vector< Vector<bool> > matriz;
     		Nat filas;
     		Nat columnas;
 
