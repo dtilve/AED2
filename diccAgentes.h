@@ -218,9 +218,9 @@ namespace aed2
 
         private:
 
-            Conj<Agente>	                  conjuntoDeAgentes;
+            Conj<Agente>	              conjuntoDeAgentes;
             Vector<AgenteCompleto>            arregloDeAgentes;
-            Vector<Conj<Iterador>>            tablaHash;
+            Vector< Conj<Iterador> >          tablaHash;
             Nat                               mayor;
             Nat                               menor;
             Lista<NodoLista>                  ListasSanciones;
@@ -237,7 +237,7 @@ namespace aed2
 DiccAgentes::DiccAgentes(){
 	conjuntoDeAgentes = Conj<Agente>();
 	arregloDeAgentes = Vector<AgenteCompleto>();
-	tablaHash = Vector<Conj<Iterador>>();
+	tablaHash = Vector< Conj<Iterador> >();
 	mayor = 1;
 	menor = 0;
 	ListasSanciones = Lista<NodoLista>();
@@ -248,7 +248,7 @@ DiccAgentes::DiccAgentes(){
 DiccAgentes::DiccAgentes(Nat minimo,Nat maximo){
 	conjuntoDeAgentes = Conj<Agente>();
 	arregloDeAgentes = Vector<AgenteCompleto>();
-	tablaHash = Vector<Conj<Iterador>>();
+	tablaHash = Vector< Conj<Iterador> >();
 	mayor = maximo;
 	menor = minimo;
 	ListasSanciones = Lista<NodoLista>();
@@ -275,7 +275,7 @@ DiccAgentes& DiccAgentes::operator=(const DiccAgentes& otro){
     //Dejo todo vacío
     conjuntoDeAgentes = Conj<Agente>();
 	arregloDeAgentes = Vector<AgenteCompleto>();
-	tablaHash = Vector<Conj<Iterador>>();
+	tablaHash = Vector< Conj<Iterador> >();
 	mayor = otro.mayor;
 	menor = otro.menor;
 	ListasSanciones = Lista<NodoLista>();
@@ -333,7 +333,7 @@ void DiccAgentes::Definir(Agente a, Posicion p){
 	}
 	arregloDeAgentes.Agregar(i,nuevoAgente);
 	//Armando una nueva tabla de Hash
-	Vector<Conj<Iterador>> nuevaTabla;
+	Vector< Conj<Iterador> > nuevaTabla;
 	Nat cantAgentes = conjuntoDeAgentes.Cardinal();
 	while(nuevaTabla.Longitud() < cantAgentes){
 	        nuevaTabla.AgregarAtras(Conj<Iterador>());
