@@ -59,7 +59,6 @@ class Driver
 		CampusSeguro cs;
 
 }; // class Driver
-
 Driver::Driver(){
 }
 

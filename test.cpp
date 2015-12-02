@@ -11,9 +11,11 @@ using namespace aed2;
 // ---------------------------------------------------------------------
 
 void test_agregar_obstaculos() {
+
 	Driver campus;
 
-	campus.crearCampus(10,10);
+
+	/*campus.crearCampus(10,10);
 
 	Dicc<Agente,Posicion> agentes;
 	campus.comenzarRastrillaje(agentes);
@@ -32,7 +34,7 @@ void test_agregar_obstaculos() {
 	p2.x = 1;
 	p2.y = 1;
 
-	ASSERT(campus.ocupada(p2) == false);
+	ASSERT(campus.ocupada(p2) == false);*/
 
 
 }
@@ -563,6 +565,7 @@ void test_mas_vigilante()
 	Nombre h2 = "hippie2";
 	campus.ingresarHippie(h2,ph2);
 
+
 	ASSERT(campus.cantHippiesAtrapados(a) == 1);
 	ASSERT(campus.cantHippiesAtrapados(a2) == 1);
 	ASSERT(campus.cantHippiesAtrapados(a3) == 2);
@@ -830,10 +833,20 @@ void CampusSeguroMover(){
     cout << endl;
 }
 
+void MemoryTest(){
+    //DiccNombres
+    diccNombres dN;
+
+    dN.Definir("esto es un texto mas largo",Posicion(3,3));
+    dN.Definir("esto es un texto",Posicion(2,2));
+    dN.Definir("esto es un",Posicion(4,4));
+
+}
+
 int main(int argc, char **argv)
 {
-    RUN_TEST(test_agregar_obstaculos);
-	RUN_TEST(test_ingresa_estudiante);
+    //RUN_TEST(test_agregar_obstaculos);
+	/*RUN_TEST(test_ingresa_estudiante);
 	RUN_TEST(test_mover_estudiante);
 	RUN_TEST(test_mover_estudiante_fuera);
 	RUN_TEST(test_ingresa_hippie);
@@ -846,7 +859,7 @@ int main(int argc, char **argv)
 	RUN_TEST(test_rastrillaje_mover_hacia_hippie);
 	RUN_TEST(test_captura_hippie_entre_agentes);
 	RUN_TEST(test_captura_estudiante);
-	RUN_TEST(test_mas_vigilante);
+	RUN_TEST(test_mas_vigilante);*/
 
 	//RUN_TEST(CampusSeguroIniciar);
     //cout << endl;
@@ -854,6 +867,8 @@ int main(int argc, char **argv)
     //cout << endl;
     //RUN_TEST(CampusSeguroMover);
     //RUN_TEST(MegaTest);
+
+    RUN_TEST(MemoryTest);
 
 	return 0;
 }

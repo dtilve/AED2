@@ -8,6 +8,8 @@
 #include "Tipos.h"
 #include "aed2.h"
 
+using namespace std;
+
 namespace aed2
 {
     struct Celda{
@@ -178,14 +180,15 @@ namespace aed2
         Campus c(3,3);
         CampusSeguro(c,d);
     }
-	
-    
+
+
 	CampusSeguro::~CampusSeguro(){
+	    /*
 		Nat i = campusObstaculos.Columnas();
 	    while(i > 0)
 	    {
             Nat j = campusObstaculos.Filas();
-            
+
             while(j > 0)
             {
                 campusCompleto[i-1].Eliminar(j-1);
@@ -193,7 +196,7 @@ namespace aed2
             }
             campusCompleto.Eliminar(i);
             i--;
-        }
+        }*/
 	}
     //Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parametro en sus posiciones
 	//correspondientes.

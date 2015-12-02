@@ -6,6 +6,8 @@
 #include "aed2.h"
 #include "Tipos.h"
 
+using namespace std;
+
 namespace aed2
 {
 	class Campus{
@@ -13,7 +15,7 @@ namespace aed2
 
             //Constructor por defecto
 		    Campus();
-		    
+
 		    ~Campus();
 
 			//devuelve el campus
@@ -77,17 +79,16 @@ namespace aed2
     }
 
 	Campus::~Campus(){
-            Nat i = columnas;
+	    /*Nat i = columnas;
 	    while(i > 0){
             	Nat j = filas;
-            
             	while(j > 0){
                 	matriz[i-1].Eliminar(j-1);
                 	j--;
             	}
             	matriz.Eliminar(i);
             	i--;
-	    }
+	    }*/
        }
 
 	Campus::Campus(const Nat ancho, const Nat alto){

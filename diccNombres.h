@@ -95,20 +95,21 @@ diccNombres::diccNombres(){
 }
 
 diccNombres::~diccNombres(){
-	for( Nat i = 0; i < 256; i++ ){
-		this->_primero->alfabeto.Borrar(i);
-	}
+
+    Conj<Nombre> conjClaves = _claves;
+    Conj<Nombre>::Iterador it = conjClaves.CrearIt();
+    while(it.HaySiguiente()){
+        Borrar(it.Siguiente());
+        it.Avanzar();
+    }
 	delete this->_primero;
 }
 
 bool diccNombres::Definido(Nombre n) const{
-
-
 	Nat i = 0;
 	int indice = (int) n[i];
 	Nodo* actual = this->_primero;
 	//actual = actual->alfabeto[indice];
-
 	for(i = 0; (i < n.length()) && (actual->alfabeto[indice] != NULL); i++)
 	{
 		actual =  actual->alfabeto[indice];
@@ -125,7 +126,6 @@ bool diccNombres::Definido(Nombre n) const{
 }
 
 Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
-
 	Nat i;
 	Nodo* actual = this->_primero;
 	Nat indice;
@@ -140,8 +140,6 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 
 		Conj<info>::Iterador* itInfoPointer = new Conj<info>::Iterador;
 		*itInfoPointer = this->_definiciones.AgregarRapido(*definicion);
-
-
 
 		for(i = 0; i < n.length(); i++)
 		{
@@ -170,17 +168,11 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 			}
 			else
 			{
+				proximo = actual->alfabeto[indice];
 				if (i == n.length() - 1)
 				{
-
 					actual->esNombre = true;
 					proximo->significado = itInfoPointer;
-
-				}
-				else
-				{
-
-					proximo = actual->alfabeto[indice];
 				}
 				actual = proximo;
 			}
@@ -235,13 +227,12 @@ void diccNombres::Borrar(const Nombre n){
 		proximo = actual->alfabeto[indice];
 		actual = proximo;
 	}
-	Conj<info>::Iterador itI = *actual->significado;
-
+	Conj<info>::Iterador itI = *(actual->significado);
 	Conj<Nombre>::Iterador itK = itI.Siguiente().clave;
 	itK.EliminarSiguiente();
 	itI.EliminarSiguiente();
-	delete actual->significado;
-	delete actual;
+	//delete actual->significado;
+	//delete actual;
 	//actual->significado = NULL;//esto se pierde, hay q liberar el significado y el nodo
 	//actual->anterior = NULL;
 
@@ -255,12 +246,11 @@ void diccNombres::Borrar(const Nombre n){
 
 	actual->esNombre = false;
 
-	indice = (int) n[i];
-    actual = actual->alfabeto[indice];
+	//indice = (int) n[i];
+    //actual = actual->alfabeto[indice];
 
 	if (esArregloDeNULL(actual->alfabeto))
 	{
-
 		for (i = n.length()-1; 0 < i && !actual->esNombre; i--)
 		{
 			indice = (int) n[i];
