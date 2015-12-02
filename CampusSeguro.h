@@ -3,8 +3,8 @@
 
 #include <ostream>
 #include "Campus.h"
-#include "DiccNombres.h"
-#include "DiccAgentes.h"
+#include "diccNombres.h"
+#include "diccAgentes.h"
 #include "Tipos.h"
 #include "aed2.h"
 
