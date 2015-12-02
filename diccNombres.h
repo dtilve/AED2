@@ -10,6 +10,7 @@ class diccNombres
   public:
 
     diccNombres();
+    ~diccNombres();
 
     Conj<Nombre>::const_Iterador Definir(Nombre n, Posicion p);
     void Borrar(const Nombre n);
@@ -78,6 +79,7 @@ class diccNombres
 
 // definicion del diccionario
 
+
 diccNombres::diccNombres(){
 	this->_claves = Conj<Nombre>();
 	this->_definiciones = Conj<info>();
@@ -90,6 +92,13 @@ diccNombres::diccNombres(){
 	node->esNombre = false;
 
 	this->_primero = node;
+}
+
+diccNombres::~diccNombres(){
+	for( Nat i = 0; i < 256; i++ ){
+		this->_primero->alfabeto.Borrar(i);
+	}
+	delete this->_primero;
 }
 
 bool diccNombres::Definido(Nombre n) const{
@@ -123,10 +132,10 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 	Conj<Nombre>::const_Iterador itRet;
 	if (!this->Definido(n))
 	{
-		Conj<Nombre>::Iterador* itClaveNuevaPointer = new Conj<Nombre>::Iterador;
-		*itClaveNuevaPointer = this->_claves.AgregarRapido(n);
+		Conj<Nombre>::Iterador itClaveNuevaPointer;
+		itClaveNuevaPointer = this->_claves.AgregarRapido(n);
 		info* definicion = new info;
-		definicion->clave = (*itClaveNuevaPointer);
+		definicion->clave = itClaveNuevaPointer;
 		definicion->pos = p;
 
 		Conj<info>::Iterador* itInfoPointer = new Conj<info>::Iterador;
@@ -176,7 +185,7 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 				actual = proximo;
 			}
 		}
-		itRet = *itClaveNuevaPointer;
+		itRet = itClaveNuevaPointer;
 	}
 	else
 	{
@@ -192,6 +201,7 @@ Conj<Nombre>::const_Iterador diccNombres::Definir(Nombre n, Posicion p){
 		informacion.clave = laClave;
 		informacion.pos = p;
 		(*actual->significado).EliminarSiguiente();
+		delete actual->significado;
 		Conj<info>::Iterador* itInfoPointer = new Conj<info>::Iterador;
 		*itInfoPointer = _definiciones.AgregarRapido(informacion);
 		actual->significado = itInfoPointer;
@@ -230,8 +240,9 @@ void diccNombres::Borrar(const Nombre n){
 	Conj<Nombre>::Iterador itK = itI.Siguiente().clave;
 	itK.EliminarSiguiente();
 	itI.EliminarSiguiente();
-
-	actual->significado = NULL;
+	delete actual->significado;
+	delete actual;
+	//actual->significado = NULL;//esto se pierde, hay q liberar el significado y el nodo
 	//actual->anterior = NULL;
 
 
