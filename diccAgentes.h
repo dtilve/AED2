@@ -256,11 +256,19 @@ DiccAgentes::DiccAgentes(Nat minimo,Nat maximo){
 }
 
 DiccAgentes::~DiccAgentes(){
-	conjuntoDeAgentes.~Conj();
-	while(tablaHash.Longitud() > 0){
-		tablaHash.Eliminar(0);
+	//conjuntoDeAgentes.~Conj();
+	Nat i;
+	i = tablaHash.Longitud();
+	while(i > 0 ){
+		tablaHash.Eliminar(i-1);
+		i--;
 	}
-	ListasSanciones.~Lista();
+	i = arregloDeAgentes.Longitud();
+	while( i > 0){
+		arregloDeAgentes.Eliminar(i-1);
+		i--;
+	}
+	//ListasSanciones.~Lista();
 }
 
 DiccAgentes& DiccAgentes::operator=(const DiccAgentes& otro){
