@@ -121,7 +121,7 @@ namespace aed2
             };
 
     		Campus 					    campusObstaculos;
-    		Vector<Vector<Celda>>  		campusCompleto;
+    		Vector< Vector<Celda> >  		campusCompleto;
     		diccNombres 				estudiantes;
     		diccNombres 				hippies;
     		DiccAgentes 				diccAg;
