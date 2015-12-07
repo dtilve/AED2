@@ -1,0 +1,274 @@
+%% ___________________________________________________________________________________________
+
+\Titulo{Operaciones del iterador}
+
+  El iterador que presentamos permite modificar el conjunto recorrido, eliminando elementos.  Sin embargo, cuando el conjunto es no modificable, no se pueden utilizar las funciones de eliminación.  Todos los naturales del conjunto son iterados por copia.
+
+  \InterfazFuncion{CrearIt}{\In{c}{conjAcotado}}{itConjAcotado}
+  {alias(esPermutación?(SecuSuby($res$), ConjSuby($c$))) $\land$ vacia?(Anteriores($res$))}
+  [$\Theta(1)$]
+  [crea un iterador bidireccional del conjunto, de forma tal que \NombreFuncion{HayAnterior} evalúe a \texttt{false} (i.e., que se pueda recorrer los elementos aplicando iterativamente \NombreFuncion{Siguiente}).]
+  [El iterador se invalida si y sólo si se elimina el elemento siguiente del iterador sin utilizar la función \NombreFuncion{EliminarSiguiente}.  Además, anteriores($res$) y siguientes($res$) podrán cambiar completamente ante cualquier operación que modifique $c$ sin utilizar las funciones del iterador.]
+		
+  \InterfazFuncion{HaySiguiente}{\In{it}{itConjAcotado}}{bool}
+  {$res$ $\igobs$ haySiguiente?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para avanzar.]
+
+  \InterfazFuncion{HayAnterior}{\In{it}{itConjAcotado}}{bool}
+  {$res$ $\igobs$ hayAnterior?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para retroceder.]
+
+  \InterfazFuncion{Siguiente}{\In{it}{itConjAcotado}}{nat}
+  [HaySiguiente?($it$)]
+  {$res$ $\igobs$ Siguiente($it$)}
+  [$\Theta(1)$]
+  [devuelve el elemento siguiente a la posición del iterador.]
+  [$res$ se devuelve por copia.]
+
+  \InterfazFuncion{Anterior}{\In{it}{itConjAcotado}}{nat}
+  [HayAnterior?($it$)]
+  {$res$ $\igobs$ Anterior($it$)}
+  [$\Theta(1)$]
+  [devuelve el elemento anterior a la posición del iterador.]
+  [$res$ se devuelve por copia.]
+
+  \InterfazFuncion{Avanzar}{\Inout{it}{itConjAcotado}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ Avanzar($it_0$)}
+  [$\Theta(1)$]
+  [Avanza a la posición siguiente del iterador.]
+
+  \InterfazFuncion{Retroceder}{\Inout{it}{itConjAcotado}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ Retroceder($it_0$)}
+  [$\Theta(1)$]
+  [Retrocede a la posición anterior del iterador.]
+
+  \InterfazFuncion{EliminarSiguiente}{\Inout{it}{itConjAcotado}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ EliminarSiguiente($it_0$)}
+  [$\Theta(1)$]
+  [Elimina del conjunto el elemento que se encuentra en la posición siguiente.]
+
+  \InterfazFuncion{EliminarAnterior}{\Inout{it}{itConjAcotado}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ EliminarAnterior($it_0$)}
+  [$\Theta(1)$]
+  [Elimina del conjunto el elemento que se encuentra en la posición anterior.]
+  
+%% ___________________________________________________________________________________________  
+    \Titulo{Representación del iterador}
+
+  El iterador del conjunto acotado es simplemente un iterador del conjunto \textit{elementos}, ya que con éste recorremos todos los elementos, más un puntero a la estructura del conjunto, para poder borrar al eliminar el iterador.  
+
+  \begin{Estructura}{itConjAcotado}[itCA]
+    \begin{Tupla}[itCA]%
+      \tupItem{iter}{itConj(nat)}%
+      \tupItem{conj}{puntero(ca)}%
+    \end{Tupla}
+  \end{Estructura}
+
+  \Rep[itCA][it]{Rep($\ast it$.conj) $\land$ EsPermutacion(SecuSuby($it$.iter), $it$.conj\DRef elementos) }
+
+  ~
+
+  \AbsFc[itCA]{itBi(nat)}[it]{$it$.elementos}
+
+%% ___________________________________________________________________________________________
+
+%% esto no iba diseñado
+
+%%  yo creo que aca abajo vamos a tener que escribir las demas auxiiares no? -Nati
+%% pongo las complejidades a Ojo +- desp las revisamos segun si cambiamos las estructuras o esten equivocadas -Nati
+
+  \InterfazFuncion{EstaOcupada?}{\In{p}{tupla(nat,nat)}, \In{cs}{campusSeguro}}{bool}
+  [$posValida?(p,campus(cs))$]
+  {$res$ $\igobs$ estaOcupada?(p,cs)}
+  [$\Theta(1)$]
+  [Chaquea su la posicion p del campus esta ocupada por alguno de los elementos presentes.]  
+
+  \InterfazFuncion{SeRetira}{\In{e}{string}, \In{dir}{string}, \In{cs}{campusSeguro}}{bool}
+  [$e \in estudiantes(cs)$]
+  {$res$ $\igobs$ seRetira(e,cs)}
+  [$\Theta(1)$]
+  [Quita a un estudiante del campus, debido a que se retira.]  
+
+  \InterfazFuncion{TodasOcupadas?}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  [$ps \subseteq posicionesValidas(cs)$] 
+  {$res$ $\igobs$ todasOcupadas?(ps,cs)}
+  [$\Theta(cardianl(ps))$]
+  [$Determina si todas las posiciones que integran ps estan ocupadas por algun elemento del campus.$]
+  
+  \InterfazFuncion{PosConHippies}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(string)}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ posConHippies(ps,cs)}
+  [$\Theta(cardianl(ps))$]
+  [Devuelve los nombres de los hippies que estan en las posiciones del conjunto ps.]  
+
+  \InterfazFuncion{HippiesRodeados}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(string)}
+  [$posValida?(p,campus(cs)) \land ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ hippiesRodeados(p,ps,cs)}
+  [$\Theta(cardianl(ps))$] %rever??
+  [Devuelve los nombres de los hippies que esten rodeados.]  
+
+  \InterfazFuncion{EstaRodeadoPorEstudiantes}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ estaRodeadoPorEstudiantes(ps,cs)}
+  [$\Theta(cardinal(ps))$]
+  [Chequea si el conjunto ps esta completo y formado por estudiantes.]  
+
+  \InterfazFuncion{TodosEstudiantes}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ todosEstudiantes(ps,cs)}
+  [$\Theta(cardinal(ps))$]
+  [Verifica si se cumple que el conjunto pasado por parámetro está formado sólamente por estudiantes.]  
+
+  \InterfazFuncion{EstudiantesHippificados}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(string)}
+  [$posValida?(p,campus(cs)) \land ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ estudiantesHippificados(p,ps,cs)}
+  [$\Theta(candinal(ps))$]
+  [Chequea si hay mas de un hippie al rededor de cada estudiante. //para mi deberia ser que chequee si hay 4 hippies.]  
+
+  \InterfazFuncion{EstudiantesRodeados}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(string)}
+  [$posValida?(p,campus(cs)) \land ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ estudiantesRodeados(p,ps,cs)}
+  [$\Theta(cardianl(ps))$]
+  [Devuelve los nombres de los estudiantes que esten rodeados.]  
+
+  \InterfazFuncion{QuedoAtrapado}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ quedoAtrapado(ps,cs)}
+  [$\Theta(cardinal(ps))$]
+  [Verifica si alguien(un estudiante o un hippie) quedo atrapado.]  
+
+  \InterfazFuncion{AlMenosUnAgente}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ alMenosUnAgente(ps,cs)}
+  [$\Theta(cardinal(ps))$]
+  [Chequea que si algún agente pertenece o no a ps.]  
+
+  \InterfazFuncion{AgentesDelEquipo}{\In{p}{tupla(nat,nat)}, \In{as}{conj(nat)}, \In{cs}{campusSeguro}}{conj(nat)}
+  [$posValida?(p,campus(cs)) \land as \subseteq (hippies(cs) \cup estudiantes(cs))$]
+  {$res$ $\igobs$ agentesDelEquipo(p,as,cs)}
+  [$\Theta(cardinal(as)) * \Theta(ps)$]
+  [Devuelve el conjunto de agentes del campus.]  
+
+  \InterfazFuncion{AgentesDelEquipoAux}{\In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(nat)}
+  [$ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ agentesDelEquipoAux(ps,cs)}
+  [$\Theta(cardinal(ps))$]
+  [Devuelve los elementos de ps que sean agentes.]  
+ 
+  \InterfazFuncion{QuedoAtrapadoPorA}{\In{a}{nat}, \In{nombre}{string}, \In{cs}{campusSeguro}}{bool}
+  [$a \in agentes(cs) \land nombre \in hippies(cs)$]
+  {$res$ $\igobs$ quedoAtrapadoPorA(a,nombre,cs)}
+  [$\Theta(1)$]
+  [Chequea si el hippie pasado por parámetro quedó atrapado por el agente pasado por parámetro.]  
+
+  \InterfazFuncion{HippiesAtrapados}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(string)}
+  [$posValida?(p,campus(cs)) \land ps \subseteq posicionesValidas(cs)$]
+  {$res$ $\igobs$ hippiesAtrapados(p,ps,cs)}
+  [$\Theta(ps)$] %falta la especificacion de HippiesAtrapados!!!
+  [Devuelve a los hippies que esten atrapados es decir que no tengan ninguna casilla vecina libre. Esto no quiere decir que un alguna de ellas halla un agente, puede o no suceder. Si ahy un agente, el hippie desaparece por ser capturado. Si todos los vecinos son estudiantes se convierte a estudiante.]  
+
+  \InterfazFuncion{ProxPosicionHippie}{\In{nombre}{string}, \In{cs}{campusSeguro}}{tupla(nat,nat)}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{ProxPosicionAgente}{\In{a}{nat}, \In{cs}{campusSeguro}}{tupla(nat,nat)}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{NuevaPosicion}{\In{p}{tupla(nat,nat)}, \In{nombres}{conj(string)}, \In{cs}{campusSeguro}}{tupla(nat,nat)}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{Acercarse}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{ps2}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{tupla(nat,nat)}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{PosicionesParaAcercarse}{\In{p}{tupla(nat,nat)}, \In{ps}{conj(tupla(nat,nat))}, \In{ps2}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{conj(tupla(nat,nat))}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{SeAcercaA}{\In{p}{tupla(nat,nat)}, \In{p2}{tupla(nat,nat)}, \In{ps2}{conj(tupla(nat,nat))}, \In{cs}{campusSeguro}}{bool}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{LosQueEstanADistanciaN}{\In{p}{tupla(nat,nat)}, \In{nombres}{conj(string)}, \In{n}{nat}, \In{cs}{campusSeguro}}{conj(tupla(nat,nat))}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{DistanciaAlMasCercano}{\In{p}{tupla(nat,nat)}, \In{nombres}{conj(string)}, \In{cs}{campusSeguro}}{nat}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{HayHippieOEstudiante}{\In{p}{tupla(nat,nat)}, \In{nombres}{conj(string)}, \In{cs}{campusSeguro}}{bool}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{EsAgente?}{\In{p}{tupla(nat,nat)}, \In{as}{conj(nat)}, \In{cs}{campusSeguro}}{bool}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{Buscar}{\In{p}{tupla(nat,nat)}, \In{nombres}{conj(string)}, \In{cs}{campusSeguro}}{string}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+  
+  \InterfazFuncion{BuscarAgente}{\In{p}{tupla(nat,nat)}, \In{as}{conj(nat)}, \In{cs}{campusSeguro}}{nat}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{MayorAtrapada}{\In{as}{conj(nat)}, \In{cs}{campusSeguro}}{nat}
+  []
+  {$res$ $\igobs$}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{LosMasVigilantes}{\In{a}{nat}, \In{as}{conj(nat)}, \In{cs}{campusSeguro}}{conj(nat)}
+  []
+  {$res$ $\igobs$ losMasVigilantes(a,as,cs)}
+  [$\Theta()$]
+  []  
+
+  \InterfazFuncion{AgenteDeMenorPlaca}{\In{as}{conj(nat)}, \In{cs}{campusSeguro}}{nat}
+  []
+  {$res$ $\igobs$ agenteDeMenorPlaca(as,cs)}
+  [$\Theta(cardinal(agentes(cs)))$]
+  [Devuelve al agente con menor numero de placa.]  
+
+  \InterfazFuncion{AgenteConKsanciones}{\In{a}{nat}, \In{cs}{campusSeguro}}{conj(nat)}
+  []
+  {$res$ $\igobs$ agenteConKsanciones(a,cs)}
+  [$\Theta(cardinal(agentes(cs)))$]
+  [Devuelve el conjunto de agentes que poseen k sanciones.]  
+
+
+
+

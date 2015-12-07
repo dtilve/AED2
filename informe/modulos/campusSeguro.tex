@@ -1,0 +1,797 @@
+\section{M\'odulo Campus Seguro}
+
+El m\'odulo Campus Seguro permite obtener tanto la cuadrícula que conforma el tablero (por referencia) como los conjuntos que incluyen a los participantes (agentes, estudiantes, hippies) de manera eficiente.\par
+Sobre el conjunto de estudiantes: es posible ingresarlos, consultar sus posiciones y moverlos, en peor caso, la longitud del nombre más largo.\par
+Sobre el conjunto de hippies: es posible ingresarlos y consultar sus posiciones, en peor caso, la longitud del nombre más largo. Moverlos puede implicar cambiar algun/os estudiante/s a hippie y por ello esta operaci\'on es un poco más costosa.\par
+Sobre el conjunto de agentes: es posible consultar sus posiciones de manera eficiente en caso promedio y aquél que tiene más capturas de manera eficiente. Moverlos puede implicar conseguir sanciones o capturas y la eliminaci\'on de hippies del campus, por lo que hay varias operaciones implicadas. Finalmente, consultar los que tienen las mismas sanciones que cierto agente es eficiente en caso promedio, y consultar los que tienen cierto número de sanciones depende si hubieron sanciones antes de la última consulta o no.\par
+
+
+\begin{Interfaz}
+
+	\textbf{se explica con}: \tadNombre{CampusSeguro}.\par
+	\textbf{géneros}: \TipoVariable{campusSeguro}
+	\tinterfaz{Operaciones básicas}
+	
+%    \textbf{Nota}: \TipoVariable{.}
+
+%% daba ERROR porque faltaban los   [$True$] genial :) gracias por arreglarlo!
+
+   \InterfazFuncion{Campus}{\In{c}{campusSeguro}}{campus}
+   [true]
+   {$res \igobs campus(c)$}
+   [$O(1)$]
+   [Devuelve el campus por referencia.]
+
+   \InterfazFuncion{Estudiantes}{\In{c}{campusSeguro}}{itEstudiantes}
+   [true]
+   {$res \igobs estudiantes(c)$}
+   [$O(1)$]
+   [Devuelve un iterador a los estudiantes del campus.]\par
+% OBS ::  revisar iterador
+   \InterfazFuncion{Hippies}{\In{c}{campusSeguro}}{itHippies}
+   [true]
+   {$res \igobs hippies(c)$}
+   [$O(1)$]
+   [Devuelve un iterador a los hippies del campus.]
+   % OBS :: revisar iterador.
+  
+   \InterfazFuncion{Agentes}{\In{c}{campusSeguro}}{itAgentes}
+   [true]
+   {$res \igobs agentes(c)$}
+   [$O(1)$]
+   [Devuelve un iterador a los agentes del campus.]
+   %obs:: revisar iterador.
+
+   \InterfazFuncion{PosEstudianteYHippie}{\In{c}{campusSeguro}, \In{nombre}{string}}{tupla(nat,nat)}
+   [$nombre \in estudiantes(c) \cup hippies(c) $]
+   {$res$ $\igobs$ posEstudianteYHippie($c$)}
+   [$O(|n_{m}|)$]
+   [Devuelve la posici\'on del estudiante o hippie pasado por parámetro.]
+
+   \InterfazFuncion{PosAgente}{\In{c}{campusSeguro}, \In{a}{agente}}{posici\'on}
+   [$a \in agentes(c)$]
+   {$res$ $\igobs$ posAgente($c$,$a$)}
+   [$O(1)$]
+   [Devuelve la posici\'on del agente pasado por parámetro.]
+
+   \InterfazFuncion{CantSanciones}{\In{c}{campusSeguro}, \In{a}{agente}}{nat}
+   [$a \in agentes(c)$]
+   {$res$ $\igobs$ cantSanciones($c$,$a$)}
+   [$O(1)$]
+   [Devuelve la cantidad de sanciones que tiene el agente pasado por parámetro.]
+
+   \InterfazFuncion{CantHippiesAtrapados}{\In{c}{campusSeguro}, \In{a}{agente}}{nat}
+   [$a \in agentes(c)$]
+   {$res$ $\igobs$ cantHippiesAtrapados($c$,$a$)}
+   [$O(1)$]
+   [Devuelve la cantidad de hippies que atrap\'o el agente pasado por parámetro.]
+
+% GENERADORES
+
+      \InterfazFuncion{ComenzarRastrillaje}{\In{d}{Dicc(agente x posicion)}, \In{c}{campus}}{campusSeguro}
+      [$(\forall a : agente)(def?(a,d) \implies (posV\acute{a}lida?(obtener(a,d),c) \land \neg ocupada?(obtener(a,d),c))) \land ( \forall a,a2 : agente) ((def?(a,d) \land def?(a2,d) \land a \neq a2) \implies obtener(a,d) \neq obtener(a2,d))$]
+      {$res$ $\igobs$ comenzarRastrillaje(c,d)}
+      [$O(...)$]
+      [Instancia un nuevo Campus Seguro ubicando a los agentes pasados por parámetro en sus posiciones correspondientes.]
+
+	\InterfazFuncion{IngresarEstudiante}{\In{e}{string}, \In{p}{tupla(nat,nat)}, \Inout{cs}{campusSeguro}}{}
+   [$cs \igobs cs_{0} \land e \notin (estudiantes(cs) \cup hippies(cs)) \land esIngreso?(p,campus) \land \neg(estaOcupada?(p,cs))$]
+   {$cs$ $\igobs$ ingresarEstudiante($e$,$p$,$cs_{0}$)}
+   [$O(|N_{m}|)$]
+   [Ingresa un estudiante al campus y realiza los cambios necesarios de acuerdo a la nueva situaci\'on en la grilla con respecto a sus vecinos.]
+
+   \InterfazFuncion{IngresarHippie}{\In{h}{string}, \In{p}{tupla(nat,nat)}, \Inout{cs}{campusSeguro}}{}
+   [$cs \igobs cs_{0} \land h \notin (estudiantes(cs) \cup hippies(cs)) \land esIngreso?(p,campus) \land \neg(estaOcupada?(p,cs))$]
+   {$cs$ $\igobs$ ingresarHippie(h,p,$cs_{0}$)}
+   [$O(|n_{m}|)$]
+   [Ingresa un hippie al campus y realiza los cambios necesarios de acuerdo a la nueva situaci\'on en la grilla con respecto a sus vecinos.]
+
+   \InterfazFuncion{MoverEstudiante}{\In{e}{string}, \In{dir}{string}, \Inout{cs}{campusSeguro}}{}
+   [$cs \igobs cs_{0} \land e \in estudinates(cs) \land (seRetira(e,dir,cs) \lor (posValida?(proxPosicion(posEstudianteYHippie(e,cs),dir,campus(cs)),cs)))$]
+   {$cs$ $\igobs$ moverEstudiante(e,d,$cs_{0}$)}
+   [$O(|n_{m}|)$]
+   [Mueve al estudiante pasado por parámetro dentro de campus hacia la direcci\'on pasada por parámetro y realiza los cambios necesarios de acuerdo a la nueva situaci\'on en la grilla con respecto a sus vecinos.]
+  
+  \InterfazFuncion{MoverHippie}{\In{h}{string}, \Inout{cs}{campusSeguro}}{}
+   [$cs \igobs cs_{0} \land h \in hippies(cs) \land \neg(todasOcupadas?(vecinos(posEstudianteYHippie(h, cs), campus(cs)),cs))$]
+   {$cs$ $\igobs$ moverHippie(h,cs)}
+   [$O(|n_{m}|)$]
+   [Mueve al hippie pasado por parámetro dentro de campus y realiza los cambios necesarios de acuerdo a la nueva situaci\'on en la grilla con respecto a sus vecinos.]
+  
+   \InterfazFuncion{MoverAgente}{\In{a}{nat}, \Inout{cs}{campusSeguro}}{}
+   [$cs \igobs cs_{0} \land a \in agentes(cs) \land_{L} cantSanciones(a,cs) \leq 3  \land \neg(todasOcupadas?(vecinos (posAgente(a,cs), campus(cs)),cs))$]
+   {$cs$ $\igobs$ moverAgente(a,$cs_{0}$)}
+   [$O(N_{m}) + O(N_{h}))+ O(log(N_{a}))$]
+   [Mueve a un agente dentro del campus y realiza los cambios necesarios de acuerdo a la nueva situaci\'on en la grilla con respecto a sus vecinos.]
+  
+% OTRAS OPERACIONES
+
+   \InterfazFuncion{CantHippies}{\In{cs}{campusSeguro}}{nat}
+   [$True$]
+   {$res$ $\igobs$ cantHippies(cs)}
+   [$O(N_{h})$]
+   [Devuelve la cantidad de hippies que están presentes en el campus.]  
+
+   \InterfazFuncion{CantEstudiantes}{\In{cs}{campusSeguro}}{nat}
+   [$True$]
+   {$res$ $\igobs$ cantEstudiantes(cs)}
+   [$O(N_{e})$]
+   [Devuelve la cantidad de estudiantes que están presentes en el campus.]  
+
+   \InterfazFuncion{MásVigilante}{\In{cs}{campusSeguro}}{nat}
+   [$True$]
+   {$res$ $\igobs$ másVigilante(cs)}
+   [$O(1)$]
+   [Devuelve el agente que atrap\'o la mayor cantidad de hippies.]  
+
+   \InterfazFuncion{ConMismasSanciones}{\In{a}{nat}, \In{cs}{campusSeguro}}{conj(nat)}
+   [$a \in agentes(cs)$]
+   {$res$ $\igobs$ conMismasSanciones(a,cs)}
+   [$O(1)$ en promedio.]
+   [Devuelve el conjunto de agentes que tiene la misma cantidad de sanciones que el agente pasado por parámetro.]  
+
+   \InterfazFuncion{ConKSanciones}{\In{k}{nat}, \In{cs}{campusSeguro}}{conj(nat)}
+   [$True$]
+   {$res$ $\igobs$ conkSanciones(k,cs)}
+   [$O(|N_{a}|)$ si el flag de sanciones está prendido, $O(|log(n)|)$ si el flag de sanciones está apagado.]
+   [Devuelve el conjunto de agentes que tiene k sanciones.]
+
+\tinterfaz{Auxiliares}
+
+   \InterfazFuncion{actualizarCampusSeguro}{\Inout{cs}{campusSeguro}, \In{p}{posici\'on}}{}
+   [$cs \igobs cs_{0} \land posV\acute{a}lida?(p,campus(cs))$]
+   {$estudiantes(cs) \igobs estudiantes(cs_{o}) - estudiantesHippificados(p,Ag(p,vecinos(p,campus(cs_{0}))),cs_{0}) \cup hippiesRodeadosPorEstudiantes(Ag(p,vecinos(p,campus(cs_{0}))),cs_{0}) \land$ \\
+$hippies(cs) \igobs hippies(cs_{0}) - hippiesRodeados(p,Ag(p,vecinos(p,campus(cs_{0}))),cs_{0}) \land$ \\
+$(\forall a: agente) (a \in agentes(cs) \impluego$ \\ $((sanciones(a,cs) \igobs sanciones(a,cs_{0}) + \#estudiantesQueAtrapa(a,Ag(p,vecinos(p,campus(cs_{0}))),cs_{0})) \land $ \\
+$(cantHippiesAtrapados(a,cs) \igobs$ \\ $cantHippiesAtrapados(a,cs_{0}) + \#hippiesQueAtrapa(a,Ag(p,vecinos(p,campus(cs_{0}))),cs_{0}))))$}
+   [$O(|n_{m}|)$]
+   [Funci\'on que se utiliza una vez que se coloc\'o a una persona en su nueva posici\'on. Chequea su propia celda y todas las de alrededor para eliminar/convertir a las unidades que sean necesarias.]
+
+   \InterfazFuncion{chequearEstudiantes}{\Inout{cs}{campusSeguro}, \In{p}{posici\'on}, \Inout{esduaintesAconvertir}{conj(nombre)}}{}
+   [$cs \igobs cs_{0} \land posV\acute{a}lida?(p,campus(cs))$]
+   {$estudiantesAconvertir = estudiantesRoedeados(p,Ag(p,vecinos(p,campus(cs_{0}))),cs) \land$ \\ $(\forall a: agente) (a \in agentes(cs) \impluego$ \\ $(sanciones(a,cs) \igobs sanciones(a,cs_{0}) + \#estudiantesQueAtrapa(a,Ag(p,vecinos(p,campus(cs))),cs)))$}
+   [$O(|n_{m}|)$]
+   [Dada una posici\'on en el campus seguro, agrega al conjunto de estudiantes pasado por par\'ametro a aquellos que se encuentran alrededor de p (inclutyendo a p) y deban ser convertidos en hippie. Al mismo tiempo sanciona a todos los agentes que est\'en rodeando a dichos estudiantes.]
+      
+\InterfazFuncion{chequearHippies}{\Inout{cs}{campusSeguro}, \In{p}{posici\'on}, \Inout{hippiesAeliminar}{conj(nombre)},\Inout{estudiantesAagregar}{conj(nombre)}}{}
+   [$cs \igobs cs_{0} \land posV\acute{a}lida?(p,campus(cs))$]
+   {$hippiesAeliminar = hippiesRodeados(p,Ag(p,vecinos(p,campus(cs_{0}))),cs) \land$ \\ 
+$estudiantesAagregar = hippiesRodeadosPorEstudiantes(Ag(p,vecinos(p,campus(cs))),cs) \land$ \\
+$(\forall a: agente) (a \in agentes(cs) \impluego (cantHippiesAtrapados(a,cs) \igobs$ \\ $cantHippiesAtrapados(a,cs_{0}) + \#hippiesQueAtrapa(a,Ag(p,vecinos(p,campus(cs))),cs)))$}
+   [$O(|n_{m}|)$]
+   [Dada una posici\'on en el campus seguro, agrega al conjunto de hippies pasado por par\'ametro a aquellos que se encuentran alrededor de p (inclutyendo a p) y deban ser eliminados del conjunto de hippies del campus, as\'i como tambi\'en agrega al conjunto de estudiantes pasado por par\'ametro a aquellos que deban ser agregados a los estudiantes del campus. Al mismo tiempo agrega una captura a todos los agentes que est\'en rodeando a dichos hippies.]
+
+\InterfazFuncion{filtrarAdyacentes}{\In{filtro}{string}, \In{p}{posici\'on}, \In{cs}{campusSeguro}}{conj(posici\'on)}
+[$|filtro| \in Ag("estudiante",Ag("hippie",Ag("agente",\emptyset)))) \land posV\acute{a}lida?(p,campus(cs))$]
+{$res \subseteq vecinos(p,campus(cs)) \land (\forall p': posici\acute{o}n) (p' \in res \impluego $(\IF $filtro = "estudiante"$ THEN $(\exists e: nombre) e \in estudiantes(cs) \yluego posEstudianteYHippie(e,cs) = p'$ ELSE
+{\IF $filtro = "hippie"$ THEN $(\exists h: nombre) h \in hippies(cs) \yluego posEstudianteYHippie(h,cs) = p'$ ELSE {$(\exists a: agente) a \in agentes(cs) \yluego posAgente(a,cs) = p'$} FI} FI))}
+[$O(|filtro|)$]
+[Esta funci\'on chequea las posiciones vecinas a la posici\'on p y las filtra seg\'un el tipo de unidad pasado como primer par\'ametro en forma de string.]
+
+\InterfazFuncion{premiarAlrededor}
+{\Inout{cs}{campusSeguro}, \In{p}{posici\'on}}
+{}
+[$posV\acute{a}lida?(p,campus(cs)) \land cs \igobs cs_{0}$]
+{$(\forall a: agente) (a \in agentes(cs) \impluego (cantHippiesAtrapados(a,cs) \igobs$ \\ $cantHippiesAtrapados(a,cs_{0}) + \beta(posAgente(a,cs_{0}) \in vecinos(p,campus(cs_{0})))))$}
+[$O(1)$]
+[Agrega una captura a todos los agentes que se encuentran alrededor de la posici\'on p.]
+
+\InterfazFuncion{rodeado?}
+{\In{p}{posici\'on}, \In{cs}{campusSeguro}}
+{bool}
+[$posV\acute{a}lida?(p,campus(cs))$]
+{$res \igobs todasOcupadas?(vecinos(p,campus(cs)),cs)$}
+[$O(1)$]
+[Chequea si la posici\'on p se encuentra completamente rodeada por celdas que se encuentran ocupadas.]
+
+\InterfazFuncion{sancionarAlrededor}
+{\Inout{cs}{campusSeguro}, \In{p}{posici\'on}}
+{}
+[$posV\acute{a}lida?(p,campus(cs))$]
+{$(\forall a: agente) (a \in agentes(cs) \impluego (sanciones(a,cs) \igobs$ \\ $sanciones(a,cs_{0}) + \beta(posAgente(a,cs_{0}) \in vecinos(p,campus(cs_{0})))))$}
+[$O(1)$]
+[Sanciona a todos los agentes que se encuentran alrededor de la posici\'on p.]
+
+\InterfazFuncion{todosEstudiantes}
+{\In{p}{posici\'on}, \In{cs}{campusSeguro}}
+{bool}
+[$posV\acute{a}lida?(p,campus(cs))$]
+{$res \igobs todosEstudiantes(vecinos(p,campus(cs)),cs)$}
+[$O(1)$]
+[Chequea si todas las pocisiones vecinas de p son estudiantes.]
+
+  \InterfazFuncion{buscarEstudianteM\'asCercano}{\In{cs}{campusSeguro},\In{p}{posici\'on}}{posici\'on}
+  [$posV\acute{a}lida?(p,campus(cs))$]
+  {$(\emptyset?(estudiantes(cs)) \land (\forall i,j: nat) (((j = 1 \lor j = filas(campus(cs))) \land 1 \leq i \leq columnas(cs))) \impluego distancia(p,res,campus(cs)) \leq distancia(p,<i,j>,campus(cs))) \lor ((\exists e_{0}) (e_{0} \in estudiantes(cs) \yluego posEstudianteYHippie(e_{0}) = res \yluego (\forall e: nombre) (e \in estudiantes(cs) \impluego posEstudianteYHippie(e,cs) \leq posEstudianteYHippie(e_{o},cs))))$}
+  [$O(N_{e})$]
+  [Busca al estudiante m\'as cercano dentro de la grilla. En caso de no haber estudiantes, se devuelve la salida m\'as cercana.]
+  
+    \InterfazFuncion{buscarHippieM\'asCercano}{\In{cs}{campusSeguro},\In{p}{posici\'on}}{posici\'on}
+  [$posV\acute{a}lida?(p,campus(cs))$]
+  {$(\emptyset?(hippies(cs)) \land (\forall i,j: nat) (((j = 1 \lor j = filas(campus(cs))) \land 1 \leq i \leq columnas(cs))) \impluego distancia(p,res,campus(cs)) \leq distancia(p,<i,j>,campus(cs))) \lor ((\exists h_{0}) (h_{0} \in hippies(cs) \yluego posEstudianteYHippie(h_{0}) = res \yluego (\forall h: nombre) (h \in hippies(cs) \impluego posEstudianteYHippie(h,cs) \leq posEstudianteYHippie(h_{o},cs))))$}
+  [$O(N_{h})$]
+  [Busca al hippie m\'as cercano dentro de la grilla. En caso de no haber hippies, se devuelve la salida m\'as cercana.]
+
+\tinterfaz{Especificación de las operaciones auxiliares utilizadas en la interfaz}
+
+  \begin{tad}{Campus Seguro Extendido}
+    \parskip=0pt
+    \tadExtiende{\tadNombre{Campus Seguro}}
+    
+    \tadTitulo{otras operaciones (no exportadas)}
+    \tadOperacion{$\#estudiantesQueAtrapa$}{agente/a,conj(posici\'on)/es,campusSeguro/cs}{nat}{$a \in agentes(cs) \land (\forall p: posici\acute{o}n) p \in ps \impluego posV\acute{a}lida?(p,campus(cs))$}
+    
+\tadOperacion{$\#hippiesQueAtrapa$}{agente/a,conj(posici\'on)/es,campusSeguro/cs}{nat}{$a \in agentes(cs) \land (\forall p: posici\acute{o}n) p \in ps \impluego posV\acute{a}lida?(p,campus(cs))$}
+
+\tadOperacion{$hippiePorPosici\acute{o}n$}{posici\'on/p,conj(nombre)/hs,campusSeguro/cs}{nombre}{$(\exists h: nombre) h \in hs \yluego p = posEstudianteYHippie(h,cs)$}
+
+\tadOperacion{$hippiesRodeadosPorEstudiantes$}{conj(posici\'on)/ps,campusSeguro/cs}{conj(nombre)}{$(\forall p: posici\acute{o}n) p \in ps \impluego posV\acute{a}lida?(p,campus(cs))$}
+    \tadAxiomas
+    \tadAxioma{$\#estudiantesQueAtrapa(a,ps,cs)$}{\IF $\emptyset?(ps)$ THEN $0$ ELSE  $\beta(hayHippieOEstudiante(dameUno(ps),estudiantes(cs),cs) \land quedoAtrapado(vecinos(dameUno(ps),campus(cs)),cs)) + \#estudiantesQueAtrapa(a,sinUno(ps),cs)$ FI}
+    
+\tadAxioma{$\#hippiesQueAtrapa(a,ps,cs)$}{\IF $\emptyset?(ps)$ THEN $0$ ELSE  $\beta(hayHippieOEstudiante(dameUno(ps),hippies(cs),cs) \land quedoAtrapado(vecinos(dameUno(ps),campus(cs)),cs)) + \#hippiesQueAtrapa(a,sinUno(ps),cs)$ FI}
+
+\tadAxioma{hippiePorPosici\'on(p,hs,cs)}{ \IF $p = posEstudianteYHippie(dameUno(hs),cs)$ THEN $dameUno(hs)$ ELSE $hippiePorPosici\acute{o}n(p,sinUno(hs),cs)$ FI}
+
+\tadAxioma{hippiesRodeadosPorEstudiantes(ps,cs)}{\IF $\emptyset?(ps)$ THEN $\emptyset$ ELSE {\IF $hayHippieOEstudiante(dameUno(ps),hippies(cs),cs) \land est\acute{a}RodeadoPorEstudiantes(vecinos(dameUno(ps),campus(cs)),cs)$ THEN $Ag(hippiePorPosicion(dameUno(ps),hippies(cs),cs),cs)$\\
+$hippiesRodeadosPorEstudiantes(sinUno(ps),cs))$ ELSE hippiesRodeadosPorEstudiantes(sinUno(ps),cs) FI} FI}
+  \end{tad}
+   
+\end{Interfaz}
+
+\begin{Representacion}
+
+  \tinterfaz{Representaci\'on del CampusSeguro}
+
+  \begin{Estructura}{CampusSeguro}[cs]
+    \begin{Tupla}[cs]
+      \tupItem{campusObst\'aculos}{Campus}
+      \tupItem[\\]{campusCompleto}{Matriz(Celda)}
+      \tupItem[\\]{estudiantes}{diccNombres}
+	  \tupItem[\\]{hippies}{diccNombres}
+      \tupItem[\\]{diccAgentes}{diccAgentes}
+      \tupItem[\\]{másVigilante}{placa}
+      \tupItem[\\]{huboSanciones}{bool}
+    \end{Tupla}\par
+    
+    \begin{Tupla}[Celda]
+	  \tupItem{tipo}{string}
+      \tupItem{estudiante}{itNombres}
+      \tupItem{hippie}{itNombres}
+      \tupItem{agente}{itPlacas}
+	\end{Tupla}
+    
+    donde Matriz es Vector(Vector($\alpha$))
+    
+    donde placa es nat
+    
+    \begin{Tupla}[Posici\'on]
+    	\tupItem{X}{nat}
+        \tupItem{Y}{nat}
+    \end{Tupla}
+    
+  \end{Estructura}
+
+  \Rep[cs][c]{$conjuntosV\acute{a}lidos(c) \yluego (campusV\acute{a}lido(c) \land  estudiantesV\acute{a}lidos(c) \land hippiesV\acute{a}lidos(c) \land agentesV\acute{a}lidos(c))$}
+
+\tadOperacion{conjuntosV\'alidos}{cs/c}{bool}{}
+
+\tadAxioma{conjuntosV\'alidos(c)}{$c.estudiantes \igobs claves(c.diccEstudiantes) \land c.hippies \igobs claves(c.diccHippies) \land c.agentes \igobs claves(c.diccAgentes)$}
+
+\tadOperacion{campusV\'alido}{cs/c}{bool}{}
+\tadAxioma{campusV\'alido(c)}{$(\forall i,j: nat)(posV\acute{a}lida?(<i+1,j+1>,c.campusObst\acute{a}culos)) \impluego \\ ((c.campusCompleto[i][j].tipo = \, "estudiante" \Leftrightarrow \\ (hayEstudiante(c,i,j) \land \neg ocupada?(<i+1,j+1>,c.campusObst\acute{a}culos))) \land \\
+(c.campusCompleto[i][j].tipo = \, "hippie" \Leftrightarrow \\ (hayHippie(c,i,j) \land \neg ocupada?(<i+1,j+1>,c.campusObst\acute{a}culos))) \land \\
+(c.campusCompleto[i][j].tipo = \, "agente" \Leftrightarrow \\ (hayAgente(c,i,j) \land \neg ocupada?(<i+1,j+1>,c.campusObst\acute{a}culos))) \land \\
+((c.campusCompleto[i][j].tipo = \, "libre" \lor c.campusCompleto[i][j].tipo = \, "obst\acute{a}culo") \Leftrightarrow (\neg hayEstudiante(c,i,j) \land \neg hayHippie(c,i,j) \land \neg hayAgente(c,i,j))) \land \\
+c.campusCompleto[i][j].tipo = \, "libre" \Leftrightarrow \neg ocupada?(<i+1,j+1>,c.campusObst\acute{a}culos) \land \\
+c.campusCompleto[i][j].tipo = \, "obst\acute{a}culo" \Leftrightarrow ocupada?(<i+1,j+1>,c.campusObst\acute{a}culos))$}
+
+\tadOperacion{hayEstudiante}{cs/c, nat/i, nat/j}{bool}{}
+\tadAxioma{hayEstudiante(c,i,j)}{$(\exists e: estudiante) \, (def?(e,c.diccEstudiantes) \yluego obtener(e,c.diccEstudiantes) = <i+1,j+1>)$}
+
+\tadOperacion{hayHippie}{cs/c, nat/i, nat/j}{bool}{}
+\tadAxioma{hayHippie(c,i,j)}{$(\exists h: hippie) \, (def?(h,c.diccHippies) \yluego obtener(e,c.diccHippies) = <i+1,j+1>)$}
+
+\tadOperacion{hayAgente}{cs/c, nat/i, nat/j}{bool}{}
+\tadAxioma{hayAgente(c,i,j)}{$(\exists a: agente) \, (def?(a,diccAgentes) \yluego obtener(e,c.diccAgentes).posici\acute{o}n = <i+1,j+1>)$}
+
+\tadOperacion{estudiantesV\'alidos}{cs/c}{bool}{}
+\tadAxioma{estudiantesV\'alidos(c)}{$(\forall e_{0}: estudiante) \, (def?(e_{0},c.diccEstudiantes) \impluego \space (posV\acute{a}lida?(obtener(e_{0},c.diccEstudiantes))))$}
+
+\tadOperacion{hippiesV\'alidos}{cs/c}{bool}{}
+\tadAxioma{hippiesV\'alidos(c)}{$(\forall h_{0}: hippie) \, (def?(h_{0},c.diccHippies) \impluego posV\acute{a}lida?(obtener(h_{0},c.diccHippies)))$}
+
+\tadOperacion{agentesV\'alidos}{cs/c}{bool}{}
+\tadAxioma{agentesV\'alidos(c)}{$def?(c.m\acute{a}sVigilante,c.diccAgentes) \land (\forall a_{0}: agente) \, (def?(a_{0},c.diccAgentes) \impluego (posV\acute{a}lida?(obtener(a_{0},c.diccAgentes).posici\acute{o}n) \land (obtener(a_{0},c.diccAgentes).sanciones \leq obtener(c.m\acute{a}sVigilante*,c.diccAgentes).sanciones)))$}
+\mbox{}
+
+  ~
+
+  \Abs[estr]{campusSeguro}[e]{c}{$(campus(c) = e.campusObst\acute{a}culos \land estudiantes(c) = claves(e.diccEstudiantes) \land hippies(c) = claves(e.diccHippies) \land agentes(c) = claves(e.diccAgentes)) \yluego (losEstudiantesSonIguales(c,e) \land losHippiesSonIguales(c,e) \land losAgentesSonIguales(c,e))$}
+
+\tadOperacion{losEstudiantesSonIguales}{campusSeguro/tad, estr/diseno}{bool}{}
+\tadAxioma{losEstudiantesSonIguales(tad,dise'no)}{$(\forall e: nombre) e \in estudiantes(tad) \impluego posEstudianteYHippie(e,tad) = obtener(e,dise\tilde{n}o.diccEstudiantes)$}
+
+\tadOperacion{losHippiesSonIguales}{campusSeguro/tad, estr/diseno}{bool}{}
+\tadAxioma{losHippiesSonIguales(tad,dise'no)}{$(\forall h: nombre) h \in hippies(tad) \impluego posEstudianteYHippie(h,tad) = obtener(e,dise\tilde{n}o.diccHippies)$}
+
+\tadOperacion{losAgentesSonIguales}{campusSeguro/tad, estr/diseno}{bool}{}
+\tadAxioma{losAgentesSonIguales(tad,dise'no)}{$(\forall a: agente) (a \in agentes(tad) \impluego \\ (posAgente(a,tad) = obtener(a,dise\tilde{n}o.diccAgentes).posici\acute{o}n \land \\ cantSanciones(a,tad) = obtener(a,dise\tilde{n}o.diccAgentes).sanciones \land \\
+cantHippiesAtrapados(a,tad) = obtener(a,dise\tilde{n}o.diccAgentes).capturas))$}
+
+\end{Representacion}
+
+\begin{Algoritmos}
+
+\begin{algorithm}[H]{\textbf{iCampus}(\In{cs}{estr}) $\to$ $\res$: campus}
+	\begin{algorithmic}
+       	\State $res \gets cs.campusObst\acute{a}culos$ \Comment $O(1)$ porque pasa el campus por referencia
+		\medskip
+		\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iEstudiantes}(\In{cs}{estr}) $\to$ $\res$: itConj}
+	\begin{algorithmic}
+    \State $res \gets claves(cs.diccEstudiantes)$ \Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iHippies}(\In{cs}{estr}) $\to$ $\res$: itConj}
+	\begin{algorithmic}
+    \State $res \gets$ claves(cs.diccHippies) \Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+  
+\begin{algorithm}[H]{\textbf{iAgentes}(\In{cs}{estr}) $\to$ $\res$: itConj}
+	\begin{algorithmic}
+    \State $res \gets claves(cs.diccAgentes)$ \Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iPosEstudianteYHippie}(\In{cs}{estr}, \In{n}{nombre}) $\to$ $\res$: posici\'on}
+	\begin{algorithmic}
+		\If{definido?(n,cs.diccEstudiantes)} \Comment $O(|n_{m}|)$
+        	\State $res \gets obtener(n,cs.diccEstudiantes)$	\Comment $O(|n_{m}|)$
+		\Else
+			\State $res \gets obtener(n,cs.diccHippies)$	\Comment $O(|n_{m}|)$
+        \EndIf
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|)$
+        \Statex \underline{Justificaci\'on:} El if llama a la opereci\'on ''definido?" del m\'odulo diccNombres, que tiene complejidad $O(|n_{m}|)$. Luego, independientemente del camino que tome, ejecuta otra operación con complejidad $O(|n_{m}|)$, lo cual, por \'algebra de complejidades, se vuelve $O(|n_{m}|) + O(|n_{m}|) = O(2|n_{m}|) = O(|n_{m}|)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iPosAgente}(\In{cs}{estr}, \In{a}{nat}) $\to$ $\res$: posici\'on}
+	\begin{algorithmic}
+       	\State $res \gets buscarXplaca(a,cs.diccAgentes).posici\acute{o}n$ \Comment $O(1)$ en caso promedio
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$ en caso promedio
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iCantSanciones}(\In{cs}{estr}, \In{a}{nat}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+        	\State $res \gets buscarXplaca(a,cs.diccAgentes).sanciones$	\Comment $O(1)$ en caso promedio
+    	\medskip
+		\Statex \underline{Complejidad:} $O(1)$ en caso promedio
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iCantHippiesAtrapados}(\In{cs}{estr}, \In{a}{nat}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+       	\State $res \gets buscarXplaca(a,cs.diccAgentes).capturas$ \Comment $O(1)$ en caso promedio
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$ en caso promedio
+	\end{algorithmic}
+\end{algorithm}
+
+% GENERADORES
+\begin{algorithm}[H]{\textbf{iComenzarRastrillaje}(\In{c}{Campus}\In{d}{Dicc(placa, posicion))} $\to$ $\res$: estr}
+  \begin{algorithmic}
+	\State $campusCompleto: Matriz(Celda)$	\Comment $O(1)$
+    \State $i,j: nat$	\Comment $O(1)$
+    \State $i \gets 0$	\Comment $O(1)$
+    \State $j \gets 0$	\Comment $O(1)$
+    \While{$i < columnas(c)$}	\Comment $O(1)$. El ciclo se repite $O(columnas(c))$ veces.
+    	\While{$j < filas(c)$}	\Comment $O(1)$. El ciclo se repite $O(filas(c))$ veces.
+        	\If{$ocupada?(<i+1,j+1>,c$)}	\Comment $O(1)$
+            	\State $campusCompleto[i][j] \gets <"obst\acute{a}culo",noSeQuePoner,noSeQuePoner,noSeQuePoner>$	\Comment $O(1)$
+            \Else
+            	\State $campusCompleto[i][j] \gets <"libre",noSeQuePoner,noSeQuePoner,noSeQuePoner>$	\Comment $O(1)$
+            \EndIf
+        \EndWhile \Comment
+    \EndWhile \Comment 
+    \State $diccEstudiantes: diccNombres$	\Comment $O(1)$
+    \State $diccEstudiantes \gets Vac\acute{\imath}o()$	\Comment $O(1)$
+	\State $diccHippies: diccNombres$	\Comment $O(1)$
+    \State $diccHippies \gets Vac\acute{\imath}o()$	\Comment $O(1)$
+    \State $conjAgentes: conj(placa)$	\Comment $O(1)$
+    \State $conjAgentes \gets claves(d)$
+    \State $itAgentes: itConj$	\Comment $O(1)$
+    \State $itAgentes \gets crearIt(conjAgentes)$	\Comment $O(1)$
+    \State $m\acute{a}sVigilante: placa$	\Comment $O(1)$
+    \State $m\acute{a}sVigilante \gets siguiente(itAgentes)$	\Comment $O(1)$
+    \State $min, max: nat$	\Comment $O(1)$
+    \State $min \gets calcularMin(conjAgentes)$	\Comment $O(\#conjAgentes)$
+    \State $max \gets calcularMax(conjAgentes)$	\Comment $O(\#conjAgentes)$
+    \State $agentes: diccAgentes$	\Comment $O(1)$
+    \State $agentes \gets crearDicc(min,max)$
+    \While{$haySiguiente?(itAgentes)$}
+    	\State $agregarAgente(agentes,siguiente(itAgentes),obtener(d,siguiente(itAgentes)))$
+        \State $avanzar(itAgentes)$	\Comment $O(1)$
+    \EndWhile
+    \State $res \gets <c,campusCompleto,diccEstudiantes,diccHippies,agentes,m\acute{a}sVigilante,false>$	\Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:}
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iIngresarEstudiante}(\Inout{cs}{estr}, \In{e}{nombre}, \In{p}{posici\'on})}
+	\begin{algorithmic}
+    	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''estudiante",definir(e,p,cs.diccEstudiantes),itVacio(),itVacio()$>$	\Comment $O(|n_{m}|)$
+		\State actualizarCampusSeguro(cs,p)	\Comment $O(|n_{m}|)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|)$
+        \Statex \underline{Justificaci\'on:} por \'algebra de complejidades: $O(|n_{m}|) + O(|n_{m}|) = O(2|n_{m}|) = O(|n_{m}|)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iIngresarHippie}(\In{e}{estr}, \In{h}{string}, \In{p}{tupla(nat,nat)}) $\to$ $\res$: estr}
+	\begin{algorithmic}
+    	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''hippie",itVacio(),definir(e,p,cs.diccHippies),itVacio()$>$	\Comment $O(|n_{m}|)$
+		\State actualizarCampusSeguro(cs,p)	\Comment $O(|n_{m}|)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|)$
+        \Statex \underline{Justificaci\'on:} por \'algebra de complejidades: $O(|n_{m}|) + O(|n_{m}|) = O(2|n_{m}|) = O(|n_{m}|)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iMoverEstudiante}(\Inout{cs}{estr}, \In{e}{nombre}, \In{dir}{direcci\'on})}
+	\begin{algorithmic}
+   \State $posici\acute{o}n$ $p \gets obtener(e,cs.diccEstudiantes).posici\acute{o}n$	 		\Comment $O(|n_{m}|)$
+  	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''libre",itVacio(),itVacio(),itVacio()$>$	\Comment $O(1)$
+       \If{$dir = izq$}	\Comment $O(1)$
+       \State $p \gets <p.X-1,p.Y>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = der$}	\Comment $O(1)$
+        	\State $p \gets <p.X+1,p.Y>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = arriba$}	\Comment $O(1)$
+        	\State $p \gets <p.X,p.Y-1>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = abajo$}	\Comment $O(1)$
+        	\State $p \gets <p.X,p.Y+1>$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(p,cs.campusObst\acute{a}culos)$}	\Comment $O(1)$
+    		\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ \\ $<$''estudiante",definir(e,p,cs.diccEstudiantes),itVacio(),itVacio()$>$	\Comment $O(|n_{m}|)$
+        	\State actualizarCampusSeguro(cs,p)	\Comment $O(|n_{m}|)$
+        \Else
+        	\State $borrar(e,cs.diccEstudiantes)$	\Comment $O(|n_{m}|)$
+        \EndIf
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|)$
+        \Statex \underline{Justificaci\'on:} La funci\'on realiza varias operaciones $O(1)$ -las cuales podemos obviar ya que todas se realizan una sola vez- y tres que son $O(|n_{m}|)$. Luego, por \'algebra de complejidades: $O(|n_{m}|) + O(|n_{m}|) + O(|n_{m}|) = O(3|n_{m}|) = O(|n_{m}|)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iMoverHippie}(\Inout{cs}{estr}, \In{h}{nombre})}
+	\begin{algorithmic}
+	    \State $posici\acute{o}n$ $p \gets obtener(e,cs.diccEstudiantes).posici\acute{o}n$	 		\Comment $O(|n_{m}|)$
+	  	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''libre",itVacio(),itVacio(),itVacio()$>$	\Comment $O(1)$
+        \State $p \gets buscarEstudianteM\acute{a}sCercano(cs,p)$	\Comment $O(N_{e})$
+    	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''hippie",itVacio(),definir(h,p,cs.diccHippies),itVacio()$>$	\Comment $O(|n_{m}|)$
+        \State actualizarCampusSeguro(cs,p)	\Comment $O(|n_{m}|)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|) + O(N_{e})$
+        \Statex \underline{Justificaci\'on:} La funci\'on realiza principalmente tres operaciones que son $O(|n_{m}|)$ y una que es $O(\#claves(cs.diccEstudiantes))$. Sin embargo, como la funci\'on claves(cd.diccEstudiantes) devuelve el conjunto de nombres de todos los estudiantes del campus, se puede inferir que $\#claves(cs.diccEstudiantes) = N_{e}$. Luego, por \'algebra de complejidades y haciendo un reemplazo: $O(|n_{m}|) + O(\#claves(cs.diccEstudiantes)) + O(|n_{m}|) + O(|n_{m}|) = O(3|n_{m}|) + O(N_{e}) = O(|n_{m}|) + O(N_{e})$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iMoverAgente}(\Inout{cs}{estr}, \In{a}{placa})}
+	\begin{algorithmic}
+		\State $ag: agente$	\Comment $O(1)$
+	    \State $ag \gets obtenerLog(a,cs.diccAgentes)$	 			\Comment $O(log(\#claves(cs.diccAgentes)))$
+    	\State $p: posicion$	\Comment $O(1)$
+        \State $p \gets ag.posici\acute{o}n$	\Comment $O(1)$
+	  	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ $<$''libre",itVacio(),itVacio(),itVacio()$>$	\Comment $O(1)$
+        \State $p \gets buscarHippieM\acute{a}sCercano(cs,p)$	\Comment $O(\#claves(cs.diccHippies))$
+        \State $ag.posici\acute{o}n \gets p$	\Comment $O(1)$
+    	\State cs.campusCompleto[p.X-1][p.Y-1] $\gets$ \\ $<$''agente",itVacio(),itVacio,moverAgente(a,p,cs.diccAgentes)$>$	\Comment $O(log(\#claves(cs.diccAgentes)))$
+        \State actualizarCampusSeguro(cs,p)	\Comment $O(|n_{m}|)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(|n_{m}|) + O(log(N_{a})) + O(N_{h})$
+        \Statex \underline{Justificaci\'on:} Antes de deducir la complejidad mencionada arriba, veamos primero que $\#claves(cs.diccAgentes)$ representa a la cantidad total de agentes en el campus seguro, y $\#claves(cs.diccHippies)$ representa a la cantidad total de hippies en el campus. Por ende, $\#claves(cs.diccAgentes) = N_{a}$ y $\#claves(cs.diccHippies) = N_{h}$. Ahora, aplicando \'algebra de complejidades y haciendo algunos reemplazos: $O(log(\#claves(cs.diccAgentes))) + O(\#claves(cs.diccHippies)) + O(log(\#claves(cs.diccAgentes))) + O(|n_{m}|) = O(log(N_{a})) + O(log(N_{a})) + O(N_{h}) + O(|n_{m}|) = O(2log(N_{a})) + O(N_{h})  + O(|n_{m}|) = O(|n_{m}|) + O(log(N_{a})) + O(N_{h})$
+	\end{algorithmic}
+\end{algorithm}
+  
+% OTRAS OPERACIONES
+
+\begin{algorithm}[H]{\textbf{iCantHippies}(\In{cs}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+    \State $res \gets$ cardinal(claves(cs.diccHippies)) \Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+    \Statex \underline{Justificaci\'on:} claves(cs.diccHippies) devuelve un conjunto lineal en $O(1)$ al cual se le calcula el cardinal tambi\'en en $O(1)$ (ver interfaz de conjunto lineal).
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iCantEstudiantes}(\In{cs}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+    \State $res \gets$ cardinal(claves(cs.diccEstudiantes)) \Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+    \Statex \underline{Justificaci\'on:} claves(cs.diccEstudiantes) devuelve un conjunto lineal en $O(1)$ al cual se le calcula el cardinal tambi\'en en $O(1)$ (ver interfaz de conjunto lineal).
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iM\'asVigilante}(\In{cs}{estr}) $\to$ $\res$: nat}
+  \begin{algorithmic}
+    \State $res \gets cs.m\acute{a}sVigilante$	\Comment $O(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iConMismasSanciones}(\In{a}{placa}, \In{cs}{estr}) $\to$ $\res$: conj(placa)}
+  \begin{algorithmic}
+    \State $res \gets conMismasSanciones(a,cs.diccAgentes)$	\Comment $O(1)$ en caso promedio
+    \medskip
+	\Statex \underline{Complejidad:} $O(1)$ en caso promedio
+    \Statex \underline{Justificaci\'on:} La operaci\'on conMismasSanciones del m\'odulo diccAgentes se encarga de realizar la tarea en la complejidad especificada.
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iConKSanciones}(\In{k}{nat}, \In{cs}{estr}) $\to$ $\res$: conj(placa)}
+  \begin{algorithmic}
+    \If{cs.huboSanciones?}	\Comment $O(1)$
+    	\State $res \gets conKSancionesLineal(k,cs.diccAgentes)$	\Comment $O(N_{a})$
+        \State $cs.huboSanciones? \gets false$	\Comment $O(1)$
+    \Else
+    	\State $res \gets conKSancionesLog(k,cs.diccAgentes)$	\Comment $O(log(N_{a}))$
+    \EndIf
+    \medskip
+	\Statex \underline{Complejidad:} $O(N_{a})$ La primera vez, $O(log(N_{a}))$ si no hubo ninguna sanci\'on luego de la primera llamada.
+    \Statex \underline{Justificaci\'on:} La estructura posee un flag booleano llamado huboSanciones? para poder determinar si a la hora de llamar a esta funci\'on hubo sanciones anteriormente o no. En la primera llamada de la funci\'on, sea cual sea el caso, se realiza una operaci\'on de costo $O(N_{a})$ o una de costo $O(log(N_{a})) \in O(N_{a})$. Si entra por la rama true de la guarda, deja el flag en false para que en la siguiente llamada -si ese flag no fue modificado- entre por la rama false y ejecute solo la operaci\'on de costo $O(log(N_{a}))$. Si entra por la rama false de la guarda, entonces no es necesario ajustar nada para que en la siguiente llamada se acceda a esa misma guarda -de nuevo, asumiendo que no hubo sanciones en el medio-.
+  \end{algorithmic}
+\end{algorithm}
+
+  
+  
+\tinterfaz{Auxiliares}
+
+\begin{algorithm}[H]{\textbf{iActualizarCampusSeguro}(\Inout{cs}{estr}, \In{p}{posici\'on})}
+  \begin{algorithmic}
+		\State $conj(nombre)$ $hippiesAeliminar \gets vac\acute{\imath}o()$ \Comment $O(1)$
+        \State $conj(nombre)$ $estudiantesAagregar \gets vac\acute{\imath}o()$	\Comment $O(1)$
+        \State $conj(nombre)$ $estudiantesAconvertir \gets vac\acute{\imath}o()$	\Comment $O(1)$
+		\State $chequearEstudiantes(cs,p,estudiantesAconvertir)$ \Comment $O(1)$
+		\State $chequearHippies(cs,p,hippiesAeliminar,estudiantesAagregar)$ \Comment $O(1)$
+        \State $itConj(nombre)$ $itNombres1 \gets crearIt(estudiantesAconvertir)$ \Comment $O(1)$
+        \While{$haySiguiente?(itNombres1)$}	\Comment $O(1)$. El ciclo se repite $O(\#estudiantesAconvertir)$ veces
+        	\State $borrar(itNombres1.siguiente,cs.diccEstudiantes)$	\Comment $O(|n_{m}|)$
+            \State $definir(itNombres1.siguiente,cs.diccHippies)$	\Comment $O(|n_{m}|)$
+            \State $avanzar(itNombres1)$	\Comment $O(1)$
+        \EndWhile
+        \State $itConj(nombre)$ $itNombres2 \gets crearIt(hippiesAeliminar)$ \Comment $O(1)$
+        \While{$haySiguiente?(itNombres2)$}	\Comment $O(1)$. El ciclo se repite  $O(\#hippiesAeliminar)$ veces
+        	\State $borrar(itNombres2.siguiente,cs.diccHippies)$	\Comment $O(|n_{m}|)$
+            \State $avanzar(itNombres2)$	\Comment $O(1)$
+        \EndWhile
+        \State $itConj(nombre)$ $itNombres3 \gets crearIt(estudiantesAagregar)$ \Comment $O(1)$
+        \While{$haySiguiente?(itNombres3)$}	\Comment $ $O(1)$. El ciclo se repite O(\#estudiantesAagregar)$ veces
+            \State $definir(itNombres3.siguiente,cs.diccEstudiantes)$	\Comment $O(|n_{m}|)$
+            \State $avanzar(itNombres3)$	\Comment $O(1)$
+        \EndWhile
+        \medskip
+	\Statex \underline{Complejidad:} $O(|n_{m}|)$
+    \Statex \underline{Justificaci\'on:} Los conjuntos estudiantesAconvertir, hippiesAeliminar y estudiantesAagregar est\'an acotados en cardinal por 4, ya que la informaci\'on que estos contienen est\'a relacionada solo con las personas que se encuentran en los casilleros vecinos de la posici\'on p que se pasa por par\'ametro en la funci\'on. Por ende, los tres while que se ejecutan son todos $O(1)$. Una vez aclarado eso, se tiene por \'algebra de complejidades lo siguiente (obviando todas las operaciones que son $O(1)$): $O(|n_{m}|) + O(|n_{m}|) + O(|n_{m}|) + O(|n_{m}|) = O(4|n_{m}|) = O(|n_{m}|)$
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iChequearEstudiantes}(\Inout{cs}{estr}, \In{p}{posici\'on}, \Inout {estudiantesAconvertir}{conj(nombre)})}
+  \begin{algorithmic}
+        \State $conj(posici\acute{o}n)$ $ps \gets filtrarAdyacentes("estudiante",p,cs)$	\Comment $O(|"estudiante"|)$
+        \If{$cs.campusCompleto[p.X-1][p.Y-1].tipo == "estudiante"$}	\Comment $O(|"estudiante"|)$ (igualdad entre vectores)
+	        \State $agregarR\acute{a}pido(p,ps)$ \Comment $O(1)$
+            \EndIf
+        \State $itConj(posici\acute{o}n)$ $itPos \gets crearIt(ps)$ \Comment $O(1)$
+        \State $nat$ $i \gets 0$	\Comment $O(1)$
+        \State $nat$ $j \gets 0$	\Comment $O(1)$
+        \State $posici\acute{o}n$ $posActual \gets <0,0>$	\Comment $O(1)$
+        \While{$haySiguiente?(itPos)$}	\Comment $O(1)$. El ciclo se repite $O(\#ps)$ veces
+            \State $posActual \gets itPos.siguiente$ \Comment $O(1)$
+            \If{$rodeado?(posActual,cs) \land$ \\ $cardinal(filtrarAdyacentes("agente",posActual,cs)) \geq 1$}	\Comment $O(1) + O(1) + O(1) $
+				\State $sancionarAlrededor(cs,p)$	\Comment $O(1)$
+                \State $cs.huboSanciones? \gets true$	\Comment $O(1)$
+            \EndIf
+            \If{$cardinal(filtrarAdyacentes("hippie",posActual,cs)) \geq 2$}	\Comment $O(1)$
+				\State $i \gets (posActual).X-1$	\Comment $O(1)$
+                \State $j \gets (posActual).Y-1$	\Comment $O(1)$
+            	\State $agregarRapido(((cs.campusCompleto[i][j]).estudiante).siguiente,estudiantesAconvertir)$	\Comment $O(1)$
+            \EndIf
+            \State $avanzar(itPos)$	\Comment $O(1)$
+            \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+    \Statex \underline{Justificaci\'on:} El conjunto ps se encuentra acotado en cardinal ya que representa a los estudiantes que se encuentran alrededor de la posici\'on pasada por par\'ametro (incluyendo la posici\'on misma), que son a lo sumo 5. Por ende, el while que se encuentra en la funci\'on es $O(1)$. Adem\'as, $|"estudiante"| == 10$ con lo cual $O(|"estudiante"|) = O(10) = O(1)$. Como el resto de las operaciones tambi\'en son $O(1)$, queda demostrada la complejidad mencionada arriba sobre el algoritmo.
+		\EndWhile
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iChequearHippies}(\Inout{cs}{estr}, \In{p}{posici\'on}, \Inout {hippiesAeliminar}{conj(nombre)}, \Inout {estudiantesAagregar}{conj(nombre)})}
+  \begin{algorithmic}
+        \State $conj(posici\acute{o}n)$ $ps \gets filtrarAdyacentes("hippie",p,cs.campusCompleto)$	\Comment $O(|"hippie"|)$
+        \If{$cs.campusCompleto[p.X-1][p.Y-1].tipo == "hippie"$}	\Comment $O(|"hippiw"|)$ (igualdad entre vectores)
+	        \State $agregarR\acute{a}pido(p,ps)$	\Comment $O(1)$
+        \EndIf
+        \State $itConj(posici\acute{o}n)$ $itPos \gets crearIt(ps)$	\Comment $O(1)$
+        \State $nat$ $i \gets 0$	\Comment $O(1)$
+        \State $nat$ $j \gets 0$	\Comment $O(1)$
+        \State $posici\acute{o}n$ $posActual \gets <0,0>$	\Comment $O(1)$
+        \While{$haySiguiente?(itPos)$}	\Comment  $O(1)$. El ciclo se repite $O(\#ps)$ veces
+        	\State $posActual \gets itPos.siguiente$	\Comment $O(1)$
+			\State $i \gets (posActual).X-1$	\Comment $O(1)$
+            \State $j \gets (posActual).Y-1$	\Comment $O(1)$
+            \If{$rodeado?(posActual,cs) \land$ \\ $cardinal(filtrarAdyacentes("agente",posActual,cs)) \geq 1$}	\Comment $O(1) + O(1) + O(1) $
+            	\State $premiarAlrededor(cs,p)$	\Comment $O(1)$
+            	\State $agregarRapido(((cs.campusCompleto[i][j]).hippie).siguiente,hippiesAeliminar)$	\Comment $O(1)$
+            \EndIf
+            \If{$rodeado?(posActual,cs)  \land todosEstudiantes(posActual,cs)$}	\Comment $O(1) + O(1)$
+            	\State $agregarRapido(((cs.campusCompleto[i][j]).hippie).siguiente,estudiantesAagregar)$	\Comment $O(1)$
+            \EndIf
+            \State $avanzar(itPos)$	\Comment $O(1)$
+        \EndWhile
+        \medskip
+	\Statex \underline{Complejidad:} $O(1)$
+    \Statex \underline{Justificaci\'on:} El conjunto ps se encuentra acotado en cardinal ya que representa a los hippies que se encuentran alrededor de la posici\'on pasada por par\'ametro (incluyendo la posici\'on misma), que son a lo sumo 5. Por ende, el while que se encuentra en la funci\'on es $O(1)$. Adem\'as, $|"hippie"| == 6$ con lo cual $O(|"hippie"|) = O(6) = O(1)$. Como el resto de las operaciones tambi\'en son $O(1)$, queda demostrada la complejidad mencionada arriba sobre el algoritmo.
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iFiltrarAdyacentes}(\In{filtro}{string}, \In{p}{posici\'on}, \In{cs}{estr}) $\to$ $\res$: conj(posici\'on)}
+	\begin{algorithmic}
+    	\State $res \gets vac\acute{i}o$	\Comment $O(1)$
+    	\State $nat$ $i \gets p.X-1$	\Comment $O(1)$
+    	\State $nat$ $j \gets p.Y-1$	\Comment $O(1)$
+    	\If{$posV\acute{a}lida?(<p.X+1,p.Y>,cs.campusObst\acute{a}culos) \land$ \\ $(cs.campusSeguro[i+1][j]).tipo == filtro$}	\Comment $O(1) + O(|filtro|)$  explicaci\'on m\'as abajo
+        	\State $agregarR\acute{a}pido(res,<p.X+1,p.Y>)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X,p.Y+1>,cs.campusObst\acute{a}culos) \land$ \\ $(cs.campusSeguro[i][j+1]).tipo == filtro$}	\Comment $O(1) + O(|filtro|)$ explicaci\'on m\'as abajo
+        	\State $agregarR\acute{a}pido(res,<p.X,p.Y+1>)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X-1,p.Y>,cs.campusObst\acute{a}culos) \land$ \\ $(cs.campusSeguro[i-1][j]).tipo == filtro$}	\Comment $O(1) + O(|filtro|)$ explicaci\'on m\'as abajo
+        	\State $agregarR\acute{a}pido(res,<p.X-1,p.Y>)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X,p.Y-1>,cs.campusObst\acute{a}culos) \land$ \\ $(cs.campusSeguro[i][j-1]).tipo == filtro$}	\Comment $O(1) + O(|filtro|)$ explicaci\'on m\'as abajo
+        	\State $agregarR\acute{a}pido(res,<p.X,p.Y-1>)$	\Comment $O(1)$
+        \EndIf
+        \medskip
+		\Statex \underline{Complejidad:} $O(|filtro|)$
+        \Statex \underline{Justificaci\'on:} Los if son $O(|filtro|)$ porque se est\'a evaluando una igualdad entre dos instancias del tipo string, que son del tipo vector(char). La complejidad de comparar igualdad entre dos vectores es $\displaystyle O\left(\sum_{i=1}^\ell{equal(v_1[i],v_2[i])}\right)$ donde $\ell = \min\{\text{long}(v_1), \text{long}(v_2)\}$. En el peor caso $\ell = filtro$ y la igualdad entre chars es $O(1)$. Entonces utilizando propiedades del \'algebra de complejidades se tiene lo siguiente: $\displaystyle O\left(\sum_{i=1}^\ell{equal(v_1[i],v_2[i])}\right) = \sum_{i=1}^{|filtro|}{O(equal(v_1[i],v_2[i]))} = \sum_{i=1}^{|filtro|}{O(1)} = O(1)*\sum_{i=1}^{|filtro|}{1} = O(1)*|filtro| = O(|filtro|)$. \\
+        Ya habiendo aclarado esto, se puede ver que se aplican 4 operaciones con la complejidad reci\'en mencionada (las dem\'as son $O(1)$). Entonces, otra vez, por \'algebra de complejidades: $O(|filtro|) + O(|filtro|) + O(|filtro|) + O(|filtro|) = O(4|filtro|) = O(|filtro|)$
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iPremiarAlrededor}(\Inout{cs}{estr}, \In{p}{posici\'on})}
+	\begin{algorithmic} 
+		\State $conj(posici\acute{o}n)$ $ags \gets filtrarAdyacentes("agente",p,cs)$	\Comment $O(|"agente"|)$
+		\State $itConj(posici\acute{o}n)$ $itAgs \gets crearIt(ags)$	\Comment $O(1)$
+        \State $nat$ $i \gets 0$	\Comment $O(1)$
+        \State $nat$ $j \gets 0$	\Comment $O(1)$
+		\While{$haySiguiente?(itAgs)$}	\Comment  $O(1)$. El ciclo se repite $O(\#ags)$ veces
+			\State $i \gets (itAgs.siguiente).X-1$	\Comment $O(1)$
+		    \State $j \gets (itAgs.siguiente).Y-1$ 	\Comment $O(1)$
+		    \State $agregarCaptura((cs.campusCompleto[i][j]).agente)$	\Comment $O(1)$
+		    \State $avanzar(itAgs)$	\Comment $O(1)$
+		\EndWhile
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$
+        \Statex \underline{Justificaci\'on:} El conjunto ags se encuentra acotado en cardinal ya que representa a los agentes que se encuentran alrededor de la posici\'on pasada por par\'ametro, que son a lo sumo 4. Por ende, el while que se encuentra en la funci\'on es $O(1)$. Adem\'as, $|"agente"| == 6$ con lo cual $O(|"agente"|) = O(6) = O(1)$. Como el resto de las operaciones tambi\'en son $O(1)$, queda demostrada la complejidad mencionada arriba sobre el algoritmo.
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iRodeado?}(\In{p}{posici\'on}, , \In{cs}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+    	\State $nat$ $i \gets p.X-1$	\Comment $O(1)$
+    	\State $nat$ $j \gets p.Y-1$	\Comment $O(1)$
+        \State $bool$ $derecha \gets posV\acute{a}lida?(<p.X+1,p.Y>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i+1][j]).tipo \neq "libre"$	\Comment $O(1) + O(1)$
+        \State $bool$ $abajo \gets posV\acute{a}lida?(<p.X,p.Y+1>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i][j+1]).tipo \neq "libre"$	\Comment $O(1) + O(1)$
+        \State $bool$ $izquierda \gets posV\acute{a}lida?(<p.X-1,p.Y>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i-1][j]).tipo \neq "libre"$	\Comment $O(1) + O(1)$
+        \State $bool$ $arriba \gets posV\acute{a}lida?(<p.X,p.Y-1>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i][j-1]).tipo \neq "libre"$	\Comment $O(1) + O(1)$
+        \State $res \gets derecha \land izquierda \land arriba \land abajo$	\Comment $O(1)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iSancionarAlrededor}(\Inout{cs}{estr}, \In{p}{posici\'on})}
+	\begin{algorithmic}
+		\State $conj(posici\acute{o}n)$ $ags \gets filtrarAdyacentes("agente",p,cs)$	\Comment $O(|"agente"|)$
+		\State $itConj(posici\acute{o}n)$ $itAgs \gets crearIt(ags)$	\Comment $O(1)$
+        \State $nat$ $i \gets 0$	\Comment $O(1)$
+        \State $nat$ $j \gets 0$	\Comment $O(1)$
+		\While{haySiguiente?(itAgs)}	\Comment  $O(1)$. El ciclo se repite $O(\#ags)$ veces
+			\State $i \gets (itAgs.siguiente).X-1$	\Comment $O(1)$
+		    \State $j \gets (itAgs.siguiente).Y-1$ 	\Comment $O(1)$
+		    \State $sancionar((cs.campusCompleto[i][j]).agente)$	\Comment $O(1)$
+		    \State $avanzar(itAgs)$	\Comment $O(1)$
+		\EndWhile
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$
+        \Statex \underline{Justificaci\'on:} El conjunto ags se encuentra acotado en cardinal ya que representa a los agentes que se encuentran alrededor de la posici\'on pasada por par\'ametro, que son a lo sumo 4. Por ende, el while que se encuentra en la funci\'on es $O(1)$. Adem\'as, $|"agente"| == 6$ con lo cual $O(|"agente"|) = O(6) = O(1)$. Como el resto de las operaciones tambi\'en son $O(1)$, queda demostrada la complejidad mencionada arriba sobre el algoritmo.
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iTodosEstudiantes}(\In{p}{posici\'on}, , \In{cs}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+    	\State $nat$ $i \gets p.X-1$	\Comment $O(1)$
+    	\State $nat$ $j \gets p.Y-1$	\Comment $O(1)$
+        \State $bool$ $derecha \gets posV\acute{a}lida?(<p.X+1,p.Y>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i+1][j]).tipo = "estudiante"$	\Comment $O(1) + O(1)$
+        \State $bool$ $abajo \gets posV\acute{a}lida?(<p.X,p.Y+1>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i][j+1]).tipo = "estudiante"$	\Comment $O(1) + O(1)$
+        \State $bool$ $izquierda \gets posV\acute{a}lida?(<p.X-1,p.Y>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i-1][j]).tipo = "estudiante"$	\Comment $O(1) + O(1)$
+        \State $bool$ $arriba \gets posV\acute{a}lida?(<p.X,p.Y-1>,cs.campusObst\acute{a}culos) \impluego$ \\ \hspace{65pt} $(cs.campusSeguro[i][j-1]).tipo = "estudiante"$	\Comment $O(1) + O(1)$
+        \State $res \gets derecha \land izquierda \land arriba \land abajo$	\Comment $O(1)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iBuscarEstudianteM\'asCercano}(\In{cs}{estr},\In{p}{posici\'on}) $\to$ $\res$: posici\'on}
+	\begin{algorithmic}
+        \State $posici\acute{o}n$ $candidato \gets <0,0>$
+        \If{$\neg diccVacio?(cs.diccEstudiantes)$}	\Comment $O(1)$
+        	\State $itConj$ $it \gets significados(cs.diccEstudiantes)$ \Comment $O(1)$
+            \State $candidato \gets (it.siguiente).pos$ \Comment $O(1)$
+            \While{$haySiguiente?(it)$} \Comment $O(1)$. El ciclo se repite $O(\#estudiantes(cs))$ veces.
+            	\If{$distancia(p,(it.siguiente).pos,campusObst\acute{a}culos) \leq distancia(p,candidato,cs.campusObst\acute{a}culos)$}	\Comment $O(1)$
+                	\State $candidato \gets (it.siguiente).pos$ \Comment $O(1)$
+                \EndIf
+                \State $avanzar(it)$ \Comment $O(1)$
+            \EndWhile
+        \Else
+        	\State $itConj$ $it \gets crearIt(incgresosM\acute{a}sCercanos(cs.campusObst\acute{a}culos))$ $avanzar(it)$ \Comment $O(1)$
+            \State $candidato \gets siguiente(it)$ $avanzar(it)$ \Comment $O(1)$
+        \EndIf
+        \State $res \gets candidato$ $avanzar(it)$ \Comment $O(1)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(N_{e})$
+		\Statex \underline{Justificaci\'on:} En el peor caso, el algoritmo entrar\'ia por la rama true del primer if, en el cual se ejecuta un ciclo que se realiza $O(\#estudiantes(cs))$ veces ya que recorre a todos los estudiantes uno por uno para ver cu\'al es el m\'as cercano.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iBuscarHippieM\'asCercano}(\In{cs}{estr},\In{p}{posici\'on}) $\to$ $\res$: posici\'on}
+	\begin{algorithmic}
+        \State $posici\acute{o}n$ $candidato \gets <0,0>$
+        \If{$\neg diccVacio?(cs.diccHippies)$}	\Comment $O(1)$
+        	\State $itConj$ $it \gets significados(cs.diccHippies)$ \Comment $O(1)$
+            \State $candidato \gets (it.siguiente).pos$ \Comment $O(1)$
+            \While{$haySiguiente?(it)$} \Comment $O(1)$. El ciclo se repite $O(\#hippies(cs))$ veces.
+            	\If{$distancia(p,(it.siguiente).pos,campusObst\acute{a}culos) \leq distancia(p,candidato,cs.campusObst\acute{a}culos)$}	\Comment $O(1)$
+                	\State $candidato \gets (it.siguiente).pos$ \Comment $O(1)$
+                \EndIf
+                \State $avanzar(it)$ \Comment $O(1)$
+            \EndWhile
+        \Else
+        	\State $itConj$ $it \gets crearIt(incgresosM\acute{a}sCercanos(cs.campusObst\acute{a}culos))$ $avanzar(it)$ \Comment $O(1)$
+            \State $candidato \gets siguiente(it)$ $avanzar(it)$ \Comment $O(1)$
+        \EndIf
+        \State $res \gets candidato$ $avanzar(it)$ \Comment $O(1)$
+        \medskip
+		\Statex \underline{Complejidad:} $O(N_{h})$
+		\Statex \underline{Justificaci\'on:} En el peor caso, el algoritmo entrar\'ia por la rama true del primer if, en el cual se ejecuta un ciclo que se realiza $O(\#hippies(cs))$ veces ya que recorre a todos los hippies uno por uno para ver cu\'al es el m\'as cercano.
+	\end{algorithmic}
+\end{algorithm}
+
+\end{Algoritmos}

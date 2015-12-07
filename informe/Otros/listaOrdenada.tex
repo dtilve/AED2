@@ -1,0 +1,576 @@
+\section{Módulo Lista Ordenada}
+
+El módulo Lista Ordenada provee una secuencia que permite la inserción, modificación, borrado y acceso eficiente del primer y último elemento.  El acceso a un elemento aleatorio tiene un costo logaritmico porque los elementos se ecuentran ordenados, entonces se puede acceder a trav\'es de busqueda binaria. En forma concisa, este módulo implementa lo que se conoce como una lista doblemente enlazada ordenada, con punteros al inicio y al fin.
+
+En cuanto al recorrido de los elementos, se provee un iterador bidireccional que permite eliminar y agregar elementos.  De esta forma, se pueden aplicar filtros recorriendo una única vez la estructura.  El iterador se puede inicializar tanto apuntando al inicio, en cuyo caso el siguiente del iterador es el primer elemento de la lista, como apuntando al fin, en cuyo caso el anterior del iterador es el último elemento de la lista.  En consecuencia, se puede recorrer el reverso de la lista en forma eficiente.
+
+Para describir la complejidad de las operaciones, vamos a llamar $copy(a)$ al costo de copiar el elemento $a \in \alpha$ (i.e., $copy$ es una función de $\alpha$ en $\mathbb{N}$).\footnote{Nótese que este es un abuso de notación, ya que no estamos describiendo $copy$ en función del tamaño de $a$.  A la hora de usarlo, habrá que realizar la traducción.}
+
+\begin{Interfaz}
+  
+  \textbf{parámetros formales}\hangindent=2\parindent\\
+  \parbox{1.7cm}{\textbf{géneros}} $\alpha$\\
+  \parbox[t]{1.7cm}{\textbf{función}}\parbox[t]{\textwidth-2\parindent-1.7cm}{%
+    \InterfazFuncion{Copiar}{\In{a}{$\alpha$}}{$\alpha$}
+    {$res \igobs a$}
+    [$\Theta(copy(a))$]
+    [función de copia de $\alpha$'s]
+    %\TipoFuncion{Copiar}{\In{a}{$\alpha$}}{$\alpha$} \qquad función de copia, con costo temporal $\Theta(copy(a))$.
+  }
+
+  \textbf{se explica con}: \tadNombre{Secuencia$(\alpha)$}, \tadNombre{Iterador Bidireccional($\alpha$)}.
+  \textbf{géneros}: \TipoVariable{lista$(\alpha)$}, \TipoVariable{itLista($\alpha$)}.
+  \Titulo{Operaciones básicas de lista}
+
+  \InterfazFuncion{Vacía}{}{lista$(\alpha)$}%
+  {$res \igobs \secuencia{}$}%
+  [$\Theta(1)$]
+  [Genera una lista vacía.]
+
+  \InterfazFuncion{Agregar}{\Inout{l}{lista($\alpha$)}, \In{a}{$\alpha$}}{itLista($\alpha$}
+  [$l \igobs l_{0}$]
+  {$l \igobs$ ( if  $(primero(l)$ $>= a)$  then $\secuencia{a}[l_{0}]$ else $\secuencia{primero(l)}[agregar(l_{0},a)])$ $\land$ $res$ $=$ CrearItBi(\secuencia{}, $l$) $\land$ alias(SecuSuby($res$) $=$ $l$)}
+  [$\Theta(copy(a))$]
+  [agrega el elemento $a$ ordenado.  Retorna un iterador a $l$, de forma tal que Siguiente devuelva $a$.]
+  [el elemento $a$ agrega por copia. El iterador se invalida si y sólo si se elimina el elemento siguiente del iterador sin utilizar la función \NombreFuncion{EliminarSiguiente}.]
+
+  \InterfazFuncion{EsVacía?}{\In{l}{lista($\alpha$)}}{bool}
+  {$res$ $\igobs$ vacia?($l$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si $l$ no contiene elementos]
+
+  \InterfazFuncion{Fin}{\Inout{l}{lista($\alpha$)}}{}
+  [$l \igobs l_0$ $\land$ $\lnot$vacía?($l$)]
+  {$l$ $\igobs$ fin($l_0$)}
+  [$\Theta(1)$]
+  [elimina el primer elemento de $l$]
+
+  \InterfazFuncion{Comienzo}{\Inout{l}{lista($\alpha$)}}{}
+  [$l \igobs l_0$ $\land$ $\lnot$vacía?($l$)]
+  {$l$ $\igobs$ com($l_0$)}
+  [$\Theta(1)$]
+  [elimina el último elemento de $l$]
+
+  \InterfazFuncion{Primero}{\In{l}{lista($\alpha$)}}{$\alpha$}
+  [$\lnot$vacía?($l$)]
+  {alias($res$ $\igobs$ prim($l$))}
+  [$\Theta(1)$]
+  [devuelve el primer elemento de la lista.]
+  [$res$ es modificable si y sólo si $l$ es modificable.]
+
+  \InterfazFuncion{Ultimo}{\In{l}{lista($\alpha$)}}{$\alpha$}
+  [$\lnot$vacía?($l$)]
+  {alias($res$ $\igobs$ ult($l$))}
+  [$\Theta(1)$]
+  [devuelve el último elemento de la lista.]
+  [$res$ es modificable si y sólo si $l$ es modificable.]
+
+  \InterfazFuncion{Longitud}{\In{l}{lista($\alpha$)}}{nat}
+  {$res$ $\igobs$ long($l$)}
+  [$\Theta(1)$]
+  [devuelve la cantidad de elementos que tiene la lista.]
+
+  \InterfazFuncion{$\bullet$[$\bullet$]}{\In{l}{lista($\alpha$)}, \In{i}{nat}}{$\alpha$}
+  [$i$ $<$ long($l$)]
+  {alias($res$ $\igobs$ iesimo($l$, $i$))}
+  [$\Theta(i)$]
+  [devuelve el elemento que se encuentra en la $i$-ésima posición de la lista en base $0$.  Es decir, {$l[i]$} devuelve el elemento que se encuentra en la posición $i+1$.]  
+  [$res$ es modificable si y sólo si $l$ es modificable.]
+
+  \InterfazFuncion{Copiar}{\In{l}{lista($\alpha$)}}{lista($\alpha$)}
+  {$res \igobs l$}
+  [{$\displaystyle\Theta\left(\sum_{i=1}^{\ell}copy({l[i]})\right)$, donde $\ell$ $=$ long($l$).}]
+  [genera una copia nueva de la lista.]
+
+  \InterfazFuncion{$\bullet = \bullet$}{\In{l_1}{lista($\alpha$)}, \In{l_2}{lista($\alpha$)}}{bool}
+  {$res \igobs l_1 = l_2$}
+  [{$\displaystyle\Theta\left(\sum_{i=1}^{\ell}{equal(l_1[i],l_2[i])}\right)$, donde $\ell = \min\{\text{long}(l_1),\text{long}(l_2)\}$}.]
+  [compara $l_1$ y $l_2$ por igualdad, cuando $\alpha$ posee operación de igualdad.]
+  []%no hay aliasing
+  [{\parbox[t]{\textwidth-3cm}{%
+    \InterfazFuncion{$\bullet = \bullet$}{\In{a_1}{$\alpha$}, \In{a_2}{$\alpha$}}{bool}
+    {$res \igobs (a_1 = a_2)$}
+    [$\Theta(equal(a_1, a_2))$]
+    [función de igualdad de $\alpha$'s]
+  }}]
+
+  \Titulo{Operaciones del iterador}
+
+  El iterador que presentamos permite modificar la lista recorrida.  Sin embargo, cuando la lista es no modificable, no se pueden utilizar las funciones que la modificarían, teniendo en cuenta el aliasing existente entre el iterador y la lista iterada.  Cuando la lista es modificable, vamos a decir que el iterador generado es modificable.
+
+  \InterfazFuncion{CrearIt}{\In{l}{lista($\alpha$)}}{itLista($\alpha$)}
+  {$res$ $\igobs$ crearItBi(\secuencia{}, $l$) $\land$ alias(SecuSuby($it$) $=$ $l$)}
+  [$\Theta(1)$]
+  [crea un iterador bidireccional de la lista, de forma tal que al pedir \NombreFuncion{Siguiente} se obtenga el primer elemento de $l$.]
+  [el iterador se invalida si y sólo si se elimina el elemento siguiente del iterador sin utilizar la función \NombreFuncion{EliminarSiguiente}.]
+
+  \InterfazFuncion{CrearItUlt}{\In{l}{lista($\alpha$)}}{itLista($\alpha$)}
+  {$res$ $\igobs$ crearItBi($l$, \secuencia{}) $\land$ alias(SecuSuby($it$) $=$ $l$)}
+  [$\Theta(1)$]
+  [crea un iterador bidireccional de la lista, de forma tal que al pedir \NombreFuncion{Anterior} se obtenga el último elemento de $l$.]  
+  [el iterador se invalida si y sólo si se elimina el elemento siguiente del iterador sin utilizar la función \NombreFuncion{EliminarSiguiente}.]
+
+  \InterfazFuncion{HaySiguiente}{\In{it}{itLista($\alpha$)}}{bool}
+  {$res$ $\igobs$ haySiguiente?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para avanzar.]
+
+  \InterfazFuncion{HayAnterior}{\In{it}{itLista($\alpha$)}}{bool}
+  {$res$ $\igobs$ hayAnterior?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para retroceder.]
+
+  \InterfazFuncion{Siguiente}{\In{it}{itLista($\alpha$)}}{$\alpha$}
+  [HaySiguiente?($it$)]
+  {alias($res$ $\igobs$ Siguiente($it$))}
+  [$\Theta(1)$]
+  [devuelve el elemento siguiente a la posición del iterador.]
+  [$res$ es modificable si y sólo si $it$ es modificable.]
+
+  \InterfazFuncion{Anterior}{\In{it}{itLista($\alpha$)}}{$\alpha$}
+  [HayAnterior?($it$)]
+  {alias($res$ $\igobs$ Anterior($it$))}
+  [$\Theta(1)$]
+  [devuelve el elemento anterior del iterador.]
+  [$res$ es modificable si y sólo si $it$ es modificable.]
+
+  \InterfazFuncion{Avanzar}{\Inout{it}{itLista($\alpha$)}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ Avanzar($it_0$)}
+  [$\Theta(1)$]
+  [avanza el iterador a la posición siguiente.]
+
+  \InterfazFuncion{Retroceder}{\Inout{it}{itLista($\alpha$)}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ Retroceder($it_0$)}
+  [$\Theta(1)$]
+  [retrocede el iterador a la posición anterior.]
+
+  \InterfazFuncion{EliminarSiguiente}{\Inout{it}{itLista($\alpha$)}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ EliminarSiguiente($it_0$)}
+  [$\Theta(1)$]
+  [elimina de la lista iterada el valor que se encuentra en la posición siguiente del iterador.]
+
+  \InterfazFuncion{EliminarAnterior}{\Inout{it}{itLista($\alpha$)}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ EliminarAnterior($it_0$)}
+  [$\Theta(1)$]
+  [elimina de la lista iterada el valor que se encuentra en la posición anterior del iterador.]
+
+  \InterfazFuncion{AgregarComoSiguiente}{\Inout{it}{itLista($\alpha$)}, \In{a}{$\alpha$}}{}
+  [$it = it_0$]
+  {$it$ $\igobs$ AgregarComoSiguiente($it_0$, $a$)}
+  [$\Theta(copy(a))$]
+  [agrega el elemento $a$ a la lista iterada, entre las posiciones anterior y siguiente del iterador, dejando al iterador posicionado de forma tal que al llamar a \NombreFuncion{Siguiente} se obtenga $a$.]
+  [el elemento $a$ se agrega por copia.]
+
+
+  \InterfazFuncion{AgregarComoAnterior}{\Inout{it}{itLista($\alpha$)}, \In{a}{$\alpha$}}{}
+  [$it = it_0$]
+  {$it$ $\igobs$ AgregarComoAnterior($it_0$, $a$)}
+  [$\Theta(copy(a))$]
+  [agrega el elemento $a$ a la lista iterada, entre las posiciones anterior y siguiente del iterador, dejando al iterador posicionado de forma tal que al llamar a \NombreFuncion{Anterior} se obtenga $a$.]
+  [el elemento $a$ se agrega por copia.]
+
+\end{Interfaz}
+
+\begin{Representacion}
+  
+  \tinterfaz{Representación de la lista}
+  El objetivo de este módulo es implementar una lista doblemente enlazada con punteros al principio y al fin.  Para simplificar un poco el manejo de la estructura, vamos a reemplazarla por una lista circular, donde el siguiente del último apunta al primero y el anterior del primero apunta al último.  La estructura de representación, su invariante de representación y su función de abstracción son las siguientes.
+
+  \begin{Estructura}{lista$(\alpha)$}[lst]
+    \begin{Tupla}[lst]
+      \tupItem{primero}{puntero(nodo)}%
+      \tupItem{longitud}{nat}%
+    \end{Tupla}
+
+    \begin{Tupla}[nodo]
+      \tupItem{dato}{$\alpha$}%
+      \tupItem{anterior}{puntero(nodo)}%
+      \tupItem{siguiente}{puntero(nodo)}%
+    \end{Tupla}
+  \end{Estructura}
+
+  \Rep[lst][l]{($l$.primero $=$ NULL) $=$ ($l$.longitud $=$ $0$) $\yluego$ ($l$.longitud $\neq$ $0$ \impluego \\
+    Nodo($l$, $l$.longitud) $=$ $l$.primero $\land$ \\
+    ($\forall i$: nat)(Nodo($l$,$i$)\DRef siguiente $=$ Nodo($l$,$i+1$)\DRef anterior) $\land$ \\
+    ($\forall i$: nat)($1 \leq i <$ $l$.longitud $\implies$ Nodo($l$,$i$) $\neq$ $l$.primero)}\mbox{}
+
+  ~      
+  \tadOperacion{Nodo}{lst/l,nat}{puntero(nodo)}{$l$.primero $\neq$ NULL}
+  \tadAxioma{Nodo($l$,$i$)}{\IF $i = 0$ THEN $l$.primero ELSE Nodo(FinLst($l$), $i-1$) FI}
+  ~
+  \tadOperacion{FinLst}{lst}{lst}{}
+  \tadAxioma{FinLst($l$)}{Lst($l$.primero\DRef siguiente, $l$.longitud $-$ $\min$\{$l$.longitud, $1$\})}
+  ~
+  \tadOperacion{Lst}{puntero(nodo),nat}{lst}{}
+  \tadAxioma{Lst($p,n$)}{$\langle p, n\rangle$}
+  ~
+  \AbsFc[lst]{secu($\alpha$)}[l]{\IF $l$.longitud $=$ $0$ THEN \secuencia{} ELSE \secuencia{$l$.primero\DRef dato}[Abs(FinLst($l$))] FI}
+
+  \Titulo{Representación del iterador}
+
+  El iterador es simplemente un puntero al nodo siguiente.  Este puntero apunta a NULL en el caso en que se llegó al final de la lista.  Por otra parte, el nodo anterior se obtiene accediendo al nodo siguiente y retrocediendo (salvo que el nodo siguiente sea el primer nodo).  Para poder modificar la lista, tambien hay que guardar una referencia a la lista que está siendo iterada.  Además, de esta forma podemos saber si el iterador apunta al primero o no.
+
+  \begin{Estructura}{itLista($\alpha$)}[iter]
+    \begin{Tupla}[iter]
+      \tupItem{siguiente}{puntero(nodo)}%
+      \tupItem{lista}{puntero(lst)}%
+    \end{Tupla}
+  \end{Estructura}
+
+  \Rep[iter][it]{Rep($\ast$($it$.lista)) $\yluego$ ($it$.siguiente $=$ NULL $\oluego$ ($\exists i$: nat)(Nodo($\ast it$.lista, $i$) $=$ $it$.siguiente)}
+  ~
+  \Abs[iter]{itBi($\alpha$)}[it]{b}{Siguientes($b$) $=$ Abs(Sig($it$.lista, $it$.siguiente)) $\land$\\
+    Anteriores($b$) $=$ Abs(Ant($it$.lista, $it$.siguiente))}
+  ~
+  \tadOperacion{Sig}{puntero(lst)/l,puntero(nodo)/p}{lst}{Rep($\langle l, p\rangle$)}
+  \tadAxioma{Sig($i, p$)}{Lst($p$, $l$\DRef longitud $-$ Pos($\ast l$, $p$))}
+  ~
+  \tadOperacion{Ant}{puntero(lst)/l,puntero(nodo)/p}{lst}{Rep($\langle l, p\rangle$)}
+  \tadAxioma{Ant($i, p$)}{Lst(\IF $p$ $=$ $l$\DRef primero THEN NULL ELSE $l$\DRef primero FI, Pos($\ast l$, $p$))}
+  ~
+  
+  {\small Nota: cuando $p$ $=$ NULL, Pos devuelve la longitud de la lista, lo cual está bien, porque significa que el iterador no tiene siguiente.}
+  \tadOperacion{Pos}{lst/l,puntero(nodo)/p}{puntero(nodo)}{Rep($\langle l, p\rangle$)}
+  \tadAxioma{Pos($l$,$p$)}{\IF $l$.primero $=$ $p$ $\lor$ $l$.longitud $=$ $0$ THEN $0$ ELSE $1$ $+$ Pos(FinLst($l$), $p$) FI}
+
+\end{Representacion}
+
+\bigskip
+
+\begin{Algoritmos}
+
+En esta sección se hace abuso de notación en los cálculos de álgebra de órdenes presentes en la justificaciones de los algoritmos. La operación de suma ``+'' denota secuencialización de operaciones con determinado orden de complejidad, y el símbolo de igualdad ``='' denota la pertenencia al orden de complejidad resultante.
+
+\medskip
+	
+ \Titulo{Algoritmos del módulo}
+  	\medskip
+  
+\begin{algorithm}[H]{\textbf{iVacía}() $\to$ $res$ : lst}
+    	\begin{algorithmic}[1]
+			 \State $res \gets \langle NULL, 0 \rangle$ \Comment $\Theta(1)$
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iAgregar}(\Inout{l}{lst}, \In{a}{$\alpha$}) $\to$ $res$ : $iter$}
+	\begin{algorithmic}
+			 \State $it \gets CrearIt(l)$ 				\Comment $\Theta(1)$
+			 \State $Agregar(it, a)$	\Comment $\Theta(copy(a))$
+			 \State $res \gets it$					\Comment $\Theta(1)$
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(copy(a))$
+			\Statex \underline{Justificación:} El algoritmo tiene llamadas a funciones con costo $\Theta(1)$ y $\Theta(copy(a))$. Aplicando álgebra de órdenes: \\ $\Theta(1)$ + $\Theta(1)$ + $\Theta(copy(a))$ = $\Theta(copy(a))$
+    	\end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}[H]{\textbf{iEsVacía?}(\In{l}{lst}) $\to$ $res$ : $bool$}
+	\begin{algorithmic}[1]
+			 \State $res \gets (l.primero = NULL)$	 \Comment $\Theta(1)$
+    
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}[H]{\textbf{iFin}(\Inout{l}{lst})}
+	\begin{algorithmic}[1]
+			 \State $CrearIt(l).EliminarSiguiente()$	\Comment $\Theta(1)$ + $\Theta(1)$
+			 
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}	
+	
+\begin{algorithm}[H]{\textbf{iComienzo}(\Inout{l}{lst})}	
+	\begin{algorithmic}[1]
+			 \State $CrearItUlt(l).EliminarAnterior()$	\Comment $\Theta(1)$ + $\Theta(1)$
+    	    
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+			 
+    	\end{algorithmic}
+\end{algorithm}	
+	
+\begin{algorithm}[H]{\textbf{iPrimero}(\In{l}{lst}) $\to$ $res$ : $\alpha$}	
+	\begin{algorithmic}[1]
+		 \State $res \gets CrearIt(l).Siguiente()$	\Comment $\Theta(1)$ + $\Theta(1)$
+
+		\medskip
+		\Statex \underline{Complejidad:} $\Theta(1)$
+		\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    \end{algorithmic}
+\end{algorithm}	
+	
+\begin{algorithm}[H]{\textbf{iÚltimo}(\In{l}{lst}) $\to$ $res$ : $\alpha$}	
+	\begin{algorithmic}[1]
+    		% \State \textbf{iÚltimo}(\In{l}{lst}) $\to$ $res$ : $\alpha$
+			 \State $res \gets CrearItUlt(l).Anterior()$	\Comment $\Theta(1)$ + $\Theta(1)$
+    	    	    
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{JustificaciÓn:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}	
+	
+\begin{algorithm}[H]{\textbf{iLongitud}(\In{l}{lst}) $\to$ $res$ : $nat$}	
+	\begin{algorithmic}[1]
+			 \State $res \gets l.longitud$	\Comment $\Theta(1)$ 
+    	
+		\medskip
+		\Statex \underline{Complejidad:}  $\Theta(1)$
+    \end{algorithmic}
+\end{algorithm}	
+	
+\begin{algorithm}[H]{\textbf{$\bullet$[$\bullet$]}(\In{l}{lst}, \In{i}{$nat$}) $\to$ $res$ : $\alpha$}	
+	\begin{algorithmic}[1]
+			 \State $it \gets CrearIt(l)$		\Comment $\Theta(1)$
+			 \State $indice \gets 0$		\Comment $\Theta(1)$
+			 \While{$indice < i$}			\Comment $\Theta(i)$
+			 	\State $Avanzar(it)$		\Comment $\Theta(1)$
+				\State $indice \gets indice + 1$		\Comment $\Theta(1)$
+			 \EndWhile
+			 
+			 \State $res \gets Siguiente(it)$		\Comment $\Theta(1)$
+    	
+		\medskip
+		\Statex \underline{Complejidad:} $\Theta(i)$
+		\Statex \underline{Justificación:} El algoritmo tiene un ciclo que se va a repetir $i$ veces. En cada ciclo se hacen realizan funciones con costo $\Theta(1)$. Aplicando álgebra de órdenes sabemos que el ciclo tiene un costo total del orden $\Theta(i)$. El costo total del algoritmo será de:  $\Theta(1)$ + $\Theta(1)$ + $\Theta(i)$*($\Theta(1)$+$\Theta(1)$) + $\Theta(1)$ = $\Theta(i)$
+    \end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}[H]{\textbf{iCopiar}(\In{l}{lst}) $\to$ $res$ : $lst$}	
+	\begin{algorithmic}[1]
+			\State $res \gets Vacia()$	\Comment $\Theta(1)$
+			\State $it \gets CrearIt(l)$	\Comment $\Theta(1)$
+			 \While{$HaySiguiente(it)$}	\Comment $\Theta(long(l))$
+			 	\State $AgregarAtras(res, Siguiente(it))$	\Comment $\Theta(copy(Siguiente(it)))$
+				\State $Avanzar(it)$	\Comment $\Theta(1)$
+			\EndWhile
+    	
+		\medskip
+		\Statex \underline{Complejidad:} $\Theta\left(\sum_{i=1}^{long(l)}copy({l[i]})\right)$
+		\Statex \underline{Justificación:} El algoritmo cuenta con un ciclo que se repetirá long(l) veces (recorre la lista entera). Por cada ciclo realiza una copia del elemento, el costo será el de copiar el elemento. Por lo tanto, el costo total del ciclo será la suma de copiar cada uno de los elementos de la lista. El resto de las llamadas a funciones tiene costo $\Theta(1)$. Por lo tanto el costo total es de: $\Theta(1)$  + $\Theta(1)$ + $\Theta(long(l))$ * ($\Theta(copy(Siguiente(it)))$ + $\Theta(1)$ ) = $\Theta\left(\sum_{i=1}^{long(l)}copy({l[i]})\right)$
+    \end{algorithmic}
+\end{algorithm}	
+
+	
+\begin{algorithm}[H]{\textbf{$\bullet =_i \bullet$}(\In{l_1}{lst}, \In{l_2}{lst}) $\to$ $res$ : $bool$}
+	\begin{algorithmic}[1]
+			\State $it_1 \gets CrearIt(l_1)$	\Comment $\Theta(1)$
+			\State $it_2 \gets CrearIt(l_2)$ 	\Comment $\Theta(1)$	
+			 \While{$HaySiguiente(it_1) \land HaySiguiente(it_2) \land Siguiente(it_1) = Siguiente(it_2)$} \Comment [$\ast$]
+			 	\State $Avanzar(it_1)$ // $\Theta(1)$
+				\State $Avanzar(it_2)$	// $\Theta(1)$
+			\EndWhile
+			\State $res \gets \neg(HaySiguiente(it_1) \lor HaySiguiente(it_2))$	\Comment $\Theta(1)$ + $\Theta(1)$
+		\medskip
+		\Statex \underline{Complejidad:} $\displaystyle\Theta\left(\sum_{i=1}^{\ell}{equal(l_1[i],l_2[i])}\right)$, donde $\ell = \min\{\text{long}(l_1),\text{long}(l_2)\}$. [$\ast$]
+		\Statex \underline{Justificación:} [$\ast$] Ya que continua hasta que alguna de las dos listas se acabe (la de menor longitud) y en cada ciclo compara los elementos de la lista.
+    \end{algorithmic}
+\end{algorithm}
+
+\Titulo{Algoritmos del iterador}	
+ 
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iCrearIt}(\In{l}{lst}) $\to$ $res$ : iter		
+			\State $res \gets \langle l.primero, l \rangle$ 	\Comment $\Theta(1)$
+		\medskip
+		\Statex \underline{Complejidad:} $\Theta(1)$
+    \end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iCrearItUlt}(\In{l}{lst}) $\to$ $res$ : iter
+		
+			\State $res \gets \langle NULL, l \rangle$	\Comment $\Theta(1)$
+    	
+		\medskip
+		\Statex \underline{Complejidad:} $\Theta(1)$
+    \end{algorithmic}
+\end{algorithm}	
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iHaySiguiente}(\In{it}{iter}) $\to$ $res$ : $bool$
+		
+			\State $res \gets it.siguiente \neq NULL$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]	
+	\begin{algorithmic}[1]
+		\State \textbf{iHayAnterior}(\In{it}{iter}) $\to$ $res$ : $bool$
+		
+			\State $res \gets it.siguiente \neq (it.lista\rightarrow primero)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iSiguiente}(\In{it}{iter}) $\to$ $res$ : $\alpha$
+		
+			\State $res \gets (it.siguiente\rightarrow dato)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]{\textbf{iAnterior}(\In{it}{iter}) $\to$ $res$ : $\alpha$}
+	\begin{algorithmic}[1]	
+			\State $res \gets (SiguienteReal(it)\rightarrow anterior\rightarrow dato)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iAvanzar}(\Inout{it}{iter})
+		
+			\State $it.siguiente \gets (it.siguiente\rightarrow siguiente)$	\Comment $\Theta(1)$
+			\If{$it.siguiente = it.lista\rightarrow primero$}	\Comment $\Theta(1)$
+				\State $it.siguiente \gets NULL$	
+			\EndIf
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:}  $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iRetroceder}(\Inout{it}{iter})
+		
+			\State $it.siguiente \gets (SiguienteReal(it)\rightarrow anterior)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+
+	
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iEliminarSiguiente}(\Inout{it}{iter})
+		
+			\State $puntero(nodo) \ temp \gets it.siguiente$
+			
+			\State $(tmp\rightarrow siguiente\rightarrow anterior) \gets (tmp\rightarrow anterior)$
+			\Comment{Reencadenamos los nodos // $\Theta(1)$}
+			\State $(tmp\rightarrow anterior\rightarrow siguiente) \gets (tmp\rightarrow siguiente)$
+		
+			\If{$(tmp\rightarrow siguiente) = (it.lista\rightarrow primero)$}
+			\Comment{Si borramos el último nodo, ya no hay siguiente // $\Theta(1)$}
+				\State $it.siguiente \gets NULL$
+			\Else
+			\Comment{Sino, avanzamos al siguiente	// $\Theta(1)$}
+				\State $it.siguiente \gets (tmp\rightarrow siguiente)$	
+			\EndIf
+			
+			\If{$tmp = (it.lista\rightarrow primero)$}
+			\Comment{Si borramos el primer nodo, hay que volver a setear el primero // $\Theta(1)$}
+				\State $(it.lista\rightarrow primero) \gets it.siguiente$
+			\EndIf
+			
+			\State $tmp \gets NULL$	 \Comment{Se libera la memoria ocupada por el nodo // $\Theta(1)$}
+			\State $(it.lista\rightarrow longitud) \gets (it.lista\rightarrow longitud) - 1$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ + $\Theta(1)$ + $\Theta(1)$ + $\Theta(1)$ =  $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iEliminarAnterior}(\Inout{it}{iter})
+		
+			\State $Retroceder(it)$	\Comment $\Theta(1)$
+			\State $EliminarSiguiente(it)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iAgregarComoSiguiente}(\Inout{it}{iter}, \In{a}{$\alpha$})
+		
+			\State $AgregarComoAnterior(it, a)$		\Comment $\Theta(1)$
+			\State $Retroceder(it)$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ = $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]
+	\begin{algorithmic}[1]
+		\State \textbf{iAgregarComoAnterior}(\Inout{it}{iter}, \In{a}{$\alpha$})
+		
+			\State $puntero(nodo) \ sig \gets SiguienteReal(it)$
+			\State $puntero(nodo) \ nuevo \gets $ \textbf{\&} $\langle a, NULL, NULL \rangle$ \Comment{Reservamos memoria para el nuevo nodo	// $\Theta(1)$}
+			\If{$sig = NULL$}
+			\Comment{Asignamos los punteros de acuerdo a si el nodo es el primero o no en la lista circular	// $\Theta(1)$}
+				\State $(nuevo\rightarrow anterior) \gets nuevo$
+				\State $(nuevo\rightarrow siguiente) \gets nuevo$
+			\Else
+				\State $(nuevo\rightarrow anterior) \gets (sig\rightarrow anterior)$
+				\State $(nuevo\rightarrow siguiente) \gets sig$
+			\EndIf
+			
+			\State $(nuevo\rightarrow anterior\rightarrow siguiente) \gets nuevo$ \Comment{Reencadenamos los otros nodos	// $\Theta(1)$}
+			\State $(nuevo\rightarrow anterior\rightarrow siguiente) \gets nuevo$ \Comment{Notar que no hay problema cuando nuevo es el único nodo	// $\Theta(1)$}
+			
+			\If{$it.siguiente = (it.lista\rightarrow primero)$}
+			\Comment{Cambiamos el primero en caso de que estemos agregando el primero	// $\Theta(1)$}
+				\State $(it.lista\rightarrow primero) \gets nuevo$
+			\EndIf
+			
+			\State $(it.lista\rightarrow longitud) \gets (it.lista\rightarrow longitud) + 1$	\Comment $\Theta(1)$
+
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+			\Statex \underline{Justificación:} $\Theta(1)$ + $\Theta(1)$ + $\Theta(1)$ +  $\Theta(1)$ =  $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+	
+\begin{algorithm}[H]
+	\begin{algorithmic}
+		\State \textbf{iSiguienteReal}(\In{it}{iter}) $\to$ $res$ : $puntero(nodo)$ \Comment{Esta es una operación privada que}
+			
+			\If{$it.siguiente = NULL$} \Comment{devuelve el siguiente como lista circular // $\Theta(1)$}
+				\State $res \gets (it.lista\rightarrow siguiente)$
+			\Else
+				\State $res \gets it.siguiente$
+			\EndIf
+			
+			\medskip
+			\Statex \underline{Complejidad:} $\Theta(1)$
+    	\end{algorithmic}
+\end{algorithm}
+%    a
+\end{Algoritmos}

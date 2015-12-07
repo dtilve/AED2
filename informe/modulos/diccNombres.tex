@@ -1,0 +1,329 @@
+
+\section{M\'odulo Diccionario de Nombres}
+
+Este módulo muestra una estructura que ordena nombres lexicográficamente, y les asigna una posición (\texttt{tupla $\langle$x:nat, y:nat$\rangle$}) como significado. Será luego implementado sobre un Trie. \par
+El conglomerado de nombres (las claves) es implementado sobre el módulo conjunto lineal del apunte de módulos básicos. Recordaremos que éste incluye un iterador para recorrerlo. Es importante notar que el acceso a las claves, a diferencia del TAD básico de Diccionario, se da a través de un iterador por lo que no se devuelve el conjunto ni por copia ni por referencia.\par
+
+%El campo posición será (0,0) para posiciones inválidas. Esto va en el rep o abs? o algo así?
+
+Entre las operaciones destacadas del diccionario se encuentran borrar, definir y buscar, cuyas complejidades son $O(|n_{m}|)$. Donde $|n_{m}|$ es el nombre más largo ya definido. \par
+Si un nombre ya está definido, al definirlo nuevamente se modificará su significado.\par
+
+\vskip 2em
+
+\begin{Interfaz}
+ 
+    \textbf{parámetros formales}
+
+	\textbf{se explica con}: \par \tadNombre{Diccionario(string, posici\'on)}
+ \par 
+      \textbf{géneros}: \TipoVariable{diccNombres}.
+
+  \tinterfaz{Operaciones básicas del diccionario}
+
+  \InterfazFuncion{Vacío}{}{diccNombres}
+  {$res$ $\igobs$ vacío}
+  [$O(257) = O(1)$]
+  [genera un diccionario vac\'io y lo pasa por referencia.]
+  
+  \InterfazFuncion{Definir}{\Inout{d}{diccNombres)}, \In{n}{string}, \In{p}{posici\'on}}{}
+  [$d \igobs d_0$]
+  {$d$ $\igobs$ definir($d, n, p$)}
+ [$\displaystyle O\left(|n_{m}|\right)$, donde $|n_{m}|$ es la longitud máxima entre el nuevo nombre a definir y el nombre más largo definido en el diccionario.]
+  [define la clave $n$ con el significado $p$ en el diccionario $d$ y la agrega al conjunto de claves. Si la clave estaba definida, la redefine con el nuevo significado $p$.]
+  []
+
+  \InterfazFuncion{Obtener}{\In{d}{diccNombres}, \In{n}{$string$}}{$posici\acute{o}n$}
+  [def?($d$, $n$)]
+  {alias($res$ $\igobs$ obtener($d$, $n$))}
+  [$O(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre m\'as largo definido en el diccionario.]
+  [devuelve el significado de la clave $n$ en $d$ por referencia.]
+  [$res$ es modificable puesto que $d$ es modificable.]
+
+  \InterfazFuncion{Definido?}{\In{d}{diccNombres}, \In{n}{$string$}}{bool}
+  {res $\igobs$ def?($d$, $n$)}
+  [$O(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre m\'as largo definido en el diccionario.]
+  [devuelve \texttt{true} si y s\'olo si $n$ está definido en el diccionario.]
+  
+    \InterfazFuncion{Borrar}{\Inout{d}{diccNombres}, \In{n}{$string$}}{}
+  [d = d$_0$ $\land$ def?($d$, $n$)]
+  {$d$ $\igobs$ borrar($d_0, n$)}
+  [$O(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre m\'as largo]
+  [elimina la clave $n$ junto con su significado de $d$, también lo elimina del conjunto de claves.]
+  [el iterador del conjunto de claves se indefine si se borra sin utilizar la funci\'on del iterador \NombreFuncion{EliminarSiguiente}.]
+
+  \InterfazFuncion{Claves}{\In{d}{diccNombres}}{itConj(string)}
+  [true]
+  {res $\igobs$ CrearIt(claves(d))}
+  [$O(1)$]
+  [devuelve las claves del diccionario por referencia.]
+  [$res$ es modificable puesto que las claves pueden agregarse y borrarse. ]
+  
+   \InterfazFuncion{diccVac\'io?}{\In{d}{diccNombres}}{bool}
+  [true]
+  {$\emptyset?(claves(d))$}
+  {$O(1)$}
+  {Verifica si el diccionario tiene claves.}
+
+\tinterfaz{Auxiliares}
+
+  \InterfazFuncion{crearArregloDimensionableVac\'io}{}{arregloDimensionable(puntero(nodo))}
+  [true]
+  {$esArregloDeNULLs?(res)$}
+  {$O(1)$}
+  {Crea un nuevo arrelo de 256 posiciones, todas en NULL.}
+
+ 
+  
+  \InterfazFuncion{esArregloDeNULLs?}{\In{a}{arregloDimensionable(puntero(nodo))}}{bool}
+  [true]
+  {$res = (\forall i: nat) (0 \leq i \leq longitud(a) \impluego a[i) == NULL$}
+  {$O(longitud(a))$}
+  {Verifica si el arreglo pasado por par\'ametro tiene todas sus posiciones en NULL.}
+
+
+\end{Interfaz}
+
+\vskip 2em
+\begin{Representacion}
+
+  \tinterfaz{Representaci\'on del diccionario de nombres}
+
+El diccionario de nombres se representa por un lado con su estructura principal, un Trie, donde se ordenan las claves y por otro lado un \textbf{conjunto} de nombres (implementados como un conjunto lineal). Esto implica que \textbf{no pueden haber claves repetidas}, por lo que al definir con la misma clave se estará \textbf{modificando} su significado.
+Este diccionario permite sinónimos, es decir, dos claves pueden estar definidas con el mismo significado.\par
+En particular, la estructura del Trie utilizado es similar al Rosetree. La cantidad de hijos de cada nodo está limitada a 256.
+
+  \begin{Estructura}{diccNombres}[estr]
+    \begin{Tupla}[estr]
+		\tupItem{claves}{conj(string)}
+        \tupItem[\\]{definiciones}{conj(info)}
+		\tupItem[\\]{primero}{puntero(nodo)}
+    \end{Tupla}
+    
+    \begin{Tupla}[info]
+    \tupItem{clave}{itConj(string)}
+  	\tupItem[\\]{pos}{posición}
+  	\end{Tupla}
+    
+    \begin{Tupla}[nodo]
+		\tupItem{alfabeto}{arregloDimensionable[256](puntero(nodo))} % al nodo siguiente
+        \tupItem[\\]{significado}{puntero(itConj(info))}
+ 		\tupItem[\\]{anterior}{puntero(nodo)}
+        \tupItem[\\]{esNombre}{bool} %sirve para ver si es prefijo de algún otro nombre al borrar
+    \end{Tupla}
+    
+  \end{Estructura}
+
+\pagebreak
+
+\Rep[estr][e]{$(\forall i,j: info)(i \in e.definiciones \land j \in e.definiciones \land j\neq i)\impluego(i.pos\neq j.pos)\land(\forall iS_{0},iS_{1}:*string)(iS_{0}\in i.clave \land iS_{1}\in j.clave \land iS_{0}\neq iS_{1})(\exists s_{0},s_{1}:string)(s_{0} = siguiente(iS_{0}) \land siguiente(iS_{1})=s_{1} \land s_{0} \neq s_{1})$ \begin{itemize}
+				\item Para todo elemento en e.definiciones, su primera componente apunta a alguna parte de e.claves, y todos esos punteros son distintos entre sí.
+                \item Todos los punteros que existen en el trie son distintos.
+                \item Para todo nodo, esNombre da true si y solo si el pr\'oximo nodo tiene puntero a info
+			  \end{itemize}}\mbox{}
+
+   ~
+
+   \Abs[estr]{diccionario(nombre,posici\'on)}[e]{d}{$(\forall n: nombre) (def?(n,d) \Leftrightarrow n \in e.claves \land (def?(n,d) \impluego (obtener(n,d) \igobs buscarEnDicc(n,e,e.significados))))$}
+   
+   \tadOperacion{buscarEnDicc}{nombre/n,estr/e,ss/conj(info)}{posici\'on}{$n \in e.claves$}
+   \tadAxioma{buscarEnDicc(n,e,ss)}{\IF $siguiente(dameUno(ss).clave) = n$ THEN dameUno(ss).pos ELSE buscarEnDicc(n,e,sinUno(ss)) FI}
+
+\end{Representacion}
+
+\clearpage
+
+\begin{Algoritmos}
+
+\begin{algorithm}[H]{\textbf{iVacío}() $\to$ $\res$: diccNombres}
+	\begin{algorithmic}
+        \State res.claves $\gets$ iVacío \Comment $O(1)$ (crear conjunto lineal vacío)
+        \State res.definiciones $\gets$ iVacío \Comment $O(1)$ (crear conjunto lineal vacío)
+        \State $puntero(nodo)$ root $\gets$  $\langle$iCrearArregloDimensionableVacío, NULL$\rangle$ \Comment $O(1)$ (ver auxiliares)
+        \State res.primero $\gets$ root \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex \underline{Justificación:} $O(1)$*4 = $O(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iDefinir}(\Inout{d}{diccNombres}, \In{n}{string}, \In{p}{posici\'on})}
+	\begin{algorithmic}
+    \If{$\lnot$iDefinido?(n,d)}	\Comment $O(|n_{m}|)$
+   	\State itClaveNueva $\gets$ iAgregarRápido(d.claves,n) \Comment $O(1)$
+    \State definición $\gets$ $\langle$itClaveNueva,p$\rangle$ \Comment $O(1)$
+    \State itInfoNueva $\gets$ iAgregarRápido(d.definiciones,definición)
+	\State $puntero(info)$ infoPointer $\gets$ itInfoNueva $O(1)$
+    \State $nodo$ actual $\gets$ d.primero \Comment $O(1)$
+	\For{i=0; 0$=<$longitud(n); i=i+1} \Comment $O(1)$
+    \State puntero(nodo) actualPointer $\gets$ actual  $O(1)$
+       \If{i == longitud(n)} $O(1)$  
+         \State próximo $\gets$ $\langle$iCrearArregloDimensionableVacío, infoPointer, actualPointer, false$\rangle$ \Comment $O(1)$
+    \Else
+    \If{i == longitud(n) - 1}
+    \State próximo $\gets$ $\langle$iCrearArregloDimensionableVacío, NULL, actualPointer, true$\rangle$ \Comment $O(1)$
+    \Else
+    	\State próximo $\gets$ $\langle$iCrearArregloDimensionableVacío, NULL, actualPointer, false$\rangle$ \Comment $O(1)$
+    \EndIf
+    \EndIf
+	\State array $\gets$ actual.alfabeto \Comment $O(1)$
+   	\State index $\gets$ ord(n[i]) \Comment $O(1)$
+	\State array[index] $\gets$ $\&$próximo \Comment $O(1)$
+    \State actual $\gets$ próximo \Comment $O(1)$
+    \EndFor \par
+\Else 
+\For{i = 0; 0 $=<$ longitud(n); i = i+1} \Comment $O(1)$
+	\State array $\gets$ actual.alfabeto  \Comment $O(1)$
+   	\State index $\gets$ ord(n[i]) \Comment $O(1)$
+	\State actual $\gets$ array[index] \Comment $O(1)$
+\EndFor
+\State itInfo $\gets$ actual.significado \Comment $O(1)$
+\State iSiguiente(itInfo).pos $\gets$ p  \Comment $O(1)$
+ \EndIf
+\Statex \underline{Complejidad:} 2*$O(|n_{m}|)$ = $O(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre más largo entre los ya definidos en el diccionario y el que se está definiendo.
+        \Statex \underline{Justificación:} La evaluación de la guarda para el \texttt{if} es $O(|n_{m}|)$, sumando que para ambas ramas se calcula $O(|n_{m}|)$ para el loop que tiene como cota superior la cantidad de caracteres que puede tener un nombre definido o que se está definiendo (cuyo peor caso sería que sea el más largo, en ambos casos). Las operaciones dentro del loop se calculan constantes para ambas ramas por lo que, para el peor caso, los loops tienen una complejidad máxima de $O(|n_{m}|)$. Las operaciones de asignación también son $O(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iObtener}(\In{d}{diccNombres}, \In{n}{$string$}) $\to$ $\res$: posici\'on}
+	\begin{algorithmic}
+    \State actual $\gets$ d.primero \Comment $O(1)$
+\For{i=0; 0$=<$longitud(n); i=i+1} \Comment $O(1)$
+	\State array $\gets$ actual.alfabeto  \Comment $O(1)$
+   	\State index $\gets$ ord(n[i]) \Comment $O(1)$
+	\State actual $\gets$ array[index] \Comment $O(1)$
+\EndFor
+	\State itInfo $\gets$ actual.significado \Comment $O(1)$
+	\State res $\gets$ iSiguiente(itInfo).pos \Comment $O(1)$
+
+    \Statex \underline{Complejidad:} $O(|n_{m}|)$ donde $|n_{m}|$ es la longitud del nombre más largo definido.
+    \Statex \underline{Justificación:} El algoritmo es, básicamente, un loop de una operación $O(1)$. Este tiene como cota superior la cantidad de caracteres que puede tener un nombre definido, por lo tanto será $O(|n_{m}|)$ en el peor caso. Las operaciones de asignación y movimiento de iteradores son constantes.
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iDefinido?}(\In{d}{diccNombres}, \In{n}{string}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+    \State actual $\gets$ d.primero \Comment $O(1)$
+    \State j = 0 \Comment $O(1)$
+\For{i = 0; i $=< $longitud(n) $\&\&$ actual != NULL ; i = i+1} \Comment $O(1)$
+	\State array $\gets$ actual.alfabeto  \Comment $O(1)$
+   	\State index $\gets$ ord(n[i]) \Comment $O(1)$
+	\State actual $\gets$ array[index] \Comment $O(1)$
+    \State j = j + 1
+\EndFor
+	\If{actual.significado != NULL} \Comment $O(1)$
+    \State res $\gets$ j == longitud(n) \Comment $O(1)$
+   	\Else 
+    \State res $\gets$ false \Comment $O(1)$
+    \EndIf
+    \Statex \underline{Complejidad:} $O(|n_{m}|)$ donde $|n_{m}|$ es el nombre más largo definido en el diccionario.
+    \Statex \underline{Justificación:} El algoritmo es, principalmente, un loop que en cuyo peor caso (es decir, si están todas las letras del nombre que se busca) ciclará $\#$la longitud del nombre que se esté buscando. Dentro del loop las operaciones son $O(1)$*4=$O(1)$, por lo que el cálculo es $O(1)$ *$|n_{m}|$ = $O(|n_{m}|)$. Luego se realizan operaciones $O(1)$ una cantidad constante de veces, por lo que no afectan en el cálculo de complejidades. 
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iClaves}(\In{d}{diccNombres}) $\to$ $\res$: itConj(string)}
+	\begin{algorithmic}
+       	\State res $\gets$ CrearIt(d.claves) \Comment $O(1)$ (ver módulo básico)
+	    \Statex \underline{Complejidad:} $O(1)$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iBorrar}(\Inout{d}{diccNombres}, \In{n}{string})}
+%Pre: la clave existe en el diccionario
+
+%%Key present as unique key (no part of key contains another key (prefix), nor the key itself is prefix of another key in trie). Delete all the nodes
+
+%%Key present in trie, having at least one other key as prefix key. Delete nodes from end of key until first leaf node of longest prefix key.
+
+ %%Key is prefix key of another long key in trie. Unmark the leaf node => solo eliminar el significado
+
+	\begin{algorithmic}
+    \State actual $\gets$ d.primero \Comment $O(1)$
+    \For{i = 0; 0 $<=$ longitud(n); i = i+1} \Comment $O(1)$
+	\State index = ord(n[i]) \Comment $O(1)$
+    \State array $\gets$ actual.alfabeto  \Comment $O(1)$
+    \State próximo $\gets$ array[index] \Comment $O(1)$
+	\State actual = próximo \Comment $O(1)$
+    \EndFor
+	\State itI $\gets$ actual.significado \Comment $O(1)$
+    \State itK $\gets$ iSiguiente(itI).clave \Comment $O(1)$
+    \State iEliminarSiguiente(itK) \Comment $O(1)$
+    \State iEliminarSiguiente(itI) \Comment $O(1)$
+    \State actual.significado $\gets$ NULL \Comment $O(1)$
+	\State actual.anterior $\gets$ NULL \Comment $O(1)$
+%%hasta acá borré del conjunto de claves y del conjunto de info, también desapunté el array de info. casos que abarca :
+    
+    \For{i = 0; 0 $<$ longitud(n); i = i+1} \Comment $O(1)$
+	\State index = ord(n[i]) \Comment $O(1)$
+    \State array $\gets$ actual.alfabeto  \Comment $O(1)$
+    \State próximo $\gets$ array[index]
+	\State actual = próximo \Comment $O(1)$
+    \EndFor \Comment actual apunta al último caracter
+    %actual apunta al último caracter
+
+	\If{esArregloDeNULLs?(actual.alfabeto)}	\Comment $O(256) = O(1)$. Verifica si n no es prefijo de otro nombre.
+    	\For{i = longitud(n)-1; 0 $<=$ i $\land$ $\lnot$esNombre(actual); i = i-1} \Comment $O(1)$
+	    \State array $\gets$ actual.alfabeto  \Comment $O(1)$
+	   	\State index = ord(n[i])
+	    \State array[index] $\gets$ NULL
+	    \State $nodo$ previo $\gets$ actual.anterior \Comment $O(1)$
+	    \State actual.anterior $\gets$ NULL
+	    \State actual $\gets$ previo
+	    \EndFor
+    \Else
+    	\State $actual.esNombre \gets false$
+    \EndIf
+    
+    \Statex \underline{Complejidad:} $O(|n_{m}|)$ donde $|n_{m}|$ es el nombre más largo definido en el diccionario.
+    \Statex \underline{Justificación:} Este algoritmo hace 3 veces loops con operaciones internas $O(1)$, recorriendo nodos la cantidad de caracteres de la clave a eliminar (en el peor caso), esto significa que hace 3*$O(|n_{m}|)$ = $O(|n_{m}|)$.
+	\end{algorithmic}
+\end{algorithm}  
+
+\begin{algorithm}[H]{\textbf{iDiccVac\'io?}(\In{d}{estr}) $\to$ $\res$: itConj(string)}
+	\begin{algorithmic}
+		\State $esVac\acute{i}o?(d.claves)$	\Comment $O(1)$
+        \Statex \underline{Complejidad:} $O(1)$
+	\end{algorithmic}
+\end{algorithm}
+
+\pagebreak
+
+\tinterfaz{Auxiliares}
+
+\begin{algorithm}[H]{\textbf{CrearArregloDimensionableVacío} $\to$ $\res$: arregloDimensionable(puntero(nodo))}
+	\begin{algorithmic}
+	\State a $\gets$ iCrearArreglo(256) \Comment $O(1)$
+        \For{i=0; i$<$256; i=i+1} \Comment $O(1)$
+       	\State a[i] = NULL \Comment $O(1)$
+        \EndFor
+\Statex \underline{Complejidad:} $O(2)$ * 256 = $O(1)$
+        \Statex \underline{Justificación:} Esta función hace iteraciones una cantidad de veces acotada superiormente por 256 y en cada una dos operaciones $O(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{EsArregloDeNULLs?}(\In{a}{arregloDimensionable(puntero(nodo))}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+    	\State $nat$ $i \gets 0$	\Comment $O(1)$
+        \While{$i < longitud(a) \land a[i] == NULL$}	\Comment $O(1)$. El ciclo se repite $O(longitud(a))$ veces.
+        	\State $i \gets i+1$ \Comment $O(1)$
+        \EndWhile
+        \State $res \gets i == longitud(a)$
+        \Statex \underline{Complejidad:} $O(longitud(a))$
+        \Statex \underline{Justificaci\'on:} Ejecuta una simple b\'usqueda secuencial para ver si todos los elementos del arreglo son NULL. Como es sabido, la complejidad de la b\'usqueda secuencial es la marcada m\'as arriba.
+	\end{algorithmic}
+\end{algorithm}
+
+% \begin{algorithm}[H]{\textbf{noEsCaracter}(\In{a}{arregloDimensionable(puntero(nodo))}) $\to$ $\res$: bool}
+% 	\begin{algorithmic}
+%     \State j = 0 \Comment $O(1)$
+%     \For{i = 0; i $<$ 256; i = i+1} \Comment $O(1)$
+%   	\If{a[i] == NULL}  \Comment $O(1)$
+%     \State j = j+1
+%     \EndIf
+%     \EndFor
+%     \State res $\gets$ (j == i)
+% \Statex \underline{Complejidad:} $O(1)$ * 256 = $O(1)$
+%         \Statex \underline{Justificación:} Esta función hace exactamente 256 iteraciones y en cada una una operación $O(1)$.
+% 	\end{algorithmic}
+% \end{algorithm}
+
+\end{Algoritmos}

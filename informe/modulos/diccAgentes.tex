@@ -1,0 +1,459 @@
+\section{M\'odulo Diccionario de Agentes}
+
+Este m\'odulo presenta la estructura que permite buscar a un agente por placa en $O(1)$ promedio o en $O(N_{a})$. Se puede obtener un iterador las claves (el conjunto de placas) en $O(1)$. Esta estructura permite tomar a todos los agentes que tienen la misma cantidad de sanciones que uno dado, buscar logarítmicamente por número de placas y sancionar en $O(1)$.
+$N_{a}$ es la cantidad de Agentes.
+
+\begin{Interfaz}
+
+		\textbf{se explica con}:         
+            \tadNombre{Diccionario(Agente,info)}, 
+            \tadNombre{Iterador Bidireccional(act,arr)}.
+ \par 
+		\textbf{g\'eneros}: 
+            \TipoVariable{diccAgentes}, 
+            \TipoVariable{itDiccAgentes(act,arr)}. 
+
+\tinterfaz{Operaciones básicas del diccionario}
+      \InterfazFuncion{Vacio}{}{diccAgentes}
+      [$True$]
+      {$res$ $\igobs$ vac\'io()}
+      [$O(1)$]
+      [Crea el diccionario de agentes que luego estar\'a ordenado por placa]
+
+      \InterfazFuncion{Claves}{\In{da}{diccAgentes}}{itConj(Agente)}
+      [$True$]
+      {$res$ $\igobs$ calves(dp)}
+      [$O(1)$]
+      [Devuelve un iterador al conjunto de claves, es decir, las placas.]
+      [Se genera aliasing porque el iterador apunta a las claves del diccionario. El iterador no tiene la capacidad de modificar el conjunto.]
+
+      \InterfazFuncion{Definir}{\In{a}{Agente}, \Inout{da}{diccAgentes}}{}
+      [$da = da_{0}$ $\land$ $\lnot$(def?(a,dp))]
+      {$res$ $\igobs$ definir($a$,$dp$)}
+      [$O(1)$ promedio, $O(N_{a})$ peor caso.]
+      [Define un agente en el diccionario.]
+
+      \InterfazFuncion{Obtener}{\In{a}{Agente}, \In{da}{diccAgentes}}{$\langle Agente,Info \rangle$}
+      [def?($a$, $dp$)]
+      {$res$ $\igobs$ obtener($a$,$dp$)}
+      [$O(1)$ promedio, $O(N_{a})$ peor caso.]
+      [Devuelve la informacion de un agente]
+
+      \InterfazFuncion{ObtenerLog}{\In{a}{Agente}, \In{da}{diccAgentes}}{$\langle Agente,Info \rangle$}
+      [def?($a$, $dp$)]
+      {$res$ $\igobs$ obtenerLog($a$,$dp$)}
+      [$O(log(N_{a})$]
+      [Devuelve la informacion de un agente]
+
+      \InterfazFuncion{Definido?}{\In{a}{Agente}, \In{da}{diccAgentes}}{bool}
+      [$True$]
+      {$res$ $\igobs$ def?($a$,$dp$)}
+      [$O(1)$ promedio, $O(N_{a})$ peor caso.]
+      [Chequea si el agente pasado por parametro esta definido en el diccionario.]
+	
+      \InterfazFuncion{ConKSancionesLineal}{\In{k}{nat},\In{e}{estr}}{conj(itDiccAgentes(act,arr))}
+      [$True$]
+      {$res$ $\igobs$ ConKSancionesLineal(e)}
+      [$O(N_{sanc})$]
+      []
+
+      \InterfazFuncion{ConKSancionesLog}{\In{k}{nat},\In{e}{estr}}{conj(itDiccAgentes(act,arr))}
+      [$True$]
+      {$res$ $\igobs$ ConKSancionesLog(e)}
+      [$O(log(N_{sanc}))$]
+      []
+
+  \tinterfaz{Operaciones básicas del iterador del Diccionario de agentes(siguiente,dicc)} 
+      \InterfazFuncion{Premiar}{\In{it}{itDiccAgentes(act,arr)}, \Inout{da}{diccAgentes}}{}
+      [$da = da_{0}$]
+      {$res$ $\igobs$ premiar($it$,$dp$)}
+      [$O(1)$]
+      [Agrega una captura al agente apuntado por el iterador.]
+      [Se genera aliasing por el iterador que esta apuntando a un agente de la estructura.]
+
+      \InterfazFuncion{Sacionar}{\In{it}{itDiccAgentes(act,arr)},\Inout{e}{estr}}{}
+      [$ e \igobs e_{0}$]
+      {$res$ $\igobs$ sancionar(e)}
+      [$O(1)$]
+      []
+
+	  \InterfazFuncion{Mover}{\In{it}{itDiccAgentes(act,arr)}, \Inout{da}{diccAgentes}}{}
+      [$da = da_{0}$]
+      {$res$ $\igobs$ mover(it,dp)}
+      [Mueve al agente apuntado por el iterador.]
+      [Se genera aliasing por el iterador que esta apuntando a un agente de la estructura.] 
+
+      \InterfazFuncion{CrearIt}{\In{da}{diccAgentes}}{itDiccAgentes(act,arr)}
+      {$res$ $\igobs$ crearIt(dp)}
+      [$O(1)$]
+      [Crea un iterador]
+      [El iterador se inv\'alida si y s\'olo si se elimina el elemento siguiente del iterador sin utilizar la funcion \NombreFuncion{EliminarSiguiente}.]
+
+      \InterfazFuncion{HaySiguiente}{\In{it}{itDiccAgentes(act,arr)}}{bool}
+      {$res$ $\igobs$ haySiguiente?($it$)}
+      [$O(1)$]
+      [Devuelve \texttt{true} si y s\'olo si en el iterador todavía quedan elementos para avanzar.]
+
+      \InterfazFuncion{HayAnterior}{\In{it}{itDiccAgentes(act,arr)}}{bool}
+      {$res$ $\igobs$ hayAnterior?($it$)}
+      [$O(1)$]
+      [Devuelve \texttt{true} si y s\'olo si en el iterador todavía quedan elementos para retroceder.]
+
+      \InterfazFuncion{siguiente}{\In{it}{itDiccAgentes(act,arr)}}{nodo}
+      [HaySiguiente?($it$)]
+      {alias($res$ $\igobs$ Siguiente($it$))}
+      [$O(1)$]
+      [Devuelve el elemento siguiente a la posici\'on del iterador.]
+      [$res$ es modificable si y s\'olo si $it$ es modificable.]
+
+      \InterfazFuncion{Anterior}{\In{it}{itDiccAgentes(act,arr)}}{nodo}
+      [HayAnterior?($it$)]
+      {alias($res$ $\igobs$ Anterior($it$))}
+      [$O(1)$]
+      [Devuelve el elemento anterior del iterador.]
+      [$res$ es modificable si y slo si $it$ es modificable.]
+
+      \InterfazFuncion{Avanzar}{\Inout{it}{itDiccAgentes(act,arr)}}{}
+      [$it = it_0$ $\land$ HaySiguiente?($it$)]
+      {$it$ $\igobs$ Avanzar($it_0$)}
+      [$O(1)$]
+      [Avanza el iterador a la posici\'on siguiente.]
+
+      \InterfazFuncion{Retroceder}{\Inout{it}{itDiccAgentes(act,arr)}}{}
+      [$it = it_0$ $\land$ HayAnterior?($it$)]
+      {$it$ $\igobs$ Retroceder($it_0$)}
+      [$O(1)$]
+      [Retrocede el iterador a la posici\'on anterior.]
+
+      \InterfazFuncion{AgregarComoSiguiente}{\Inout{it}{itDiccAgentes(act,arr)}, \In{a}{$\langle Agente,Info \rangle$}}{}
+       [$it = it_0$]
+       {$it$ $\igobs$ AgregarComoSiguiente($it_0$, $a$)}
+       [$O(1)$]
+       [agrega el elemento $a$ a la lista iterada, entre las posici\'ones anterior y siguiente del iterador, dejando al iterador posici\'onado de forma tal que al llamar a \NombreFuncion{Siguiente} se obtenga $a$.]
+       [el elemento $a$ se agrega por referencia.]
+
+       \InterfazFuncion{AgregarComoAnterior}{\Inout{it}{itDiccAgentes(act,arr)}, \In{a}{$\langle Agente,Info \rangle$}}{}
+       [$it = it_0$]
+       {$it$ $\igobs$ AgregarComoAnterior($it_0$, $a$)}
+       [$O(1))$]
+       [agrega el elemento $a$ a la lista iterada, entre las posici\'ones anterior y siguiente del iterador, dejando al iterador posici\'onado de forma tal que al llamar a \NombreFuncion{Anterior} se obtenga $a$.]
+       [el elemento $a$ se agrega por referencia.]
+
+  \tinterfaz{Auxiliares} 
+
+      \InterfazFuncion{funcionDEhash}{\In{Agente}{nat},\In{e}{estr}}{nat}
+      [$True$]
+      {$res$ $\igobs$ funcionDEhash()}
+      [$O(1)$]
+      [Devuelve la posicion donde se va a guardar el iterador de la tabla de hash]
+
+\end{Interfaz}
+
+\begin{Representacion}
+
+  \tinterfaz{Representaci\'on del Diccionario de Agentes(Agente,info)}
+
+Este m\'odulo representa a la estructura mas importante que trabaja con los agentes. Posee 5 sub estructuras: 
+\begin{enumerate}
+\item un conjunto de placas.
+\item un arreglo sonde esta toda la información completa de los agentes.
+\item una tabla de hash relacionada con el arreglo antes mencionado, donde podemos buscar en $\Theta(1)$ promedio 
+\item en la ListaSanciones tenemos a los agentes en la posicion que corresponde por tener igual cantidad de sanciones.
+\item  un arreglo de sanciones para buscar un número de sanción logarítmicamente.
+\end{enumerate}\par
+Lo importante es que no vamos a tener contradicci\'on, ni dupliciaci\'on en la informaci\'on que usamos porque: al agregar la informaci\'on al comienzo del rastrillaje y no tener la posibilidad de borrar a los agentes, la correpondencia de las placas tanto en el conjunto como en el arreglo es una a una. La diferencia está en que el arreglo tiene más informaci\'on y está ordenado por número de placa, mientras que el conjunto no. 
+\par Las claves de la tabla de hash est\'an ordenadas por placa tambi\'en. La particularidad es que puede haber mas de un agente asignado a una posici\'on y puede haber posiciones vacias. Entre el arreglo de agentes y la tabla de hash hay aliasing de los elementos del arreglo.\par
+El ConjuntoDeAgentes se representa con el Conjunto Lineal del apunte de m\'odulos b\'asicos. Para no confundirlas con las operaciones del iterador de este diccionario, escribo las operaciones seguidas de la abreviatura Conj.\par
+En ListaSanciones y ArregloDeSanciones tenemos aliasing pero no duplicaci\'on. La lista apunta al arrglo de placas, con el iterador del diccionario de placas y el arreglo sanciones a la lista con otros iteradores.\par
+La lista de sanciones se representa con el m\'odulo lista enlazada del apunte de m\'odulos b\'asicos.\par
+El conjunto de sancionados de la lista se representa con el m\'odulo conjunto lineal del apunte de m\'odulos b\'asicos.
+El arreglo de sanciones de la lista se representa con el m\'odulo vector del apunte de m\'odulos b\'asicos.\par
+
+  \begin{Estructura}{diccAgentes}[estr]
+      \begin{Tupla}[estr]
+        \tupItem{ConjuntoDeAgentes}{conj(Agente)}
+        \tupItem[\\]{ArregloDeAgentes}{vector(tupla$\langle Agente, Info \rangle$)}
+        \tupItem[\\]{TablaHash}{vector(conj(itDiccAgentes(act, arr)))}
+        \tupItem[\\]{Mayor}{nat}
+        \tupItem[\\]{Menor}{nat}
+        \tupItem[\\]{ListaSanciones}{lista(sanción: nat, sancionados: conj(Agente))}
+        \tupItem[\\]{ArregloDeSanciones}{vector(tupla$\langle$sanción: nat, sancionados: itLista(nat)$\rangle$)}
+      \end{Tupla}
+    
+      \begin{Tupla}[Info]
+        \tupItem{pos}{posición}
+        \tupItem[\\]{sanciones}{nat}
+        \tupItem[\\]{capturas}{nat}
+        \tupItem[\\]{its}{itDiccSanciones}
+        \tupItem[\\]{itcs}{itConjSanc}
+      \end{Tupla}
+		
+       donde \texttt{Agente} es \texttt{nat}
+    
+  \end{Estructura}
+
+   \Rep[estr][d]{\begin{description}
+   	\item Mayor $\geq$ Menor
+    \item Todos los iteradores que se encuentran en tablaHash apuntan a elementos de arregloDeAgentes
+    \item Todo elemento de ConjuntoDeAgentes está como primer componente de algún elemento de ArregloDeAgentes, y el cardinal de ConjuntoDeAgentes es igual a la longitud de ArregloDeAgentes
+    \item Todos los iteradores que se encuentran en ArregloDeSanciones apuntan a una posici\'on de ListaSanciones
+   \end{description}}\mbox{}
+
+   ~
+
+   \Abs[estr]{$diccionario(agente,<pos: posici\acute{o}n, capturas: nat, sanciones: nat>$)}[e]{d}{\par$(\forall a: agente)(def?(a,d) \Leftrightarrow a \in e.ConjuntoDeAgentes \land (def?(a,d) \impluego ((\exists t: tupla(Agente,Info)) ((est\acute{a}?(t,ArregloDeAgentes) \land t.Agente = a) \yluego <t.info.pos,t.info.capturas,t.info.sanciones> \igobs obtener(a,d)))))$}
+
+\tinterfaz{Representaci\'on del iterador del Diccionario de Agentes(siguiente,dp)}
+
+Este es el iterador del diccionario que itera sobre el Arreglo de Agentes de la estructura. Modifica la estructura porque puede agregar agrentes, pere no puede borrar agentes.
+
+Agregando un poco de detalle sobre memoria a la situaci\'on, interpretamos que un arreglo es un puntero a la posici\'on de memoria del primer elemento, cuyas posiciones siguientes de memoria son los elementos que le siguen al mismo arreglo. Por eso damos el arreglo completo y no un puntero a \'el mismo porque resultar\'ia redudante. Su acceso es $O(1)$.
+
+  \begin{Estructura}{itDiccAgentes}[iter]
+    \begin{Tupla}[iter]
+		\tupItem{act}{nat}
+		\tupItem{arr}{vector(tupla(Agente,Info))}
+    \end{Tupla}
+  \end{Estructura}
+
+   \Rep[iter][i]{$act < longitud(arr)$}\mbox{}
+
+   ~
+
+   \Abs[iter]{itBi}[itArreglo]{itTAD}{$anteriores(itTAD) \igobs tomarPrimeros(iter.arr,i) \land siguientes(itTAD) \igobs tomarUltimos(iter.arr,i)$}
+
+\end{Representacion}
+
+\clearpage
+
+\begin{Algoritmos}
+
+\tinterfaz{Algoritmos del Diccionario de Agentes(Agente,Info)}
+	\begin{algorithm}[H]{\textbf{iVacio}() $\to$ $\res$: estr}
+        \begin{algorithmic}
+            \State res $\gets$ $\langle Vacio,[],[vacio()],0,0,[0,vacio()],[0,NULL] \rangle$ \Comment $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]{\textbf{iClaves}(\In{e}{estr}) $\to$ $\res$: itConj(Agente))}
+        \begin{algorithmic}
+            \State res $\gets$ CrearItConj(e.ConjuntoDeAgentes) \Comment $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]{\textbf{iDefinir}(\In{a}{$\langle Agente,Info \rangle$}, \Inout{e}{estr})}
+        \begin{algorithmic}
+        	\If{Agente < e.menor}
+            	\State Agente $\gets$ e.menor \Comment $O(1)$
+            \EndIf
+        	\If{Agente > e.mayor}
+            	\State Agente $\gets$ e.mayor \Comment $O(1)$
+            \EndIf
+            
+            \State AgergarRapido($\Pi_{1}$(a),e.ConjuntoDeAgentes) \Comment $O(1)$
+            \State vector vec $\gets$ vacia() \Comment $O(1)$ 
+            \State $nat$ $i \gets 0$	\Comment $O(1)$
+            
+            \While{i $<$= longitud(e.ArregloDeAgentes)}	\Comment $O(log(N_{a}))$
+                \If{$e.ArregloDeAgentes_{i}$ > $\Pi_{1}$(a)}	\Comment $O(1)$
+	                \State AgergarAtras(a,vec)	\Comment $O(1)$
+                    \State AgergarAtras($e.ArregloDeAgentes_{i}$,vec)	\Comment $O(1)$
+                    \State 	$i \gets i+1$ \Comment $O(1)$
+                \Else
+                    \State AgergarAtras($e.ArregloDeAgentes_{i}$,vec)	\Comment $O(1)$
+                    \State 	$i \gets i+1$ \Comment $O(1)$
+                \EndIf
+            \EndWhile
+            \State 	$s \gets a.sanciones$ \Comment $O(1)$
+            \State 	$it \gets crearIt(e.ListaSanciones)$ \Comment $O(1)$
+            \While{(it.siguiente).sancion < s}	\Comment $O(cadinal(sancDistintas))$
+            	\State it.avanzar() \Comment $O(1)$
+            \EndWhile
+      		\If{(it.siguiente).sancion = s} \Comment $O(1)$
+				\State Agregar($\Pi_{1}(a)$,it.siguiente.sancionados) \Comment $O(1)$
+			\Else
+            	\State AgregarComoSiguiente(tupla(it.siguiente.sancion,vacio),it.siguiente) \Comment $O(1)$
+                \State Agregar(itPlaca,it.siguiente.sancionados) \Comment $O(1)$
+            \EndIf
+            \Statex \underline{Complejidad:} $O(1)+O(1)+O(1)+O(1)+O(1)+O(log(N_{a}))*(O(1)+O					(1)+O(1)+O(1)+O(1)+O(1)+O(1))+O(1)+O(1)+O(cadinal(sancDistintas))*O					(1)+O(1)+O(1)+O(1)+O(1)=O(log(N_{a}))$
+            \Statex \underline{Significa:} $5*O(1)+O(log(N_{a}))*(7*O(1))+2*O(1)+O(cadinal(sancDistintas))					*O(1)+4*O(1)=O(log(N_{a}))$
+            \Statex \underline{Significa:} $O(1)+O(log(N_{a}))*O(1)+O(1)+O(cadinal(sancDistintas))*O					(1)+O(1)=O(log(N_{a}))$
+		\end{algorithmic}
+	\end{algorithm}
+    \begin{algorithm}[H]{\textbf{iObtener}(\In{a}{Agente}, \In{e}{estr}) $\to$ $\res$: $<pos: posici\acute{o}n, capturas: nat, sanciones: nat>$}
+        \begin{algorithmic}
+         	\State $nat$ n $\gets$ funcionDEhash(a,e) \Comment $O(1)$
+			\State conjunto conj $\gets$ e.TablaHash[n] \Comment $O(1)$
+            \State $itConj it \gets crearIt(conj)$
+            \While{$posible.placa \neq a$}	\Comment $O(cardinal(conj))$
+				\State posible $\gets$ siguiente(it) \Comment $O(1)$
+                \State $avanzar(it)$ \Comment $O(1)$
+			\EndWhile
+			\State res $\gets$ posible \Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)+O(1)+O(cardinal(conj))*(O(1)+O(1))+O(1)=O(cardinal(conj))=O(1) en caso promedio$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]{\textbf{iObtenerLog}(\In{a}{Agente}, \In{e}{estr}) $\to$ $\res$: $\langle Agente,Info \rangle$}
+        \begin{algorithmic}
+         	\State $nat$ i $\gets$ 0 \Comment $O(1)$
+         	\State $nat$ f $\gets$ longitud(e.ArregloDeAgentes)-1 \Comment $O(1)$
+         	\State $nat$ medio $\gets$ 0 \Comment $O(1)$
+            \While{i < f}	\Comment $O(log(N_{a}))$
+	         	\State medio $\gets$ f/2 \Comment $O(1)$
+				\If{$e.ArregloDeAgentes_{i} <= medio$}	\Comment $O(1)$
+                	\State f $\gets$ medio \Comment $O(1)$
+                \Else
+                	\State i $\gets$ medio \Comment $O(1)$					
+                \EndIf
+			\EndWhile
+            \State res $\gets$ e.ArregloDeAgentes$_{i}$ \Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)+O(1)+O(1)+O(log(N_{a}))*(O(1)+O(1)+O(1)+O(1))=O(log(N_{a}))$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]{\textbf{iDefinido?}(\In{a}{Agente}, \In{e}{estr}) $\to$ $\res$: bool}
+        \begin{algorithmic}
+         	\State $nat$ n $\gets$ funcionDEhash(a,e) \Comment $O(1)$
+			\State conjunto conj $\gets$ e.TablaHash$_{i}$ \Comment $O(1)$
+			\State posible $\gets$ dameUno(conj) \Comment $O(1)$
+            \State conj $\gets$ sinUno(conj) \Comment $O(1)$            
+			\While{$\Pi_{1}$(posible) < a)}	\Comment $O()$
+				\State posible $\gets$ dameUno(conj) \Comment $O(1)$
+    	        \State conj $\gets$ sinUno(conj) \Comment $O(1)$            
+			\EndWhile
+            \State res $\gets$ $\Pi_{1}$(posible)==a \Comment $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{ConKSancionesLineal}(\In{k}{nat},\In{e}{estr})$\to$ $res$ : conj(itDiccAgentes(act,arr))
+            \State 	$it \gets crearIt(e.ListaDeSanciones)$ \Comment $O(1)$
+            \State $nat i \gets 0$ \Comment $O(1)$
+            \While{k != it.sancion}	\Comment $O(N_{sanc})$
+	        	\State it.Avanzar() \Comment $O(1)$
+	     	\EndWhile
+            \State $res \gets it.sancionados$
+            \Statex \underline{Complejidad:} $O(N_{sanc})$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{ConKSancionesLog}(\In{k}{nat},\In{e}{estr})$\to$ $res$ : conj(itDiccAgentes(act,arr))
+            \State 	$it \gets crearIt(e.ArregloDeSanciones)$ \Comment $O(1)$
+            \State $nat i \gets 0$ \Comment $O(1)$
+            \State $nat f \gets longitud(e.ArregloDeSanciones)-1$ \Comment $O(1)$
+            \State $nat medio \gets 0$ \Comment $O(1)$
+            \While{k != it.sanci\'on}	\Comment $O(N_{sanc})$
+	         	\State medio $\gets$ f/2 \Comment $O(1)$
+				\If{$e.ArregloDeSanciones_{medio} <= k$}	\Comment $O(1)$
+                	\State f $\gets$ medio \Comment $O(1)$
+                \Else
+                	\State i $\gets$ medio \Comment $O(1)$					
+                \EndIf
+	     	\EndWhile
+            \State $res \gets it.sancionados.sancionados$
+            \Statex \underline{Complejidad:} $O(log(N_{a}))$
+        \end{algorithmic}
+    \end{algorithm}
+
+\tinterfaz{Auxiliares}
+
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iFunconDEhash}(\In{Agente}{nat}, \In{e}{estr})$\to$ $res$ : $nat$
+            \State 	$\res \gets \left\lfloor \cfrac{Agente-e.Menor}{\ \ \ \ \cfrac{e.Mayor-e.Menor}{longitud(e.ArregloDeAgentes)-1}\ \ \ \ } \right\rfloor\qquad$	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+\end{Algoritmos}
+
+\tinterfaz{Algoritmos del Iterador del Diccionario de Agentes(act,arr)}
+	
+    \begin{algorithm}[H]{\textbf{iPremiar}(\In{it}{itDiccAgentes(act,arr)}, \Inout{e}{estr})}
+        \begin{algorithmic}
+				\State ((it.arr)$_{i}$).capturas=((it.arr)$_{i}$).capturas + 1 \Comment $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+	\begin{algorithm}[H]{\textbf{iMover}(\In{it}{itDiccAgentes(act,arr)}, \In{p}{posicion}, \Inout{e}{estr})}
+		\begin{algorithmic}
+			\State $\Pi_{1}$((it.arr)$_{it.act}$.info) = p $O(1)$
+       	\end{algorithmic}
+	\end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{Sacionar}(\In{it}{itDiccAgentes(act,arr)},\Inout{e}{estr})
+            \State $borrar(it.arr_{it.act}.itcs,it.arr_{it.act}.its)$ \Comment $O(1)$
+            \If{$it.arr_{it.act}.its.avanzar().sancion == it.arr_{it.act}.sanciones$}
+				\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
+                \State $Agregar(it.arr_{it.act},it.arr_{it.act}.itcs)$ \Comment $O(1)$
+            \Else
+				\State $AgregarComoSiguiente(tupla(it.arr_{it.act}.sanciones,vacio()),it.arr_{it.act}.its)$ \Comment $O(1)$
+				\State $it.arr_{it.act}.its.avanzar()$ \Comment $O(1)$
+                \State $Agregar(it.arr_{it.act},it.arr_{it.act}.itcs)$ \Comment $O(1)$
+            \EndIf
+			\State \Comment $O(1)$
+            \State \Comment $O(1)$
+			\Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iCrearIt}(\In{da}{diccAgentes(Agente,info)}) $\to$ $res$ : iter
+            \State $res \gets \langle dp.ArregloDeAgentes,0 \rangle$ 	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}	
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iHaySiguiente}(\In{it}{iter}) $\to$ $res$ : $bool$
+            \State $res \gets it.act != longitud(it.arr)$	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]	
+        \begin{algorithmic}[1]
+            \State \textbf{iHayAnterior}(\In{it}{iter}) $\to$ $res$ : $bool$
+            \State $res \gets$ it.act != 0	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+           \State \textbf{isiguiente}(\In{it}{iter}) $\to$ $res$ : $\langle Agente,Info \rangle$
+            \State $res \gets it.arr_{it.act}$	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]{\textbf{iAnterior}(\In{it}{iter}) $\to$ $res$ : $\langle Agente,Info \rangle$}
+        \begin{algorithmic}[1]	
+            \State $res \gets it.arr_{it.act - 1}$	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iAvanzar}(\Inout{it}{iter})
+            \State it.act=it.act+1	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iRetroceder}(\Inout{it}{iter})
+            \State it.act=it.act-1	\Comment $O(1)$
+            \Statex \underline{Complejidad:} $O(1)$
+        \end{algorithmic}
+    \end{algorithm}
+    \begin{algorithm}[H]
+        \begin{algorithmic}[1]
+            \State \textbf{iAgregarComoSiguiente}(\Inout{it}{iter}, \In{a}{$\langle Agente,Info \rangle$})
+         		\State vector vec $\gets$ vacio() \Comment $O(1)$
+                \State nat i $\gets$ 0 \Comment $O(1)$
+                \While{i < longitud(it.arr)}	\Comment $O(N_{a})$
+	            	\If{$it.arr_{it.act} == i $}
+                    	\State AgregarAtras(vec,it.arr$_{it.act}$)	\Comment $O(1)$
+                        \State AgregarAtras(vec,a)	\Comment $O(1)$
+                    \Else
+                    	\State AgregarAtras(vec,it.arr$_{it.act}$)	\Comment $O(1)$
+                    \EndIf
+	     		\EndWhile
+            	\Statex \underline{Complejidad:} $O(N_{a})$
+    	\end{algorithmic}
+    \end{algorithm}    	

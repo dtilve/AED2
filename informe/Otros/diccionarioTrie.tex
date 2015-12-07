@@ -1,0 +1,309 @@
+\section{Módulo diccionario en Trie (string, posición)}
+
+El módulo diccionario en Trie incluye un iterador que permite recorrerlo como un vector donde cada elemento tiene un puntero a cada letra posible (pero sólo uno activado) y un puntero a significado. \par 
+No se permiten repeticiones de significados.\par
+Siguiendo la nominación del TAD, para este módulo llamamos posición a las tuplas $\langle$x:nat,y:nat$\rangle$. También aprovecharemos la consideración del acceso a strings en su forma vectorial y la función ord, para la correspondencia Char/Nat.
+
+\begin{Interfaz}
+
+% 	\textbf{parámetros formales}\hangindent=2\parindent\\
+% 	\parbox{1.7cm}{\textbf{géneros}}\TipoVariable{diccTrie(string, posición)}, \TipoVariable{itDiccTrie(string, posición), \tadNombre{ItBi($\alpha$)}\\
+	%\parbox[t]{1.7cm}
+%     {\textbf{función}}\parbox[t]{.65 \textwidth-\parindent-1.7cm}{%
+%   		\InterfazFuncion{$\bullet = \bullet$}{\In{n_1}{string}, \In{n_2}{string}}{bool}
+%     	{$res \igobs (n_1 = n_2)$}
+%     	[$\Theta(|n_{min}|)$, donde $|n_{min}|$ es el string más corto (puesto que si hay más caracteres ya no son iguales).]
+%     	[función de igualdad de strings]
+% 	}\\[2ex]
+%   	\parbox[t]{1.7cm}{\textbf{función}}\parbox[t]{.65\textwidth-\parindent-1.7cm}{%
+%     	\InterfazFuncion{Copiar}{\In{n}{$string$}}{$string$}
+%     	{$res \igobs n$}
+%     	[$\Theta(|n|)$, donde $|n|$ es la longitud del string.]
+%     	[función de copia de nombres]
+%   	}\\[2ex]
+%   	\parbox[t]{1.7cm}{\textbf{función}}\parbox[t]{.65\textwidth-\parindent-1.7cm}{%
+%     	\InterfazFuncion{Copiar}{\In{p}{$posicion$}}{$posicion$}
+%     	{$res \igobs p$}
+%     	[$\Theta(1)$]
+%     	[función de copia de posiciones]
+%   	}
+
+%\textbf{se explica con}: \tadNombre{diccionario$(\kappa, \sigma)$}, \tadNombre{IteradordiccionarioTrie($\alpha$), \tadNombre{Iterador Bidireccional($\alpha$)}.\section{Módulo diccionario en Trie (string, posición)}
+
+  \tinterfaz{Operaciones básicas del diccionario}
+
+  \InterfazFuncion{Vacío}{}{diccTrie$(string,posicion)$}%
+  {$res$ $\igobs$ vacío}%
+  [$257\Theta(1) = \Theta(1)$]
+  [genera un diccionario vacío y lo pasa por referencia.]
+
+  \InterfazFuncion{Definir}{\Inout{d}{diccTrie(string,posicion)}, \In{n}{string}, \In{p}{posicion}}{}
+  [$d \igobs d_0 \land \lnot$(def?($d$,$n$))]
+  {$d$ $\igobs$ definir($d, n, p$)}
+  [$\displaystyle\Theta\left(|n_{m}|\right)$, donde $|n_{m}|$ es la longitud del nombre más largo.]
+  [define la clave $n$ con el significado $p$ en el diccionario.]
+  []
+
+  \InterfazFuncion{Obtener}{\In{d}{diccTrie($string, posicion$)}, \In{n}{$string$}}{$posicion$}
+  [def?($d$, $n$)]
+  {alias($res$ $\igobs$ obtener($d$, $n$))}
+  [$\Theta(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre más largo.]
+  [devuelve el significado de la clave $n$ en $d$.]
+  [$res$ es modificable puesto que $d$ es modificable.]
+
+  \InterfazFuncion{Definido?}{\In{d}{diccTrie($string, posicion$)}, \In{n}{$string$}}{bool}
+  {$res$ $\igobs$ def?($d$, $n$)}
+  [$\Theta(CuantasClaves(d)|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre más largo.]
+  [devuelve \texttt{true} si y sólo $n$ está definido en el diccionario.]
+
+  \InterfazFuncion{Borrar}{\Inout{d}{diccTrie($string,posicion$)}, \In{n}{$string$}}{}
+  [$d = d_0$ $\land$ def?($d$, $n$)]
+  {$d$ $\igobs$ borrar($d_0, n$)}
+  [$\Theta(|n_{m}|)$, donde $|n_{m}|$ es la longitud del nombre más largo]
+  [elimina la clave $n$ junto con su significado de $d$.]
+  [el iterador se indefine si se borran claves sin utilizar la función del iterador Eliminar.]
+
+  \InterfazFuncion{Claves}{\In{d}{diccTrie$(string,posicion)$}}{lista(string)}
+  [true]
+  {$res \igobs claves(d)$}
+  [$\Theta(1)$]
+  [devuelve las claves del diccionario por referencia.]
+
+  \tinterfaz{Operaciones básicas del iterador}
+  
+  \InterfazFuncion{CrearIt}{\In{d}{diccTrie$(string,posicion)$}}{itDiccTrie(puntero))}
+  {$res$ $\igobs$ crearItBi(\secuencia{}, $d$)}
+  [$\Theta(1)$]
+  [crea un iterador bidireccional de la lista que conforma el nodo del diccionario, de forma tal que al pedir \NombreFuncion{Siguiente} se obtenga el primer nodo de $d$.]
+  [el iterador se invalida si y sólo si se elimina el elemento siguiente del iterador sin utilizar la funcin \NombreFuncion{EliminarSiguiente}.]
+  
+    \InterfazFuncion{HaySiguiente}{\In{it}{itDiccTrie(puntero)}}{bool}
+  {$res$ $\igobs$ haySiguiente?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para avanzar.]
+
+  \InterfazFuncion{HayAnterior}{\In{it}{itDiccTrie(puntero)}}{bool}
+  {$res$ $\igobs$ hayAnterior?($it$)}
+  [$\Theta(1)$]
+  [devuelve \texttt{true} si y sólo si en el iterador todavía quedan elementos para retroceder.]
+
+  \InterfazFuncion{Siguiente}{\In{it}{itDiccTrie(puntero)}}{puntero}
+  [HaySiguiente?($it$)]
+  {alias($res$ $\igobs$ Siguiente($it$))}
+  [$\Theta(1)$]
+  [devuelve el elemento siguiente a la posición del iterador.]
+  [$res$ es modificable si y sólo si $it$ es modificable.]
+
+  \InterfazFuncion{Anterior}{\In{it}{itDiccTrie(puntero)}}{puntero}
+  [HayAnterior?($it$)]
+  {alias($res$ $\igobs$ Anterior($it$))}
+  [$\Theta(1)$]
+  [devuelve el elemento anterior del iterador.]
+  [$res$ es modificable si y slo si $it$ es modificable.]
+
+  \InterfazFuncion{Avanzar}{\Inout{it}{itDiccTrie(puntero)}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ Avanzar($it_0$)}
+  [$\Theta(1)$]
+  [avanza el iterador a la posición siguiente.]
+
+  \InterfazFuncion{Retroceder}{\Inout{it}{itDiccTrie(puntero)}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ Retroceder($it_0$)}
+  [$\Theta(1)$]
+  [retrocede el iterador a la posición anterior.]
+
+  \InterfazFuncion{EliminarSiguiente}{\Inout{it}{itDiccTrie(puntero)}}{}
+  [$it = it_0$ $\land$ HaySiguiente?($it$)]
+  {$it$ $\igobs$ EliminarSiguiente($it_0$)}
+  [$\Theta(1)$]
+  [elimina de la lista iterada el valor que se encuentra en la posición siguiente del iterador.]
+
+  \InterfazFuncion{EliminarAnterior}{\Inout{it}{itDiccTrie(puntero)}}{}
+  [$it = it_0$ $\land$ HayAnterior?($it$)]
+  {$it$ $\igobs$ EliminarAnterior($it_0$)}
+  [$\Theta(1)$]
+  [elimina de la lista iterada el valor que se encuentra en la posición anterior del iterador.]
+
+  \InterfazFuncion{AgregarComoSiguiente}{\Inout{it}{itDiccTrie(puntero)}, \In{a}{puntero}}{}
+  [$it = it_0$]
+  {$it$ $\igobs$ AgregarComoSiguiente($it_0$, $a$)}
+  [$\Theta(1)$]
+  [agrega el elemento $a$ a la lista iterada, entre las posiciones anterior y siguiente del iterador, dejando al iterador posicionado de forma tal que al llamar a \NombreFuncion{Siguiente} se obtenga $a$.]
+  [el elemento $a$ se agrega por referencia.]
+
+  \InterfazFuncion{AgregarComoAnterior}{\Inout{it}{itDiccTrie(puntero)}, \In{a}{puntero}}{}
+  [$it = it_0$]
+  {$it$ $\igobs$ AgregarComoAnterior($it_0$, $a$)}
+  [$\Theta(1))$]
+  [agrega el elemento $a$ a la lista iterada, entre las posiciones anterior y siguiente del iterador, dejando al iterador posicionado de forma tal que al llamar a \NombreFuncion{Anterior} se obtenga $a$.]
+  [el elemento $a$ se agrega por referencia.]
+
+\end{Interfaz}
+
+\begin{Representacion}
+
+  \tinterfaz{Representación del diccionario}
+
+La representación que optamos consiste en representar al diccionario como un Trie cuyos nodos son arreglos dimensionables de punteros que constan de 257 posiciones (256 para las letras de las claves y 1 para el significado). Nótese que esto lo hace ineficiente en cuanto espacio, pero eficiente en cuanto al tiempo.\par 
+Representamos entonces el conjunto de claves que conforman los string en una lista, que puede recorrerse utilizando iteradores bidireccionales (ver: listas del apunto de módulos básicos).
+
+  \begin{Estructura}{diccTrie}[dt]
+    \begin{Tupla}[dt]%
+		\tupItem{raiz}{lista(puntero($hijo_{i}$))}
+   		\tupItem[\\]{$hijo_{i}$}{lista(puntero($hijo_{k}$))} donde 0 $<=$ i,k $<=$ 256
+        \tupItem[\\]{claves}{lista(string)}
+    \end{Tupla}
+  \end{Estructura}
+
+
+
+%  \Rep[][]{}\mbox{}
+
+  %~
+
+ % \Abs[]{}[]{}{}
+
+  \tinterfaz{Representación del iterador}
+  
+  El iterador es un puntero al puntero siguiente. Este puntero apunta al significado (en este caso una tupla de nat) en el caso en que se llegue al final.
+   
+  \begin{Estructura}{itDiccTrie}[itdt]
+    \begin{Tupla}[itdt]%
+		\tupItem{puntero}{puntero(puntero)},
+   		\tupItem[\\]{diccionario}{lista(puntero)}
+    \end{Tupla}
+  \end{Estructura}
+
+\end{Representacion}
+
+\clearpage
+
+\begin{Algoritmos}
+
+\begin{algorithm}[H]{\textbf{iVacío} ()}{$\to$ $\res$: diccTrie}
+	\begin{algorithmic}
+	\State lst $\gets$ Vacía() \Comment $\Theta(1)$
+    \State d.claves $\gets$ Vacía() \Comment $\Theta(1)$
+    \State d.significados $\gets$ Vacía() \Comment $\Theta(1)$
+    \State i $\gets$ 0
+    \While{(i $<$ 257)} \Comment $\Theta(1)$
+    \State AgregarAtras(lst,NULL) \Comment $\Theta(1)$
+    \State i = i + 1 	\Comment $\Theta(1)$
+    \EndWhile
+    \State res.raíz $\gets$ lst 	\Comment $\Theta(1)$
+    \State res $\gets$ $\&$raiz
+    \medskip
+	\Statex \underline{Complejidad:} $\Theta(1)$
+    \Statex \underline{Justificación:} La creación de una lista de dimensión fija es constante, el agregado a la misma del NULL como elemento es $\Theta(1)$ pues es un macro para un tipo básico (bien se podría agregar un 0) . El resultado se devuelve por referencia, no por copia.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iDefinir}(\Inout{d}{diccTrie}, \In{n}{string}, \In{p}{posición})}
+	\begin{algorithmic}
+    \State current $\gets$ d.raíz 			\Comment $\Theta(1)$
+    \State i = 0							\Comment $\Theta(1)$
+    \While{($i < Longitud(n)$)}				\Comment $\Theta(1)$
+    	\If{(current[ord(n[i])] == NULL)}	\Comment $\Theta(1)$
+            \State new $\gets$ NuevoNodo()	\Comment $\Theta(1)$
+            \State current.$hijo_{i}$ = new
+            \State current[ord(n[i])] $\gets$ $\&$new \Comment $\Theta(1)$
+            \State current = new			\Comment $\Theta(1)$
+        \Else
+        	\State current $\gets$ current[ord(n[i])] \Comment $\Theta(1)$
+		\EndIf
+    \State i = i + 1						\Comment $\Theta(1)$
+    \EndWhile
+    \State current[256] $\gets$ p	\Comment $\Theta(1)$
+    \State d.Claves$\to$AgregarAtrás(n)		\Comment $\Theta(1)$
+    \medskip
+	\Statex \underline{Complejidad:} $\Theta(|n_{m}|)$
+    \Statex \underline{Justificación:} Primero una observación particular: como n es un vector(char), su longitud puede conseguirse $\Theta(1)$. Luego, se tiene que en el peor caso se deben definir cada uno de los nuevos chars, eso hace que el loop que se tiene en $\Theta(1)$ se repita la cantidad de veces que es el largo del string.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iObtener(\In{d}{diccTrie}, \In{n}{string})}}{$\to$ $\res$:{posición}}
+	\begin{algorithmic}
+ 	\State current $\gets$ d.raíz 			\Comment $\Theta(1)$
+    \State i = 0							\Comment $\Theta(1)$
+    \While{($i < Longitud(n)$)}				\Comment $\Theta(1)$
+    	\State current $\gets$ current[ord(n[i])] \Comment $\Theta(1)$
+        \State i = i + 1						\Comment $\Theta(1)$
+    \EndWhile
+    \State res $\gets$ current[256] \Comment $\Theta(1)$
+  	\Statex \underline{Complejidad:} $\Theta(|n_{m}|)$
+    \Statex \underline{Justificación:} Obtener el significado implica buscar un nuevo char en $\Theta(1)$ por cada uno de los chars que compone la clave.
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iDefinido?(\In{d}{diccTrie}, \In{n}{string})}}{$\to$ $\res$:{bool}}
+	\begin{algorithmic}
+	\State current $\gets$ d.raíz 			\Comment $\Theta(1)$
+    \State i = 0							\Comment $\Theta(1)$
+    \While{($i < Longitud(n)$ $\&\&$ current $!=$ NULL )}				\Comment $\Theta(1)$
+    	\State current $\gets$ current[ord(n[i])] \Comment $\Theta(1)$
+        \State i = i + 1						\Comment $\Theta(1)$
+    \EndWhile
+    \State res $\gets$ (i == Longitud(n))
+    \Statex \underline{Complejidad:} $\Theta(|n_{m}|)$
+    \Statex \underline{Justificación:} Comprobar si está definido implica buscar los chars que componen la clave en $\Theta(1)$ por cada uno en el peor caso (es decir, en el que la búsqueda del char siempre haya sido generadora de un nuevo ciclo).
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iBorrar(\Inout{d}{diccTrie}, \In{n}{string})}}
+	\begin{algorithmic} 
+    \State itd $\gets$ CrearIt(d)
+    \State Siguiente(itd)
+    \State i = 0
+    \While{($i < Longitud(n)$) $\&\&$ haySiguiente(itD)}
+    \State current $\gets$ current[ord(n[i])]
+    \State itD $\gets$ Siguiente(itD)
+    \State i = i + 1 
+    \EndWhile
+    \State j = 0
+    \While{($j < Longitud(n)-1$)}
+    \State current $\gets$ current[ord(n[i])]
+    \State EliminarSiguiente(itD)
+    \State Anterior(itD)
+    \State j = j + 1 
+    \EndWhile 
+    \Statex \underline{Complejidad:} $\Theta(|n_{m}|)$
+    \Statex \underline{Justificación:} Es necesario llegar hasta el final de la clave e ir eliminando los elementos de a uno, por lo que se recorre con el iterador (para evitar indefiniciones) en $\Theta(1)$, como mucho, el nombre más largo, es decir, $n_{m}$ veces $\Theta(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+% \begin{algorithm}[H]{\textbf{iClaves}(\In{d}{diccTrie}}{$\to$ $\res$:{lista(string)}}
+% 	\begin{algorithmic}
+%     \State res $\gets$ $\&$d.claves
+% 	\end{algorithmic}
+% \end{algorithm}
+
+% \begin{algorithm}[H]{\textbf{iCuantasClaves}(\Inout{d}{diccTrie}, \In{n}{string}, \In{p}{posición})}
+% 	\begin{algorithmic}
+%     \State asdf
+% 	\end{algorithmic}
+% \end{algorithm}
+
+% \begin{algorithm}[H]{\textbf{$=_{operator}$}(\Inout{d}{diccTrie}, \In{n}{string}, \In{p}{posición})}
+% 	\begin{algorithmic}
+%     \State asdf
+% 	\end{algorithmic}
+% \end{algorithm}
+
+\tinterfaz{Auxiliares}
+
+\begin{algorithm}[H]{\textbf{NuevoNodo}()}{$\to$ $\res$: lista(puntero(NULL))}
+	\begin{algorithmic}
+        \State nodo $\gets$ Vacía() \Comment $\Theta(1)$
+        \State i $\gets$ 0
+        \While{(i $<$ 257)} \Comment $\Theta(1)$
+        \State AgregarAtras(nodo,NULL) \Comment $\Theta(1)$
+        \State i = i + 1 	\Comment $\Theta(1)$
+        \EndWhile
+        \State res $\gets$ nodo \Comment $\Theta(1)$
+    	\Statex \underline{Complejidad:} $\Theta(1)$
+    	\Statex \underline{Justificación:} Como los tiempos son constantes puesto que hay una limitación en la cantidad de posiciones para la lista y los elementos son básicos, se puede obtener una lista "nodo" nueva en $\Theta(1)$.
+	\end{algorithmic}
+
+\end{algorithm}
+\end{Algoritmos}

@@ -1,0 +1,127 @@
+\section{Módulo Diccionario en Hash (nat,info)}
+
+\begin{Interfaz}
+  \textbf{parámetros formales}\hangindent=2\parindent\\
+  \parbox{1.7cm}{\textbf{géneros}}$\alpha$\\
+  \parbox[t]{1.7cm}{\textbf{función}}\parbox[t]{.5\textwidth-\parindent-1.7cm}{%
+    \InterfazFuncion{Copiar}{\In{k}{$\kappa$}}{$\kappa$}
+    {$res \igobs k$}
+    [$\Theta(copy(k))$]
+    [función de copia de nombres]
+  }\\
+   	
+  \textbf{se explica con}: \tadNombre{Vector($\alpha$)}.
+
+  \textbf{géneros}: \TipoVariable{HashAgXPlaca}
+
+  \tinterfaz{Operaciones básicas}
+
+%%	\textbf{Nota}: Hola, ¿Todo bien?\TipoVariable{.}
+    
+%% \In{}{}
+%%  OBSERVADORES BASICOS
+%% 
+
+  
+  \InterfazFuncion{Vacia}{\In{n}{nat}}{vector()}
+  [true]
+  {$res \igobs <>$}
+  [$\Theta(1)$]
+  [genera un vector vacio]
+  
+  \InterfazFuncion{EsVacio?}{\In{v}{vector(tupla(nat,info))}}{bool}
+  [true]
+  {$res \igobs $}
+  [$\Theta(1)$]
+  [devuelve true si y solo si v esta vacio]
+    
+  \InterfazFuncion{Longitud}{\In{v}{vector(tupla(nat,info))}}{nat}
+  [true]
+  {$res \igobs long(v)$}
+  [$\Theta(1)$]
+  [devuelve la cantidad de elementos que tiene el vector]
+    
+  \InterfazFuncion{$\bullet$[$\bullet$]}{\In{v}{vector(tupla(nat,info))}, \In{i}{nat}}{tupla(nat,info)}
+  [i $<$ long(v)]
+  {$alias(res \igobs iesimo(v, i))$}
+  [$\Theta(1)$]
+  []
+  
+  
+%%  GENERADORES
+%%	
+  
+  \InterfazFuncion{Hash}{\Inout{v}{vector((nat,info))}, \In{i}{nat}, \In{tup}{tupla(nat,info)}}{}
+  [$v \igobs v_0 \land i \leq long(v) $]
+  {$v \igobs Agregar(v_0,i,tup) $}
+  [$\Theta(N_{a})$ la primera vez luego $ \Theta(Log(N_{a})) $]
+  [agrega el elemento \textit{tup} a \textit{v}, de forma tal que ocupe la posición \textit{i}]  
+ [el elemento a se agrega por copia. Cualquier referencia que se tuviera al vector queda invalidada cuando
+long(v) es potencia de 2]
+
+\end{Interfaz}
+
+\begin{Representacion}
+
+    \tinterfaz{Representación de Diccionario en Hash}
+
+  \begin{Estructura}{HashAgXPlaca}[thPlaca]
+    \begin{Tupla}[tHPlaca]%
+    
+      \tupItem{placa}{nat}%
+      \tupItem{inf}{info}%
+    \end{Tupla} 
+      \begin{Tupla}[info]%
+    
+      \tupItem{pos}{tupla(nat,nat)}%
+      \tupItem{sanciones}{nat}%
+      \tupItem{hippiesAtrapados}{nat}%
+    \end{Tupla}
+  \end{Estructura}
+  
+ 
+
+\end{Representacion}
+
+
+\begin{Algoritmos}
+\begin{algorithm}[H]{\textbf{iVacia}(\In{n}{nat})$\to$ $\res$: vector(tupla(nat,info))}
+	\begin{algorithmic}
+            \State $res \gets (NULL,n)$		\Comment $\Theta(1)$
+            
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iEsVacio}(\In{v}{vector(tupla(nat,info))})$\to$ $\res$: bool}
+	\begin{algorithmic}
+            \State $res\gets(v.elementos = NULL)$	\Comment $\Theta(1)$
+            
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iLongitud}(\In{v}{vector(tupla(nat,info))})$\to$ $\res$: nat}
+	\begin{algorithmic}
+            
+            \State $res \gets v.longitud$													\Comment $\Theta(1)$
+           
+	\end{algorithmic}
+\end{algorithm}
+
+
+  \begin{algorithm}[H]{\textbf{i$\bullet$[$\bullet$]}(\In{v}{vector(tupla(nat,info))}, \In{i}{nat})$\to$ $\res$: tupla(nat,info)}
+	\begin{algorithmic}
+    \State $res \gets v.elementos[i]$       \Comment $\Theta(1)$    
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iHash}(\Inout{v}{vector(nat,info)},  \In{tup}{tupla(nat,info)})}
+	\begin{algorithmic}
+           
+            \State $res \gets$													\Comment $\Theta(N_{a})$
+           
+	\end{algorithmic}
+\end{algorithm}
+
+\end{Algoritmos}

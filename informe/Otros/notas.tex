@@ -1,0 +1,32 @@
+%Holaaa :D
+
+%queria escribir las estructuras que tenemos asi veo mejor que falta
+
+\tupItem{campus}				{puntero(matriz(char))} %// en esta aridad faltan los 3 punteros??
+% \tupItem[\\]{estudiantes}		{conj(estudiantes:string)} 
+% \tupItem[\\]{hippies}			{conj(hippies:string)}  
+% \tupItem[\\]{agentes}			{conj(agentes:nat)} %/////// para mi este hay que reemplazarlo por arregloAgentes y que el puntero del Campus que va a un agente valla a arregloAgentes
+\tupItem[\\]{diccHippies}		{diccTrie(nombre:string, pos:tupla(nat,nat))} %//estos son los trie
+\tupItem[\\]{diccEstudiantes}	{diccTrie(nombre:string, pos:tupla(nat,nat))} %/estos son los trie
+\tupItem[\\]{diccAgentes}		{diccAg(placa:nat, info)} %//ordenados por placa
+% \tupItem[\\]{arregloAgentes}	{arrAg(itDiccAgentes)} %//este es el hash - este iterador apunta a una posicion de diccAgentes
+% \tupItem[\\]{listaSanciones}	{listSanc(NodoSancion)} %//ordenada por #sancion - para mi se representa con una lista simplemente enlazada con puntero al primero y el ultimo es suficiente
+% \tupItem[\\]{arregloSanciones}	{arrSanc(placa:nat, itListSanc)} %//ordenado por #sancion - el iterador apunta al nodo  de listaSanciones que correponde por igualdad de #sancion
+% \tupItem[\\]{másVigilante}		{itDiccAgentes} %// este iterador apunta a una posicion de diccAgentes
+% \tupItem[\\]{flagCaptura}		{bool}
+% \tupItem[\\]{sanciones}			{diccHashS(placa:nat, sanciones:nat)}
+
+Para simplificar la lectura descartamos $\Pi_i$ y definimos:\par
+\begin{Tupla}[info]
+  \tupItem{posicion}{tupla(nat,nat)}
+  \tupItem{sanciones}{$nat$}
+  \tupItem{capturas}{nat}
+  \tupItem{iteradorAListaSanciones}{itListSanc} %//este iterador apunta al nodo  de listaSanciones que correponde por igualdad de #sancion
+\end{Tupla}
+
+\begin{Tupla}[NodoSancion]
+  \tupItem{siguiente}{*NodoSancion}
+  \tupItem{numeroSancion}{nat}
+  \tupItem{agentes}{conj(agentes:nat)}
+\end{Tupla}
+    

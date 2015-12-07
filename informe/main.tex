@@ -1,0 +1,66 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc} % para poder usar tildes en archivos UTF-8
+\usepackage[spanish, activeacute]{babel} % para que comandos como \today den el resultado en castellano
+\usepackage{a4wide} % márgenes un poco más anchos que lo usual
+\usepackage[conEntregas]{caratula}
+
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+%\usepackage[T1]{fontenc}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{latexsym}
+\usepackage{lastpage}
+\usepackage{aed2-symb,aed2-itef,aed2-tad}
+\usepackage{algorithmicx, algpseudocode, algorithm}
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref}
+\usepackage{calc}
+
+\newcommand{\f}[1]{\text{#1}}
+\renewcommand{\paratodo}[2]{$\forall~#2$: #1}
+
+\sloppy
+
+\parskip=5pt % 10pt es el tamaño de fuente
+
+% Pongo en 0 la distancia extra entre ítemes.
+\let\olditemize\itemize
+\def\itemize{\olditemize\itemsep=0pt}
+
+\makeindex
+
+\begin{document}
+
+\titulo{TP2 - Diseño de TADs}
+\subtitulo{``Alta Seguridad Nos Cuida''}
+
+\fecha{10 de noviembre de 2015}
+
+\materia{Algoritmos y Estructuras de Datos II}
+\grupo{Grupo 11}
+
+\integrante{Corleto, Alan Ricardo}{790/14}{alancorleto@hotmail.es}
+\integrante{Pesaresi, Natalia Lucia}{636/14}{natalia.pesaresi@gmail.com}
+\integrante{Saenz, Luciano Ariel}{904/13}{saenzluciano@gmail.com}
+\integrante{Tilve Neyra, Dana Marlene}{614/14}{tilve.dana@gmail.com}
+
+\maketitle
+\include{premain}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\include{modulos/campusSeguro}
+\clearpage
+
+\include{modulos/campus}
+\clearpage
+
+\include{modulos/diccNombres}
+\clearpage
+
+\include{modulos/diccAgentes}
+\clearpage 
+
+
+\end{document}

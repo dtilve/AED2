@@ -1,0 +1,270 @@
+\section{Módulo Campus}
+
+\begin{Interfaz}
+
+  \textbf{se explica con}: \tadNombre{Campus}.\par
+  \textbf{géneros}: \TipoVariable{campus}
+  \tinterfaz{Operaciones básicas}
+
+%%	\textbf{Nota}: \TipoVariable{.}
+    
+%% \In{}{}
+%%  GENERADORES
+%% 
+
+  \InterfazFuncion{crearCampus}{\In{ancho}{nat}, \In{alto}{nat}}{campus}
+  [$ancho > 0 \land alto > 0$]
+  {$res \igobs crearCampus(ancho,alto)$}
+  [$O(ancho\,x\,alto)$]
+  [Crea el campus.]
+  
+  \InterfazFuncion{agregarObstaculo}{\In{p}{posici\'on}, \Inout{c}{campus}}{}
+  [$c \igobs c_{0} \land \, posV\acute{a}lida?(p,c_{0}) \, \yluego \neg ocupada?(p,c_{0})$]
+  {$c \igobs agregarObst\acute{a}culo(c_{0})$}
+  [$O(1)$]
+  [Agrega un obstaculo al campus en una posicion válida y desocupada.]
+
+%%  OBSERVADORES BÁSICOS
+%%	
+  
+  \InterfazFuncion{filas}{\In{c}{campus}}{nat}
+  [$true$]
+  {$res \igobs filas(c)$}
+  [$O(1)$]
+  [Devuelve la cantidad de filas que tiene el campus.]  
+  
+  \InterfazFuncion{columnas}{\In{c}{campus}}{nat}
+  [$true$]
+  {$res \igobs columnas(c)$}
+  [$O(1)$]
+  [Devuelve la cantidad de columnas que tiene el campus.]  
+  
+  \InterfazFuncion{ocupada?}{\In{p}{posici\'on}, \In{c}{campus}}{bool}
+  [$posV\acute{a}lida?(p,c)$]
+  {$res \igobs ocupada?(p,c)$}
+  [$O(1)$]
+  [Chequea si p esta ocupada.]  
+
+%%  OTRAS OPERACIONES
+%%	
+
+  \InterfazFuncion{posV\'alida?}{\In{p}{posici\'on}, \In{c}{campus}}{bool}
+  [$true$]
+  {$res \igobs posV\acute{a}lida?(p,c)$}
+  [$O(1)$]
+  [Chequea si p pertenece a las posiciones del campus.]
+  
+  \InterfazFuncion{esIngreso?}{\In{p}{posici\'on}, \In{c}{campus}}{bool}
+  [$true$]
+  {$res \igobs esIngreso?(p,c)$}
+  [$O(1)$]
+  [Chequea si p es una opción de ingreso para un hippie o un estudiante. Esa posición debe estar vacía y en la primera o última fila.]
+  
+  \InterfazFuncion{ingresoSuperior?}{\In{p}{posici\'on}, \In{c}{campus}}{bool}
+  [$true$]
+  {$res \igobs ingresoSuperior?(p,c)$}
+  [$O(1)$]
+  [Chequea si la posición de ingreso pertenece a la fila superior.]
+  
+  \InterfazFuncion{ingresoInferior?}{\In{p}{posici\'on}, \In{c}{campus}}{bool}
+  [$true$]
+  {$res \igobs ingresoInferior?(p,c)$}
+  [$O(1)$]
+  [Chequea si la posición de ingreso pertenece a la inferior superior.]
+  
+  \InterfazFuncion{vecinos}{\In{p}{posici\'on}, \In{c}{campus}}{conj(posici\'on)}
+  [$posV\acute{a}lida?(p,c)$]
+  {$res \igobs vecinos(p,c)$}
+  [$O(1)$]
+  [Devuelve el conjunto de vecinos de p, si es una posicion valida. Son como maximo 4 elementos. Si no hay vecinos devuelve el conjunto vacio.]
+  
+  \InterfazFuncion{distancia}{\In{p}{posici\'on}, \In{p2}{posici\'on}, \In{c}{campus}}{nat}
+  [$true$]
+  {$res \igobs distancia(p,p2,c)$}
+  [$O(1)$]
+  [Devuelve la distancia que hay entre p y p2.]
+
+  \InterfazFuncion{proxPosici\'on}{\In{p}{posici\'on}, \In{d}{direcci\'on}, \In{p}{campus}}{posici\'on}
+  [$posV\acute{a}lida?(p,c)$]
+  {$res \igobs proxPosici\acute{o}n(p,d,c)$}
+  [$O(1)$]
+  [Devuelve la proxima posicion que deberia tomar un elemento. No hace distincion en para que tipo se utilizara esta fincion. Seran datos a interpretar por el invocador.]
+  
+  \InterfazFuncion{ingresosM\'asCercanos}{\In{p}{posici\'on}, \In{c}{campus}}{conj(posici\'on)}
+  [$posV\acute{a}lida?(p,c)$]
+  {$res \igobs ingresosM\acute{a}sCercanos(p,c)$}
+  [$O(1)$]
+  [Devuelve el conjunto de posiciones libres del ingreso que esta mas cerca de p. si no hay posiciones libres en el mas cercano, devuelve el otro conjunto.]
+
+\end{Interfaz}
+
+\begin{Representacion}
+
+  \tinterfaz{Representación de Campus}
+
+  \begin{Estructura}{campus}[cs]
+    \begin{Tupla}[cs]
+      \tupItem{Matriz}{Vector(Vector(bool))}
+      \tupItem{Filas}{nat}
+      \tupItem{Columnas}{nat}
+    \end{Tupla}
+  \end{Estructura}
+
+  \Rep[cs][c]{true}
+  \mbox{}
+  ~
+  \Abs[cs]{campus}[e]{c}{$filas(c) \igobs cs.Filas \land columnas(c) \igobs cs.Columnas \land$  
+   \par$(\forall p: posici\acute{o}n) posV\acute{a}lida?(p,c) \impluego (ocupada?(p,c) \igobs cs.Matriz[p.X-1][p.Y-1]$)}
+\end{Representacion}
+ 
+ \pagebreak
+
+\begin{Algoritmos}
+
+\begin{algorithm}[H]{\textbf{iCrearCampus}(\In{ancho}{nat}, \In{alto}{nat})$\to$ $res$ : $estr$}
+	\begin{algorithmic}
+            \State $i \gets 0$		\Comment $O(1)$
+            \While{$i < ancho$}	\Comment $O(ancho)$
+            	\State $j \gets 0$	\Comment $O(1)$
+                \While{$j < alto$}\Comment $O(alto)$
+                	\State $res.Matriz[i][j] \gets false$ \Comment $O(1)$
+                \EndWhile
+            \EndWhile
+            \State $res.Filas \gets ancho$	\Comment $O(1)$
+            \State $res.Columnas \gets alto$	\Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(ancho * alto)$
+	\Statex \underline{Justificación:} La mayor complejidad se ve en la inicializacion de todas las posiciones del campus. Dado que la cantidad de dichas posiciones es igual al ancho*alto la complejidad final es O(ancho*alto): $O(1)$*3 +$O(ancho)$*$O(1)$*($O(1)$*$O(alto)$) = $O(ancho*alto)$. 
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iAgregarObst\'aculo}(\In{p}{posici\'on}, \Inout{e}{estr})}
+	\begin{algorithmic}
+       	\State $e.Matriz[p.X-1][p.Y-1] \gets \, true$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iFilas}(\In{e}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+       	\State $res \gets e.Filas$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iColumnas}(\In{e}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+       	\State $res \gets e.Columnas$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iOcupada?}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+       	\State $res \gets e.Matriz[p.X-1][p.Y-1]$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iPosV\'alida?}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+       	\State $res \gets 0 < p.X \land p.X \leq e.Filas \land 0 < p.Y \land p.Y \leq e.Columnas$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iEsIngreso?}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+       	\State $res \gets ingresoSuperior(p) \lor ingresoInferior(p)$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iIngresoSuperior?}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+       	\State $res \gets p.Y = 1$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iIngresoInferior?}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: bool}
+	\begin{algorithmic}
+       	\State $res \gets p.Y = e.Filas$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iVecinos}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: conj(posici\'on)}
+	\begin{algorithmic}
+       	\State $res \gets \emptyset$	\Comment $O(1)$
+        \If{$posV\acute{a}lida?(<p.X,p.Y-1>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X,p.Y-1>,res)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X+1,p.Y>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X+1,p.Y>,res)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X,p.Y+1>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X,p.Y+1>,res)$	\Comment $O(1)$
+        \EndIf
+        \If{$posV\acute{a}lida?(<p.X-1,p.Y>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X-1,p.Y>,res)$	\Comment $O(1)$
+        \EndIf
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex \underline{Justificación:} $O(1)$*9 = $O(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+
+%Nota: en este conjunto(res) agregar es o(1) porque esta implementado sobre una secuencia.
+
+
+\begin{algorithm}[H]{\textbf{iDistancia}(\In{p}{posici\'on}, \In{p2}{posici\'on}, \In{e}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+       	\State $res \gets |p.X - p2.X| + |p.Y - p2.Y|$ \Comment $O(1)$
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iProxPosici\'on}(\In{p}{posici\'on}, \In{dir}{direcci\'on}, \In{e}{estr}) $\to$ $\res$: nat}
+	\begin{algorithmic}
+       	\If{$dir = izq$}	\Comment $O(1)$
+        	\State $res \gets <p.X-1,p.Y>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = der$}	\Comment $O(1)$
+        	\State $res \gets <p.X+1,p.Y>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = arriba$}	\Comment $O(1)$
+        	\State $res \gets <p.X,p.Y-1>$	\Comment $O(1)$
+        \EndIf
+        \If{$dir = abajo$}	\Comment $O(1)$
+        	\State $res \gets <p.X,p.Y+1>$	\Comment $O(1)$
+        \EndIf
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex \underline{Justificación:} $O(1)$*8 = $O(1)$.
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iIngresosM\'asCercanos}(\In{p}{posici\'on}, \In{e}{estr}) $\to$ $\res$: conj(posici\'on)}
+	\begin{algorithmic}
+    	\State $res \gets \emptyset$	\Comment $O(1)$
+       	\If{$distancia(p,<p.X,1>,e) \leq distancia(p,<p.X,e.filas>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X,1>,res)$	\Comment $O(1)$
+        \EndIf
+        \If{$ distancia(p,<p.X,e.filas>,e) \leq distancia(p,<p.X,1>,e)$}	\Comment $O(1)$
+        	\State $agregar(<p.X,e.filas>,res)$	\Comment $O(1)$
+        \EndIf
+	\Statex \underline{Complejidad:} $O(1)$
+	\Statex \underline{Justificación:} $O(1)$*5 = $O(1)$.        
+	\end{algorithmic}
+\end{algorithm}
+  
+\end{Algoritmos}

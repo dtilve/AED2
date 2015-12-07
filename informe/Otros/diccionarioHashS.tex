@@ -1,0 +1,153 @@
+\section{Módulo Diccionario Lineal con Hashing (nat,conj(nat))}
+
+\begin{Interfaz}
+  \textbf{parámetros formales}\hangindent=2\parindent\\
+  \parbox{1.7cm}{\textbf{géneros}}$\alpha$\\
+  \parbox[t]{1.7cm}{\textbf{función}}\parbox[t]{.5\textwidth-\parindent-1.7cm}{%
+    \InterfazFuncion{Copiar}{\In{k}{$\kappa$}}{$\kappa$}
+    {$res \igobs k$}
+    [$\Theta(copy(k))$]
+    [función de copia de nombres]
+  }\\
+   	
+  \textbf{se explica con}: \tadNombre{Vector($\alpha$), Conjunto Lineal}.
+
+  \textbf{géneros}: \TipoVariable{HashAgXSan}
+
+  \tinterfaz{Operaciones básicas}
+
+%% \In{}{}
+%%  OBSERVADORES BASICOS
+%% 
+
+  
+  \InterfazFuncion{Vacia}{\Inout{v}{vector()}}{}
+  [true]
+  {$res \igobs <>$}
+  [$\Theta(1)$]
+  [genera un vector vacio]
+  
+  \InterfazFuncion{EsVacio?}{\In{v}{vector(nat,conj(nat))}}{bool}
+  [true]
+  {$res \igobs $}
+  [$\Theta(1)$]
+  [devuelve true si y solo si v esta vacio]
+    
+  \InterfazFuncion{Longitud}{\In{v}{vector(nat,conj(nat))}}{nat}
+  [true]
+  {$res \igobs long(v)$}
+  [$\Theta(1)$]
+  [devuelve la cantidad de elementos que tiene el vector]
+    
+  \InterfazFuncion{$\bullet$[$\bullet$]}{\In{v}{vector(nat,conj(nat))}, \In{i}{nat}}{tupla(nat,conj(nat))}
+  [i $<$ long(v)]
+  {$alias(res \igobs iesimo(v, i))$}
+  [$\Theta(1)$]
+  [devuelve el elemento que se encuentra en la i-ésima posición de la lista en base 0. Es decir,   $l[i]$   devuelve el elemento que se encuentra en la posición i + 1.]
+  
+  
+%%  GENERADORES
+%%	
+  
+  \InterfazFuncion{Hash}{\Inout{v}{vector(tupla(nat,conj(nat)))}, \In{i}{nat}, \In{tup}{tupla(nat,conj(nat))}}{}
+  [$v \igobs v_0 \land i \leq long(v) $]
+  {$v \igobs Agregar(v_0,i,tup) $}
+  [$\Theta(N_{a})$ la primera vez luego $ \Theta(Log(N_{a})) $]
+  [agrega el elemento \textit{tup} a \textit{v}, de forma tal que ocupe la posición \textit{i}]  
+ [el elemento a se agrega por copia. Cualquier referencia que se tuviera al vector queda invalidada cuando
+long(v) es potencia de 2]
+%%  OTRAS OPERACIONES
+%%	
+
+
+\end{Interfaz}
+
+\begin{Representacion}
+\tinterfaz{Representación de Diccionario lineal con Hash}
+
+  \begin{Estructura}{HashAgXSanciones}[tHXSanciones]
+    \begin{Tupla}[tHXSanciones]%
+    
+      \tupItem{sanciones}{nat}%
+      \tupItem{agentes}{conj(nat)}%
+    \end{Tupla} 
+
+  \end{Estructura}
+  \tinterfaz{Representación del Conjunto}
+
+	\begin{Estructura}{conjAcotado}[ca]
+		\begin{Tupla}[ca]%
+			\tupItem{}{}
+			\tupItem{}{}
+		\end{Tupla}
+	\end{Estructura}
+
+  \Rep[ca][c]{($\forall e$: nat)($e$ $\in$ $c$.elementos $\ssi$ $e$ $\geq$ $c$.infimo $\land$ $e$ $<$ $c$.infimo $+$ tam($c$.pertenencia) $\yluego$\\ HaySiguiente?($c$.pertenencia[$e$ $-$ $c$.infimo])) $\yluego$\\ 
+  ($\forall e$: nat)($e$ $\in$ $c$.elementos $\impluego$ Siguiente($c$.pertenencia[$e$ $-$ $c$.infimo]) $=$ $e$)}\mbox{}
+
+  ~
+
+  \Abs[ca]{conjAcotado}[e]{c}{Infimo($c$) $=$ $e$.infimo $\land$ Supremo($c$) $=$ $e$.infimo $+$ tam($e$.pertenencia) $-$ $1$ $\land$\\ ConjSuby($c$) $=$ $e$.elementos}
+
+
+  \tinterfaz{Representación del iterador}
+
+  El iterador del conjunto acotado es simplemente un iterador del conjunto \textit{elementos}, ya que con éste recorremos todos los elementos, más un puntero a la estructura del conjunto, para poder borrar al eliminar el iterador.  
+
+  \begin{Estructura}{itConjAcotado}[itCA]
+    \begin{Tupla}[itCA]%
+      \tupItem{iter}{itConj(nat)}%
+      \tupItem{conj}{puntero(ca)}%
+    \end{Tupla}
+  \end{Estructura}
+
+  \Rep[itCA][it]{Rep($\ast it$.conj) $\land$ EsPermutacion(SecuSuby($it$.iter), $it$.conj\DRef elementos) }
+
+  ~
+
+  \AbsFc[itCA]{itBi(nat)}[it]{$it$.elementos}
+
+
+\end{Representacion}
+
+\begin{Algoritmos}
+
+\begin{algorithm}[H]{\textbf{iVacia}(\In{n}{nat})$\to$ $\res$: vector(tupla(nat,info))}
+	\begin{algorithmic}
+            \State $res \gets (NULL,n)$		\Comment $\Theta(1)$
+            
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]{\textbf{iEsVacio}(\In{v}{vector(tupla(nat,info))})$\to$ $\res$: bool}
+	\begin{algorithmic}
+            \State $res\gets(v.elementos = NULL)$	\Comment $\Theta(1)$
+            
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iLongitud}(\In{v}{vector(tupla(nat,info))})$\to$ $\res$: nat}
+	\begin{algorithmic}
+            
+            \State $res \gets v.longitud$													\Comment $\Theta(1)$
+           
+	\end{algorithmic}
+\end{algorithm}
+
+
+  \begin{algorithm}[H]{\textbf{i$\bullet$[$\bullet$]}(\In{v}{vector(tupla(nat,info))}, \In{i}{nat})$\to$ $\res$: tupla(nat,info)}
+	\begin{algorithmic}
+    \State $res \gets v.elementos[i]$       \Comment $\Theta(1)$    
+	\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]{\textbf{iHash}(\Inout{v}{vector(nat,info)}, \In{i}{nat},     \In{tup}{tupla(nat,info)})}
+	\begin{algorithmic}
+            
+            \State $res \gets $													\Comment $\Theta(N_{a})$
+           
+	\end{algorithmic}
+\end{algorithm}
+\end{Algoritmos}
